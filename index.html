@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Goldmine Sync</title>
+<style>
+:root{--bg:#f6f8f7;--chart:#f5f2ea;--ink:#111;--mut:#8b9490;--grn:#2e9e6b;--grnl:#d6f3e4;--red:#d9484f;--blu:#2196f3;--line:#e3e7e5}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:#0b0b0d;font-family:-apple-system,"SF Pro Text","Segoe UI",Roboto,sans-serif;color:var(--ink)}
+button,input{font-family:inherit}
+#app{height:100%;max-width:560px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.top{display:flex;align-items:center;gap:10px;padding:10px 14px 4px;font-weight:800}
+.top .sym{font-size:20px;font-weight:800;border:0;background:none;padding:0;color:var(--ink)}.top .sym i{font-size:11px;color:#999;font-style:normal}
+.dot{width:9px;height:9px;border-radius:50%;background:#e0a030}.dot.ok{background:#2fd08a}.dot.off{background:#e0555a}
+.pill{background:var(--grnl);border:1.5px solid #8fdcb8;color:#1c9a62;border-radius:10px;padding:4px 10px;font-size:14px}
+.pill.neg{background:#fde4e4;border-color:#f0b4b6;color:#c2383f}
+.sp{flex:1}.bid{color:#b3261e;font-size:15px}.ask{color:#0a7a3a;font-size:15px}
+.tfs{display:flex;gap:2px;padding:4px 10px;overflow:auto;scrollbar-width:none}
+.tfs button{border:0;background:none;color:#a7b0ac;font-weight:700;font-size:13px;padding:7px 11px;border-radius:9px;white-space:nowrap}
+.tfs button.on{background:var(--grnl);color:#25a06d;outline:1.5px solid #8fdcb8}
+#chartView{flex:1;min-height:0;display:flex;flex-direction:column}
+#panelView{flex:1;min-height:0;overflow:auto;padding:6px 14px 14px;display:none}
+#cw{position:relative;flex:1;min-height:160px;background:var(--chart);border-top:1px solid #ddd}
+canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#c{z-index:0}
+/* Dedicated SL/TP label layer: always above the chart canvas and its trade labels. */
+#riskOverlay{position:absolute;inset:0;z-index:2147483647;pointer-events:none}
+.tb{position:absolute;top:6px;left:6px;display:flex;gap:5px}
+.tb button{border:1px solid #d6d2c6;background:#fffdf7cc;color:#6d716f;font-weight:700;font-size:11px;padding:4px 8px;border-radius:7px}
+.tb button.on{background:#e5f7ee;border-color:#9fdcbd;color:#2a9565}
+#tm{position:absolute;top:6px;right:68px;background:#1d2b27;color:#4fe3a0;font-weight:800;font-size:12px;padding:4px 8px;border-radius:7px;font-variant-numeric:tabular-nums}
+#toast{position:absolute;left:12px;right:12px;top:38px;background:#0e5240;color:#7dffc5;border:1px solid #2fa36e;border-radius:10px;padding:10px 12px;text-align:center;font-weight:700;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:4}
+#toast.bad{background:#5a1c20;color:#ffc2c5;border-color:#c2383f}#toast.on{opacity:1}
+.chips{display:flex;gap:8px;align-items:center;padding:0 10px;overflow:auto;scrollbar-width:none;white-space:nowrap}
+.chips:not(:empty){padding:6px 10px}
+.be{background:#fdf3e0;border:1.5px solid #f0d9a8;color:#e8860b;font-weight:800;border-radius:10px;padding:7px 12px;font-size:13px}
+.row2{display:flex;gap:20px;padding:4px 14px 6px;overflow:auto;scrollbar-width:none;white-space:nowrap;font-weight:800;font-size:14px}
+.row2:empty{display:none}
+.row2 .buy,.row2 .sell{color:#111}.row2 em{font-style:normal;color:#b7bdbb;font-weight:600}.row2 b{font-weight:800;margin-right:2px}.row2 u{text-decoration:none;color:#ee6a6a;margin-left:8px;padding:2px 4px}
+.mode{display:flex;padding:2px 10px}.mode button{flex:1;border:0;background:none;color:var(--mut);font-weight:700;font-size:14px;padding:8px;border-radius:9px}
+.mode button.on{background:#d9f5e7;color:#25a06d;outline:1.5px solid #9fdcbd}
+.ent{display:none;align-items:center;gap:8px;padding:4px 14px;font-size:13px;color:var(--mut);flex-wrap:wrap}
+.ent input{width:110px;border:1.5px solid #cfd6d3;border-radius:9px;padding:7px 9px;font-size:16px;font-weight:700;background:#fff}
+.ent button{width:34px;height:34px;border:0;border-radius:9px;background:#e8ebea;font-size:20px;font-weight:800}
+.ent p{flex-basis:100%;margin:2px 0 0;font-size:12px}
+.lots{display:flex;align-items:center;justify-content:center;gap:14px;padding:4px 14px}
+.lots button{width:40px;height:40px;border:0;border-radius:10px;background:#e8ebea;font-size:24px;font-weight:800}
+.lots .v{text-align:center;font-size:26px;font-weight:800;line-height:1;min-width:64px}.lots small{display:block;font-size:10px;color:var(--mut);font-weight:700;letter-spacing:.5px;margin-top:3px}
+.lots .sltp{margin-left:auto;width:auto;font-size:13px;padding:0 14px;background:none;border:1.5px solid #cfd6d3;color:#79827e}
+.go{display:flex;gap:12px;padding:4px 14px 8px}.go button{flex:1;border:0;border-radius:14px;height:56px;color:#fff;font-weight:800;font-size:17px;line-height:1.2}
+.go button:disabled{opacity:.55}.go small{display:block;font-size:15px;font-weight:700}
+#sell{background:#0d0d0f}#buy{background:var(--blu)}
+.nav{display:flex;border-top:1px solid var(--line);padding:6px 0 4px;background:var(--bg)}
+.nav button{flex:1;border:0;background:none;font-size:10.5px;font-weight:700;color:#79827e;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7}.nav .on{color:var(--blu)}
+#sheet{position:absolute;inset:auto 0 0 0;background:#fff;border-radius:18px 18px 0 0;padding:16px 18px 20px;box-shadow:0 -10px 40px #0004;transform:translateY(110%);transition:transform .25s;z-index:9;max-height:82%;overflow:auto}
+#sheet.on{transform:none}#sheet h4{margin:0 0 8px;font-size:16px}
+#sheet button,.pn button.wide{display:block;width:100%;margin:6px 0;padding:12px;border:1.5px solid #cfd6d3;border-radius:11px;background:#fff;font-weight:700;font-size:14px}
+#sheet button.bad{border-color:#e9a5a8;color:#c2383f}
+#sheet label,.pn label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin:8px 0 0}
+#sheet input,.pn input{display:block;width:100%;margin-top:4px;border:1.5px solid #cfd6d3;border-radius:10px;padding:10px;font-size:16px;font-weight:600}
+#sheet .sm,.pn .sm{font-size:12px;color:var(--mut);margin:0 0 4px}
+.pn h3{margin:12px 0 4px;font-size:15px}
+.pn .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.pn .r small{color:var(--mut);font-size:12px}.pn .r button{border:1.5px solid #cfd6d3;background:#fff;border-radius:9px;padding:7px 12px;font-weight:700;font-size:13px}
+.buy{color:#2a8fe0}.sell{color:#e0555a}.pos{color:#1c9a62}.neg{color:#c2383f}
+.pn .kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}.pn .kv b{font-weight:800}
+.pn .note{font-size:12px;color:var(--mut);line-height:1.5;margin:8px 0}
+.demo{display:inline-block;background:var(--grnl);color:#1c9a62;border-radius:7px;padding:2px 8px;font-size:12px;font-weight:800}
+
+/* In-app confirmations and redesigned account/trade panels */
+#confirmUI{position:absolute;left:12px;right:12px;bottom:78px;z-index:30;display:none;align-items:center;gap:8px;padding:11px 12px;background:#fff;border:1px solid #dce3df;border-radius:14px;box-shadow:0 8px 28px #0002}
+#confirmUI.on{display:flex}#confirmText{flex:1;font-size:13px;font-weight:750;line-height:1.35}
+#confirmUI button{flex:0 0 40px;width:40px;height:40px;border:0;border-radius:11px;font-size:22px;font-weight:900}
+#confirmYes{background:#d6f3e4;color:#168353}#confirmNo{background:#fde4e4;color:#c2383f}
+.pn h3{font-size:17px;letter-spacing:-.25px;margin:18px 0 8px}.pn h3:first-child{margin-top:8px}
+.pn .section-sub{font-size:12px;color:var(--mut);margin:-3px 0 10px}
+.pn .trade-card{background:#fff;border:1px solid #e5eae7;border-radius:16px;padding:13px;margin:9px 0;box-shadow:0 3px 12px #14251b08}
+.pn .trade-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.pn .trade-title{font-size:14px;font-weight:850;line-height:1.35}.pn .trade-sub{font-size:11px;color:var(--mut);margin-top:4px;line-height:1.45}
+.pn .trade-profit{font-size:16px;font-weight:850;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pn .trade-badge{display:inline-block;border-radius:7px;padding:4px 7px;font-size:10px;font-weight:850;background:#edf2ef;color:#5c6962;margin-right:5px}
+.pn .trade-badge.buy{background:#e5f3ff;color:#247bc1}.pn .trade-badge.sell{background:#fde9e9;color:#c2383f}
+.pn .trade-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:12px}
+.pn .trade-metric{min-width:0;background:#f7f9f8;border-radius:10px;padding:8px}.pn .trade-metric span{display:block;color:var(--mut);font-size:10px;font-weight:700;margin-bottom:4px}.pn .trade-metric b{display:block;font-size:12px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.pn .trade-actions{display:flex;gap:8px;margin-top:12px}.pn .trade-actions button{flex:1;border:1px solid #dbe2de;border-radius:10px;padding:9px 10px;background:#fff;font-size:12px;font-weight:800}.pn .trade-actions button.primary{background:#e3f5eb;border-color:#b6e3ca;color:#187c50}.pn .trade-actions button.danger{color:#c2383f;background:#fff8f8;border-color:#f0c9cb}
+.pn .account-hero{padding:17px;border-radius:18px;background:linear-gradient(135deg,#172b24,#24513f);color:#fff;margin:10px 0 12px}
+.pn .account-hero .eyebrow{font-size:11px;font-weight:750;color:#b7d5c7}.pn .account-hero .amount{font-size:28px;font-weight:900;letter-spacing:-.7px;margin:8px 0 12px;font-variant-numeric:tabular-nums}
+.pn .account-hero .hero-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#d6e9df}.pn .account-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pn .account-tile{background:#fff;border:1px solid #e5eae7;border-radius:14px;padding:12px}.pn .account-tile span{display:block;color:var(--mut);font-size:11px;font-weight:700;margin-bottom:7px}.pn .account-tile b{font-size:16px;font-weight:850;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.pn .account-info{background:#fff;border:1px solid #e5eae7;border-radius:14px;padding:4px 12px;margin-top:10px}
+.pn .account-info .kv{font-size:12px;padding:11px 0}.pn .empty-state{text-align:center;background:#fff;border:1px dashed #d8e0db;border-radius:15px;padding:24px 16px;color:var(--mut);font-size:13px}
+</style></head><body>
+<div id="app">
+<div class="top"><button class="sym" id="symBtn">GOLD <i>▼</i></button><span class="dot" id="dot"></span><span class="pill" id="pl">+$0.00</span><span class="sp"></span><span class="bid" id="hb">–</span><span class="ask" id="ha">–</span></div>
+<div class="tfs" id="tfs"></div>
+<div id="chartView">
+ <div id="cw"><canvas id="c"></canvas><canvas id="riskOverlay" aria-hidden="true"></canvas>
+  <div class="tb"><button id="tEma">EMA</button><button id="tLbl">Labels: small</button><button data-do="manage">Manage</button></div>
+  <div id="tm">⧗ --:--</div><div id="toast"></div></div>
+ <div class="chips" id="chips"></div>
+ <div class="row2" id="row"></div>
+ <div class="mode" id="mode"><button class="on" data-m="Market">Market</button><button data-m="Limit">Limit</button><button data-m="Stop">Stop</button></div>
+ <div class="ent" id="ent">ENTRY <button id="em">−</button><input id="entv" type="number" step="any" inputmode="decimal"><button id="ep">+</button><p id="entHint"></p></div>
+ <div class="lots"><button id="mi">–</button><div class="v"><span id="lv">0.10</span><small>LOTS</small></div><button id="pu">+</button><button class="sltp" id="sltp">SL / TP</button></div>
+ <div class="go"><button id="sell">SELL<small id="sp">–</small></button><button id="buy">BUY<small id="bp">–</small></button></div>
+</div>
+<div id="panelView" class="pn"></div>
+<div class="nav" id="nav"></div>
+<div id="sheet"></div>
+<div id="confirmUI" role="dialog" aria-live="polite"><span id="confirmText"></span><button id="confirmYes" aria-label="Confirm">✓</button><button id="confirmNo" aria-label="Cancel">×</button></div>
+</div>
+<script>
+/* ============ Goldmine Sync — live MT5 dashboard (talks to app.py v0.4 on your PC) ============ */
+const $=s=>document.querySelector(s);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const TFLIST=['M1','M3','M5','M12','M15','M30','H1','H4','D1'];
+const S={base:LS.get('gm_base','http://127.0.0.1:8765'),key:LS.get('gm_key',''),login:+LS.get('gm_login',0)||0,symbol:LS.get('gm_symbol',''),
+ tf:TFLIST.includes(LS.get('gm_tf','')) ? LS.get('gm_tf','') : 'M5',digits:2,point:.01,contract:100,tfs:300,bid:0,ask:0,off:0,
+ C:[],P:[],O:[],allP:[],allO:[],acct:null,gold:[],symbols:[],ok:false};
+const DEF={sl:+LS.get('gm_sl',0)||0,tp:+LS.get('gm_tp',0)||0};
+let mode='Market',lots=+LS.get('gm_lots',0.1)||0.1,entry=0,ema=LS.get('gm_ema','1')=='1',lbl=LS.get('gm_lbl','small'),panel=null;
+const view={n:80,pan:0,gap:6,scale:1,vshift:0,vlo:null,vhi:null};
+let activePos=null,activeLevels={};
+const cv=$('#c'),g=cv.getContext('2d'),riskCv=$('#riskOverlay'),rg=riskCv.getContext('2d');let W=0,H=0,dirty=true,hits=[],geo=null,drag=null,frontRiskLabels=[],frontHandles=[];
+
+/* ---------- helpers ---------- */
+const fx=x=>(+x).toFixed(S.digits);
+const CUR=()=>({USD:'$',EUR:'€',GBP:'£'}[S.acct&&S.acct.currency]||(S.acct?S.acct.currency+' ':'$'));
+const money=x=>(x<0?'−':'+')+CUR()+Math.abs(x).toFixed(2);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let toastT,pendingConfirm=null;function toast(t,bad){const e=$('#toast');e.textContent=t;e.className=(bad?'bad ':'')+'on';clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('on'),bad?5000:2800)}
+function askConfirm(message,action){pendingConfirm=action;$('#confirmText').textContent=message;$('#confirmUI').classList.add('on')}
+function clearConfirm(){pendingConfirm=null;$('#confirmUI').classList.remove('on')}
+function status(s){$('#dot').className='dot '+s}
+
+/* ---------- bridge calls ---------- */
+async function api(path,body){
+ const o={headers:{'X-Gomez-Key':S.key}};
+ if(body){o.method='POST';o.headers['Content-Type']='application/json';o.body=JSON.stringify(body)}
+ let r;try{r=await fetch(S.base+path,o)}catch(e){throw new Error('Cannot reach the bridge. Is start_bridge.bat running on your PC?')}
+ let j=null;try{j=await r.json()}catch(e){}
+ if(!r.ok)throw new Error((j&&(typeof j.detail==='string'?j.detail:JSON.stringify(j.detail)))||('Bridge error '+r.status));
+ return j}
+
+async function connect(){
+ stopPoll();S.ok=false;
+ if(!S.key){status('off');showPanel('Settings');return}
+ status('wait');
+ try{
+  await api('/api/health');
+  const a=await api('/api/accounts');
+  if(!a.accounts.length)throw new Error('No account is configured in config.json.');
+  if(!a.accounts.some(x=>x.login==S.login))S.login=a.accounts[0].login;
+  LS.set('gm_login',S.login);
+  const sy=await api('/api/symbols?login='+S.login);
+  S.symbols=sy.symbols||[];S.gold=sy.gold||[];
+  const known=[...S.symbols,...S.gold];
+  if(!S.symbol||!known.includes(S.symbol))S.symbol=S.gold[0]||S.symbols[0]||'XAUUSD';
+  LS.set('gm_symbol',S.symbol);
+  await loadCandles();
+  S.ok=true;status('ok');showPanel('Chart');startPoll();
+  toast('✓ Connected — live '+S.symbol+' from your broker');
+ }catch(e){status('off');toast(e.message,1);showPanel('Settings')}
+}
+async function loadCandles(){
+ const r=await api(`/api/candles?login=${S.login}&symbol=${encodeURIComponent(S.symbol)}&timeframe=${S.tf}&count=1000`);
+ S.C=r.candles;S.digits=r.digits;S.point=r.point;S.tfs=r.tf_seconds;view.pan=0;view.vlo=null;view.vhi=null;view.scale=1;view.vshift=0;dirty=true;header()}
+
+let polling=false,pollT=null,wasOff=false;
+function startPoll(){stopPoll();pollT=setInterval(poll,700);poll()}
+function stopPoll(){clearInterval(pollT);pollT=null}
+async function poll(){
+ if(polling||!S.ok)return;polling=true;const sym=S.symbol,tf=S.tf;
+ try{
+  const r=await api(`/api/live?login=${S.login}&symbol=${encodeURIComponent(sym)}&timeframe=${tf}`);
+  if(sym!==S.symbol||tf!==S.tf)return;
+  S.bid=r.bid;S.ask=r.ask;S.digits=r.digits;S.point=r.point;S.contract=r.contract||S.contract;S.off=r.time-Date.now()/1000;
+  for(const b of r.bars){const L=S.C[S.C.length-1];
+   if(!L||b.time>L.time)S.C.push(b);
+   else for(let i=S.C.length-1;i>=Math.max(0,S.C.length-3);i--)if(S.C[i].time===b.time){S.C[i]=b;break}}
+  if(S.C.length>6000)S.C.splice(0,S.C.length-5000);
+  S.allP=r.positions;S.allO=r.pending;S.P=r.positions.filter(p=>p.symbol===sym);S.O=r.pending.filter(o=>o.symbol===sym);S.acct=r.account;
+  if(wasOff){toast('✓ Reconnected');wasOff=false}
+  status('ok');header();list();if(panel==='Positions')renderPositions();dirty=true;
+ }catch(e){status('off');if(!wasOff){wasOff=true;toast(e.message,1)}}
+ finally{polling=false}}
+
+/* ---------- header / lists ---------- */
+function header(){
+ $('#symBtn').innerHTML=esc(S.symbol||'—')+' <i>▼</i>';
+ $('#hb').textContent=S.bid?fx(S.bid):'–';$('#ha').textContent=S.ask?fx(S.ask):'–';
+ $('#sp').textContent=S.bid?fx(S.bid):'–';$('#bp').textContent=S.ask?fx(S.ask):'–';
+ const pr=S.acct?S.acct.profit:0,el=$('#pl');el.textContent=money(pr);el.className='pill'+(pr<0?' neg':'');
+ $('#lv').textContent=lots.toFixed(2);
+ $('#sltp').textContent=(DEF.sl||DEF.tp)?`SL ${DEF.sl||'–'} · TP ${DEF.tp||'–'}`:'SL / TP';
+ $('#tEma').className=ema?'on':'';$('#tLbl').textContent='Labels: '+({small:'small',lines:'lines only',off:'hidden'}[lbl]);
+ $('#tfs').innerHTML=TFLIST.map(t=>`<button class="${t==S.tf?'on':''}" data-t="${t}">${t}</button>`).join('');
+ const hint=mode=='Limit'?'Limit: buy BELOW market, sell ABOVE market. Tap the chart to pick a price.':'Stop: buy ABOVE market, sell BELOW market. Tap the chart to pick a price.';
+ $('#entHint').textContent=hint;
+ document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on',b.dataset.m==mode));
+ $('#ent').style.display=mode=='Market'?'none':'flex';
+}
+let rowSig='';
+function list(){
+ const P=S.P,O=S.O,sig=P.map(p=>p.ticket+':'+p.sl+':'+p.tp).join()+'|'+O.map(o=>o.ticket+':'+o.price).join();
+ if(sig!==rowSig){rowSig=sig;
+  $('#chips').innerHTML=P.length?`<button class="be" id="be">🛡 BE ALL (${P.length})</button>`:'';
+  $('#row').innerHTML=P.map(p=>`<span class="${p.type.toLowerCase()}"><b>${p.type}</b> ${p.volume} &nbsp;<span data-pl="${p.ticket}"></span><u data-x="${p.ticket}">×</u></span>`).join('')+
+   O.map(o=>`<span class="${o.name.startsWith('BUY')?'buy':'sell'}"><b>${o.name} ${o.volume}</b> <em>@ ${fx(o.price)}</em><u data-o="${o.ticket}">×</u></span>`).join('')}
+ P.forEach(p=>{const e=document.querySelector(`[data-pl="${p.ticket}"]`);if(e){e.textContent=money(p.profit);e.className=p.profit<0?'neg':'pos'}});
+}
+
+/* ---------- chart ---------- */
+function size(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=Math.max(1,r.width*d);cv.height=Math.max(1,r.height*d);riskCv.width=cv.width;riskCv.height=cv.height;g.setTransform(d,0,0,d,0,0);rg.setTransform(d,0,0,d,0,0);W=r.width;H=r.height;dirty=true}
+const AX=62,BX=22,BH=18;
+const eff=(kind,t,v)=>drag&&drag.kind===kind&&drag.ticket===t?drag.price:v;
+function orderLevels(){
+ const out=[];
+ S.P.forEach(p=>{out.push(p.price_open);const sl=eff('sl',p.ticket,p.sl),tp=eff('tp',p.ticket,p.tp);if(sl)out.push(sl);if(tp)out.push(tp)});
+ S.O.forEach(o=>{out.push(eff('pend',o.ticket,o.price));const sl=eff('psl',o.ticket,o.sl),tp=eff('ptp',o.ticket,o.tp);if(sl)out.push(sl);if(tp)out.push(tp)});
+ if(mode!='Market'&&entry)out.push(entry);
+ return out}
+const NICE=[.01,.02,.05,.1,.2,.5,1,2,5,10,20,25,50,100,200,500,1000];
+function draw(){
+ if(!W||!H)return;dirty=false;g.clearRect(0,0,W,H);rg.clearRect(0,0,W,H);frontRiskLabels=[];frontHandles=[];hits=[];
+ const cw=W-AX,ph=H-BX,n=view.n,bw=cw/n,C=S.C;
+ if(!C.length){g.fillStyle='#8b9490';g.font='600 14px sans-serif';g.textAlign='center';g.fillText(S.ok?'Loading candles…':'Not connected — open Settings',cw/2,ph/2);g.textAlign='left';return}
+ const vis=n-view.gap,last=C.length-1-view.pan,first=last-vis+1;
+ const arr=[];for(let k=0;k<vis;k++){const c=C[first+k];if(c)arr.push([k,c])}
+ // Establish the vertical price range once, then keep it independent of horizontal
+ // zoom/pan. Changing view.n or view.pan must not recalculate the price scale.
+ if(!Number.isFinite(view.vhi)||!Number.isFinite(view.vlo)){
+  let baseHi=-1e9,baseLo=1e9;
+  arr.forEach(([k,c])=>{baseHi=Math.max(baseHi,c.high);baseLo=Math.min(baseLo,c.low)});
+  if(baseHi<baseLo){baseHi=(S.ask||1)+1;baseLo=(S.bid||0)-1}
+  const m=(baseHi-baseLo)*.6||1;
+  orderLevels().forEach(x=>{if(x>baseLo-m&&x<baseHi+m){baseHi=Math.max(baseHi,x);baseLo=Math.min(baseLo,x)}});
+  [S.ask,S.bid].forEach(x=>{if(x){baseHi=Math.max(baseHi,x);baseLo=Math.min(baseLo,x)}});
+  const pad=(baseHi-baseLo)*.08||.5;view.vhi=baseHi+pad;view.vlo=baseLo-pad;
+ }
+ let hi=view.vhi,lo=view.vlo;
+ const mid=(hi+lo)/2,half=(hi-lo)/2/Math.max(.15,view.scale);hi=mid+half-view.vshift;lo=mid-half-view.vshift;
+ const Y=p=>8+(hi-p)/(hi-lo)*(ph-16),X=k=>k*bw+bw/2;
+ geo={ph,cw,bw,inv:y=>hi-(y-8)/(ph-16)*(hi-lo)};
+ // watermark
+ g.fillStyle='rgba(150,150,150,.16)';g.font='900 54px Helvetica,Arial';g.textAlign='center';g.fillText('GOLDMINE',cw/2,ph*.45);g.font='900 32px Helvetica,Arial';g.fillText('SYNC',cw/2,ph*.45+38);g.textAlign='left';
+ // grid + price axis
+ const step=NICE.find(s=>(hi-lo)/s<=9)||1000;
+ g.font='500 11px -apple-system,Arial';g.lineWidth=1;
+ for(let p=Math.ceil(lo/step)*step;p<hi;p+=step){const y=Y(p);g.strokeStyle='rgba(0,0,0,.06)';g.beginPath();g.moveTo(0,y);g.lineTo(cw,y);g.stroke();g.fillStyle='#333';g.fillText(p.toFixed(step<1?2:0),cw+6,y+4)}
+ g.fillStyle='#0003';g.fillRect(cw,0,1,ph);g.fillRect(0,ph,W,1);
+ // time axis
+ const secs=[60,300,900,1800,3600,7200,14400,43200,86400,172800,604800];
+ const tstep=secs.find(s=>s/S.tfs*bw>=70)||604800;
+ g.fillStyle='#333';g.textAlign='center';g.font='600 11px -apple-system,Arial';
+ arr.forEach(([k,c])=>{if(c.time%tstep===0){const d=new Date(c.time*1000);
+  const t=tstep>=86400?d.getUTCDate()+'/'+(d.getUTCMonth()+1):String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0');
+  g.fillText(t,X(k),H-7)}});g.textAlign='left';
+ // EMA
+ if(ema&&C.length>30)[[9,'#f2c230'],[21,'#2f7fd6']].forEach(([len,col])=>{const kk=2/(len+1);let e=C[0].close;const E=C.map(c=>e=c.close*kk+e*(1-kk));
+  g.beginPath();let st=0;arr.forEach(([k,c])=>{const y=Y(E[first+k]);st?g.lineTo(X(k),y):g.moveTo(X(k),y);st=1});g.strokeStyle=col;g.lineWidth=1.3;g.stroke()});
+ // candles
+ arr.forEach(([k,c])=>{const up=c.close>=c.open,x=X(k),w=Math.max(2,bw*.62);
+  g.strokeStyle='#111';g.lineWidth=1.2;g.beginPath();g.moveTo(x,Y(c.high));g.lineTo(x,Y(c.low));g.stroke();
+  const y1=Y(Math.max(c.open,c.close)),h=Math.max(1.5,Math.abs(Y(c.open)-Y(c.close)));
+  g.fillStyle=up?'#4db3f5':'#161616';g.fillRect(x-w/2,y1,w,h);g.strokeStyle='#111';g.lineWidth=1;g.strokeRect(x-w/2,y1,w,h)});
+ // live price
+ if(S.bid&&view.pan===0){g.setLineDash([2,3]);g.strokeStyle='#4aa8ff';g.lineWidth=1;g.beginPath();g.moveTo(0,Y(S.bid));g.lineTo(cw,Y(S.bid));g.stroke();g.setLineDash([]);
+  tag(Y(S.ask),fx(S.ask),'#e8504f');tag(Y(S.bid),fx(S.bid),'#111')}
+ // entry preview for Limit/Stop
+ if(mode!='Market'&&entry){line(Y(entry),'#2f9cf0',[3,3],1);tag(Y(entry),fx(entry),'#2f9cf0')}
+ // orders
+ if(lbl!=='off'){
+  const items=[];
+  const addLine=(price,col,dash,item)=>{const y=Y(price);line(y,col,dash,.9);tag(clampY(y),fx(price),col,item&&item.dragKind?item:null);if(item&&(lbl==='small'||item.riskKind)){item.y=clampY(y);item.col=col;items.push(item)}};
+  const val=(price,p,sgn)=>(price-p.price_open)*sgn*p.volume*S.contract;
+  S.P.forEach(p=>{const sg=p.type==='BUY'?1:-1;
+   addLine(p.price_open,sg>0?'#27b774':'#ef5b62',[],{text:`${p.type} ${p.volume}  ${money(p.profit)}`,end:'×',act:'pos',ticket:p.ticket});
+   let sl=eff('sl',p.ticket,p.sl),tp=eff('tp',p.ticket,p.tp);
+   if(activePos===p.ticket){
+    const lev=activeLevels[p.ticket]||(activeLevels[p.ticket]={sl:sl||null,tp:tp||null});
+    // Queue the transparent add-level boxes for the very top overlay pass.
+    // Drawing them here on the chart canvas lets later trade labels cover them.
+    const handle=(price,label,kind,offset)=>{if(price)return;const hy=clampY(Y(p.price_open)+offset);frontHandles.push({x:8,y:hy,label,kind,ticket:p.ticket})};
+    handle(lev.tp,'＋ TP','tp',sg>0?-28:28);handle(lev.sl,'＋ SL','sl',sg>0?28:-28);
+   }
+   if(activePos===p.ticket){const lev=activeLevels[p.ticket]||(activeLevels[p.ticket]={sl:sl||null,tp:tp||null});sl=sl||lev.sl;tp=tp||lev.tp}
+   if(sl)addLine(sl,'#ef5b62',[4,4],{text:`SL ${money(val(sl,p,sg))}`,end:'×',riskKind:'sl',dragKind:'sl',ticket:p.ticket,drag:1});
+   if(tp)addLine(tp,'#27b774',[4,4],{text:`TP ${money(val(tp,p,sg))}`,end:'×',riskKind:'tp',dragKind:'tp',ticket:p.ticket,drag:1})});
+  S.O.forEach(o=>{const buy=o.name.startsWith('BUY'),sg=buy?1:-1,pr=eff('pend',o.ticket,o.price);
+   addLine(pr,'#2f9cf0',[2,2],{text:`${o.name} ${o.volume}`,end:'×',dragKind:'pend',ticket:o.ticket,drag:1,cancel:1});
+   const sl=eff('psl',o.ticket,o.sl),tp=eff('ptp',o.ticket,o.tp);
+   const v=(x)=>(x-pr)*sg*o.volume*S.contract;
+   if(sl)addLine(sl,'#ef5b62',[4,4],{text:`SL ${money(v(sl))}`,end:'×',riskKind:'psl',dragKind:'psl',ticket:o.ticket,drag:1});
+   if(tp)addLine(tp,'#27b774',[4,4],{text:`TP ${money(v(tp))}`,end:'×',riskKind:'ptp',dragKind:'ptp',ticket:o.ticket,drag:1})});
+  // Canvas has no CSS z-index: explicitly draw all SL/TP labels in a final pass.
+  // Keep their original price-level positions; only change paint order.
+  items.forEach(it=>{it.by=it.y});
+  const isRiskLabel=it=>it.dragKind==='sl'||it.dragKind==='tp'||it.dragKind==='psl'||it.dragKind==='ptp';
+  items.filter(it=>!isRiskLabel(it)).forEach(it=>box(it));
+  frontRiskLabels=items.filter(isRiskLabel);
+  frontRiskLabels.forEach(it=>box(it));
+ }
+ // Separate transparent overlay canvas guarantees SL/TP labels and add-level
+ // boxes are composited above every chart label. Add-level boxes are painted last.
+ frontRiskLabels.forEach(it=>frontBox(it));
+ frontHandles.forEach(frontHandle);
+ function frontHandle(h){
+  const {x,y:hy,label,kind,ticket}=h;
+  rg.save();rg.globalAlpha=.72;rg.fillStyle='#fff';rg.strokeStyle=kind==='tp'?'#27b774':'#ef5b62';rg.setLineDash([3,3]);rg.lineWidth=1;rg.beginPath();rg.roundRect(x,hy-10,54,20,5);rg.fill();rg.stroke();rg.setLineDash([]);rg.globalAlpha=1;rg.fillStyle=kind==='tp'?'#188b5a':'#c2383f';rg.font='700 10px -apple-system,Arial';rg.fillText(label,x+9,hy+4);rg.restore();
+  // These hit regions are appended after every other hit region, so reverse-order
+  // hit testing selects the visible box before any label underneath it.
+  hits.push({x:x-3,y:hy-13,w:60,h:26,act:'drag',kind,ticket,handle:1});
+ }
+ function frontBox(it){
+  rg.save();rg.font='700 11px -apple-system,Arial';const endW=it.end?18:0,w=rg.measureText(it.text).width+14+endW,x=4,y=it.by-BH/2;
+  rg.fillStyle='#fff';rg.strokeStyle=it.col;rg.lineWidth=1.2;rg.beginPath();rg.roundRect(x,y,w,BH,5);rg.fill();rg.stroke();rg.fillStyle='#111';rg.fillText(it.text,x+7,y+BH/2+4);
+  if(it.end){rg.fillStyle='#ee6a6a';rg.font='800 15px Arial';rg.fillText('×',x+w-14,y+BH/2+5)}else if(it.drag){rg.fillStyle='#999';rg.fillText('⇕',x+w-13,y+BH/2+4)}
+  if(it.riskKind&&confirmRisk&&confirmRisk.ticket===it.ticket&&confirmRisk.kind===it.riskKind){const cx=x+w+13,cy=it.by;rg.fillStyle='#d6f3e4';rg.strokeStyle='#2e9e6b';rg.beginPath();rg.roundRect(cx-12,cy-9,24,18,5);rg.fill();rg.stroke();rg.fillStyle='#168353';rg.font='800 13px Arial';rg.textAlign='center';rg.fillText('✓',cx,cy+4);rg.textAlign='left'}
+  rg.restore();
+ }
+ // grabbing the price tag on the right axis also drags SL/TP/pending
+ function tag(y,t,bg,item){g.fillStyle=bg;g.fillRect(cw,y-9,AX,18);g.fillStyle='#fff';g.font='600 11px -apple-system,Arial';g.fillText(t,cw+5,y+4);
+  if(item&&item.drag)hits.push({x:cw,y:y-9,w:AX,h:18,act:'drag',kind:item.dragKind,ticket:item.ticket})}
+ function clampY(y){return clamp(y,10,ph-10)}
+ function line(y,col,dash,a){g.globalAlpha=a==null?1:a;g.setLineDash(dash);g.strokeStyle=col;g.lineWidth=1;g.beginPath();g.moveTo(0,y);g.lineTo(cw,y);g.stroke();g.setLineDash([]);g.globalAlpha=1}
+ function box(it){g.font='700 11px -apple-system,Arial';const endW=it.end?18:0,w=g.measureText(it.text).width+14+endW,x=4,y=it.by-BH/2;
+  g.fillStyle='#fff';g.strokeStyle=it.col;g.lineWidth=1.2;g.beginPath();g.roundRect(x,y,w,BH,5);g.fill();g.stroke();
+  g.fillStyle='#111';g.fillText(it.text,x+7,y+BH/2+4);
+  if(it.end){g.fillStyle='#ee6a6a';g.font='800 15px Arial';g.fillText('×',x+w-14,y+BH/2+5)}else if(it.drag){g.fillStyle='#999';g.fillText('⇕',x+w-13,y+BH/2+4)}
+  // Broad label hit areas are added first so the X and confirmation V always win hit-testing.
+  if(it.act==='pos')hits.push({x,y,w:w-20,h:BH,act:'pos',ticket:it.ticket});
+  if(it.drag)hits.push({x,y,w:it.end?w-20:w,h:BH,act:'drag',kind:it.dragKind,ticket:it.ticket});
+  if(it.end)hits.push({x:x+w-20,y,w:20,h:BH,act:it.riskKind?'riskremove':(it.cancel?'cancel':'close'),kind:it.riskKind,ticket:it.ticket});
+  if(it.act==='pos'&&confirmClose===it.ticket){const cx=x+w+13,cy=y+BH/2;g.save();g.fillStyle='#d6f3e4';g.strokeStyle='#2e9e6b';g.lineWidth=1;g.beginPath();g.roundRect(cx-13,cy-9,26,18,5);g.fill();g.stroke();g.fillStyle='#168353';g.font='800 13px Arial';g.textAlign='center';g.fillText('✓',cx,cy+4);g.textAlign='left';g.restore();hits.push({x:cx-15,y:cy-11,w:30,h:22,act:'confirmclose',ticket:it.ticket})}
+  if(it.riskKind&&confirmRisk&&confirmRisk.ticket===it.ticket&&confirmRisk.kind===it.riskKind){const cx=x+w+13,cy=it.by;hits.push({x:cx-14,y:cy-11,w:28,h:22,act:'confirmrisk',ticket:it.ticket,kind:it.riskKind})}
+ }
+}
+(function loop(){if(dirty)draw();requestAnimationFrame(loop)})();
+setInterval(()=>{tmUpdate();dirty=true},1000);
+function tmUpdate(){const L=S.C[S.C.length-1];if(!L){$('#tm').textContent='⧗ --:--';return}
+ let left=Math.max(0,Math.floor(L.time+S.tfs-(Date.now()/1000+S.off)));if(left>S.tfs)left=S.tfs;
+ const h=Math.floor(left/3600),m=Math.floor(left%3600/60),s=left%60,p=v=>String(v).padStart(2,'0');
+ $('#tm').textContent='⧗ '+(h?h+':':'')+p(m)+':'+p(s)}
+
+/* ---------- touch / mouse on chart ---------- */
+const ptrs=new Map();let pan=null,pinch=null,tap=null,scaleDrag=null,confirmClose=null,confirmRisk=null;
+const hitAt=(x,y)=>[...hits].reverse().find(h=>x>=h.x&&x<=h.x+h.w&&y>=h.y&&y<=h.y+h.h);
+cv.addEventListener('pointerdown',e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+ ptrs.set(e.pointerId,{x,y});try{cv.setPointerCapture(e.pointerId)}catch(_){}
+ if(ptrs.size===2){const[a,b]=[...ptrs.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,n:view.n};pan=null;drag=null;tap=null;return}
+ const h=hitAt(x,y);
+ if(h&&h.act==='drag'){const dk=h.kind,t=h.ticket;drag={kind:dk,ticket:t,price:+geo.inv(y).toFixed(S.digits),startY:y,moved:false};dirty=true;return}
+ if(h){tap={h,x,y};return}
+ if(x>=W-AX){scaleDrag={y,scale:view.scale,shift:view.vshift};pan=null;drag=null;tap=null;return}
+ pan={x,y,p:view.pan,g:view.gap,vs:view.vshift,moved:false,range:geo?Math.abs(geo.inv(0)-geo.inv(geo.ph)):1,scale:Math.max(.15,view.scale)}});
+cv.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+ if(ptrs.has(e.pointerId))ptrs.set(e.pointerId,{x,y});
+ if(pinch&&ptrs.size===2){const[a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y)||1;view.n=clamp(Math.round(pinch.n*pinch.d/d),20,300);dirty=true;return}
+ if(scaleDrag){const dy=y-scaleDrag.y;view.scale=clamp(scaleDrag.scale*Math.exp(-dy*.012),.15,20);dirty=true;return}
+ if(drag){if(Math.abs(y-(drag.startY??y))>3)drag.moved=true;drag.price=+geo.inv(clamp(y,0,geo.ph)).toFixed(S.digits);dirty=true;return}
+ if(tap&&Math.hypot(x-tap.x,y-tap.y)>8)tap=null;
+ if(pan){const dx=x-pan.x,dy=y-pan.y;if(Math.abs(dx)>5||Math.abs(dy)>5)pan.moved=true;if(geo){const slots=Math.round(dx/geo.bw);let gap=pan.g-slots,extra=0;if(gap<0)gap=0;if(gap>=view.n){extra=Math.floor(gap/view.n);gap=gap%view.n}view.gap=clamp(gap,0,view.n-1);view.pan=clamp(pan.p+extra,0,Math.max(0,S.C.length-25));view.vshift=pan.vs-dy/(geo.ph-16)*pan.range/pan.scale;dirty=true}}});
+function endPtr(e,cancel){const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;ptrs.delete(e.pointerId);
+ if(ptrs.size<2)pinch=null;
+ if(cancel){drag=null;pan=null;tap=null;scaleDrag=null;dirty=true;return}
+ if(scaleDrag){scaleDrag=null;dirty=true;return}
+ if(drag){const d=drag;drag=null;if(d.moved)commitDrag(d);dirty=true;return}
+ if(tap){const h=tap.h;tap=null;onHit(h);return}
+ if(pan){const p=pan;pan=null;if(!p.moved&&mode!=='Market'&&geo&&x<geo.cw&&y<geo.ph){entry=+geo.inv(y).toFixed(S.digits);$('#entv').value=entry;dirty=true}}}
+cv.addEventListener('pointerup',e=>endPtr(e,false));cv.addEventListener('pointercancel',e=>endPtr(e,true));
+cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect(),x=e.clientX-r.left;if(x>=W-AX){view.scale=clamp(view.scale*Math.exp(-e.deltaY*.002),.15,20)}else{view.n=clamp(view.n+(e.deltaY>0?6:-6),20,300);view.gap=clamp(view.gap,0,view.n-1)}dirty=true},{passive:false});
+
+function onHit(h){
+ if(h.act==='close'){confirmClose=confirmClose===h.ticket?null:h.ticket;dirty=true}
+ else if(h.act==='confirmclose'){const t=h.ticket;confirmClose=null;dirty=true;closePos(t,100)}
+ else if(h.act==='cancel'){cancelPending(h.ticket)}
+ else if(h.act==='riskremove'){confirmRisk=confirmRisk&&confirmRisk.ticket===h.ticket&&confirmRisk.kind===h.kind?null:{ticket:h.ticket,kind:h.kind};dirty=true}
+ else if(h.act==='confirmrisk'){const t=h.ticket,k=h.kind;confirmRisk=null;dirty=true;removeRiskLevel(t,k)}
+ else if(h.act==='pos'){activePos=activePos===h.ticket?null:h.ticket;if(activePos!==null){const p=S.P.find(x=>x.ticket===activePos);if(p&&!activeLevels[p.ticket])activeLevels[p.ticket]={sl:p.sl||null,tp:p.tp||null};}dirty=true}}
+
+/* ---------- trading actions ---------- */
+async function run(fn,okMsg){try{const r=await fn();toast(okMsg||(r&&r.message)||'Done');poll();return true}catch(e){toast(e.message,1);return false}}
+const closePos=(t,pct)=>run(()=>api('/api/close',{login:S.login,ticket:t,percent:pct}),pct>=100?'✓ Position closed':'✓ Closed '+pct+'%');
+const cancelPending=t=>run(()=>api('/api/cancel',{login:S.login,ticket:t}),'✓ Pending order cancelled');
+async function removeRiskLevel(ticket,kind){
+ try{
+  if(kind==='sl'||kind==='tp'){
+   const p=S.P.find(p=>p.ticket===ticket);if(!p)return;
+   const body={login:S.login,ticket,sl:kind==='sl'?0:p.sl,tp:kind==='tp'?0:p.tp};
+   await api('/api/modify',body);if(activeLevels[ticket])activeLevels[ticket][kind]=null;
+  }else{
+   const o=S.O.find(o=>o.ticket===ticket);if(!o)return;
+   const body={login:S.login,ticket};body[kind==='psl'?'sl':'tp']=0;
+   await api('/api/pending/modify',body);
+  }
+  toast('✓ '+({sl:'Stop loss',tp:'Take profit',psl:'Pending stop loss',ptp:'Pending take profit'}[kind])+' removed');poll();
+ }catch(e){toast(e.message,1);dirty=true}
+}
+
+async function commitDrag(d){
+ const price=d.price;
+ try{
+  if(d.kind==='sl'||d.kind==='tp'){const p=S.P.find(p=>p.ticket===d.ticket);if(!p)return;
+   const lev=activeLevels[d.ticket]||(activeLevels[d.ticket]={sl:p.sl,tp:p.tp});lev[d.kind]=price;
+   await api('/api/modify',{login:S.login,ticket:d.ticket,sl:d.kind==='sl'?price:(p.sl||lev.sl),tp:d.kind==='tp'?price:(p.tp||lev.tp)});toast(`✓ ${d.kind.toUpperCase()} moved to ${fx(price)}`)}
+  else{const body={login:S.login,ticket:d.ticket};
+   if(d.kind==='pend')body.price=price;else if(d.kind==='psl')body.sl=price;else body.tp=price;
+   await api('/api/pending/modify',body);toast('✓ Pending order moved to '+fx(price))}
+  poll();
+ }catch(e){if(!['sl','tp','psl','ptp'].includes(d.kind))toast(e.message,1);dirty=true}}
+
+async function place(side){
+ if(!S.ok)return toast('Not connected. Open Settings.',1);
+ const buy=side==='buy',btn=$('#'+side);btn.disabled=true;
+ try{
+  const px=mode==='Market'?(buy?S.ask:S.bid):+entry;
+  if(!px)throw new Error('Tap the chart or type an entry price first.');
+  const sl=DEF.sl?+(buy?px-DEF.sl:px+DEF.sl).toFixed(S.digits):0,tp=DEF.tp?+(buy?px+DEF.tp:px-DEF.tp).toFixed(S.digits):0;
+  if(mode==='Market'){await api('/api/order',{login:S.login,symbol:S.symbol,side,volume:lots,sl,tp});toast(`✓ ${side.toUpperCase()} ${lots.toFixed(2)} ${S.symbol} opened`)}
+  else{const r=await api('/api/pending',{login:S.login,symbol:S.symbol,side,kind:mode.toLowerCase(),volume:lots,price:px,sl,tp});toast(`✓ ${r.type} ${lots.toFixed(2)} placed @ ${fx(px)}`)}
+  poll();
+ }catch(e){toast(e.message,1)}finally{btn.disabled=false}}
+
+/* ---------- sheets ---------- */
+function sheet(html){const s=$('#sheet');if(html==null){s.classList.remove('on');return}s.innerHTML=html;s.classList.add('on')}
+function posSheet(t){const p=S.P.find(x=>x.ticket===t);if(!p)return;
+ sheet(`<h4><span class="${p.type.toLowerCase()}">${p.type}</span> ${p.volume} ${esc(p.symbol)}</h4>
+ <p class="sm">Entry ${fx(p.price_open)} · P/L ${money(p.profit)}</p>
+ <label>Stop loss price<input id="fsl" type="number" step="any" inputmode="decimal" value="${p.sl||''}"></label>
+ <label>Take profit price<input id="ftp" type="number" step="any" inputmode="decimal" value="${p.tp||''}"></label>
+ <button data-do="savesltp" data-t="${t}">Save SL / TP</button>
+ <button data-do="be" data-t="${t}">Move SL to break-even</button>
+ <button data-do="c50" data-t="${t}">Close half</button>
+ <button class="bad" data-do="c100" data-t="${t}">Close position</button>
+ <button data-do="x">Back</button>`)}
+function manageSheet(){sheet(`<h4>Manage positions</h4><p class="sm">Apply the selected close percentage to every open position.</p>
+ <button class="bad" data-do="manage100">Close all</button>
+ <button data-do="manage75">Close 75%</button>
+ <button data-do="manage50">Close 50%</button>
+ <button data-do="manage25">Close 25%</button>
+ <button data-do="x">Cancel</button>`)}
+function defSheet(){sheet(`<h4>Default SL / TP for new orders</h4><p class="sm">Distance from the entry price, in price units (gold: 5 = $5 move). Leave 0 for none. You can still drag the lines on the chart afterwards.</p>
+ <label>Stop loss distance<input id="dsl" type="number" step="any" inputmode="decimal" value="${DEF.sl}"></label>
+ <label>Take profit distance<input id="dtp" type="number" step="any" inputmode="decimal" value="${DEF.tp}"></label>
+ <button data-do="savedef">Save</button><button data-do="x">Back</button>`)}
+function symSheet(){
+ const q=($('#sq')&&$('#sq').value||'').trim().toUpperCase();
+ const goldRows=S.gold.filter(s=>s.toUpperCase().includes(q));
+ const rest=S.symbols.filter(s=>!S.gold.includes(s)&&s.toUpperCase().includes(q)).slice(0,60);
+ const row=s=>`<button data-sym="${esc(s)}">${esc(s)}${s===S.symbol?' ✓':''}</button>`;
+ sheet(`<h4>Symbol</h4><input id="sq" placeholder="Search symbols" value="${esc(q)}">
+ ${goldRows.length?'<p class="sm" style="margin-top:10px">Gold at your broker</p>'+goldRows.map(row).join(''):''}
+ ${rest.length?'<p class="sm" style="margin-top:10px">Market Watch</p>'+rest.map(row).join(''):''}
+ <button data-do="x">Close</button>`);
+ const i=$('#sq');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);i.oninput=symSheet}}
+
+/* ---------- panels (Positions / History / Account / Settings) ---------- */
+const NAV=[['Chart','M3 17l6-6 4 4 8-8'],['Positions','M12 3l9 5-9 5-9-5zM3 13l9 5 9-5'],['History','M12 6v6l4 2M4 12a8 8 0 108-8'],['Account','M4 11l8-7 8 7v9H4z'],['Settings','M12 15a3 3 0 100-6 3 3 0 000 6zM19 12l2-1-2-4-2 1-2-1-1-2h-4l-1 2-2 1-2-1-2 4 2 1v2l-2 1 2 4 2-1 2 1 1 2h4l1-2 2-1 2 1 2-4-2-1z']];
+function navUI(){$('#nav').innerHTML=NAV.map(([n,d])=>`<button class="${(panel||'Chart')==n?'on':''}" data-n="${n}"><svg viewBox="0 0 24 24"><path d="${d}"/></svg>${n}</button>`).join('')}
+function showPanel(n){
+ panel=n==='Chart'||!n?null:n;navUI();sheet(null);
+ const pv=$('#panelView');if(panel!=='Positions')delete pv.dataset.pos;
+ $('#chartView').style.display=panel?'none':'flex';$('#tfs').style.display=panel?'none':'flex';pv.style.display=panel?'block':'none';
+ if(!panel){size();dirty=true;return}
+ if(panel==='Positions')renderPositions();else if(panel==='History')renderHistory();else if(panel==='Account')renderAccount();else renderSettings()}
+let posSig='';
+function renderPositions(){
+ const A=S.allP,B=S.allO,sig=A.map(p=>p.ticket+':'+p.sl+':'+p.tp).join('|')+'#'+B.map(o=>o.ticket+':'+o.price+':'+o.sl+':'+o.tp).join('|');
+ if(sig!==posSig||panel!=='Positions'||!$('#panelView').dataset.pos){posSig=sig;$('#panelView').dataset.pos='1';
+  const total=A.reduce((v,p)=>v+(+p.profit||0),0);
+  $('#panelView').innerHTML=`<h3>Positions</h3><p class="section-sub">Live exposure and pending orders</p>
+  <div class="trade-card"><div class="trade-top"><div><div class="trade-title">Open positions <span class="trade-badge">${A.length}</span></div><div class="trade-sub">Combined floating result</div></div><div class="trade-profit ${total<0?'neg':'pos'}" data-totalpl>${money(total)}</div></div></div>
+  ${A.length?A.map(p=>`<div class="trade-card"><div class="trade-top"><div><div class="trade-title"><span class="trade-badge ${p.type.toLowerCase()}">${esc(p.type)}</span>${esc(p.symbol)}</div><div class="trade-sub">Ticket #${p.ticket} · ${p.volume} lots</div></div><div class="trade-profit ${p.profit<0?'neg':'pos'}" data-ppl="${p.ticket}">${money(p.profit)}</div></div>
+  <div class="trade-metrics"><div class="trade-metric"><span>Entry</span><b>${fx(p.price_open)}</b></div><div class="trade-metric"><span>Stop loss</span><b>${p.sl?fx(p.sl):'—'}</b></div><div class="trade-metric"><span>Take profit</span><b>${p.tp?fx(p.tp):'—'}</b></div></div>
+  <div class="trade-actions"><button class="primary" data-pc="${p.ticket}">Close position</button><button data-do="editpos" data-t="${p.ticket}">Manage</button></div></div>`).join(''):'<div class="empty-state">No open positions right now.</div>'}
+  ${A.length?'<button class="wide danger" data-do="closeall">Close all positions</button>':''}
+  <h3>Pending orders</h3><p class="section-sub">Orders waiting for their entry price</p>
+  ${B.length?B.map(o=>`<div class="trade-card"><div class="trade-top"><div><div class="trade-title"><span class="trade-badge ${o.name.startsWith('BUY')?'buy':'sell'}">${esc(o.name)}</span>${esc(o.symbol)}</div><div class="trade-sub">Ticket #${o.ticket} · ${o.volume} lots</div></div><div class="trade-profit">@ ${fx(o.price)}</div></div>
+  <div class="trade-metrics"><div class="trade-metric"><span>Entry</span><b>${fx(o.price)}</b></div><div class="trade-metric"><span>Stop loss</span><b>${o.sl?fx(o.sl):'—'}</b></div><div class="trade-metric"><span>Take profit</span><b>${o.tp?fx(o.tp):'—'}</b></div></div><div class="trade-actions"><button class="danger" data-po="${o.ticket}">Cancel order</button></div></div>`).join(''):'<div class="empty-state">No pending orders.</div>'}`}
+ const totalNow=A.reduce((v,p)=>v+(+p.profit||0),0),te=$('[data-totalpl]');if(te){te.textContent=money(totalNow);te.className='trade-profit '+(totalNow<0?'neg':'pos')}
+ A.forEach(p=>{const e=document.querySelector(`[data-ppl="${p.ticket}"]`);if(e){e.textContent=money(p.profit);e.className='trade-profit '+(p.profit<0?'neg':'pos')}})}
+async function renderHistory(){
+ const pv=$('#panelView');pv.innerHTML='<h3>Trade history</h3><p class="note">Loading recent closed trades…</p>';
+ try{const r=await api(`/api/history?login=${S.login}&limit=40`);if(panel!=='History')return;
+  pv.innerHTML='<h3>Trade history</h3><p class="section-sub">Your 40 most recent closed deals</p>'+(r.deals.length?r.deals.map(d=>`<div class="trade-card"><div class="trade-top"><div><div class="trade-title"><span class="trade-badge ${d.type==='BUY'?'buy':'sell'}">${d.type==='BUY'?'BUY':'SELL'}</span>${esc(d.symbol)}</div><div class="trade-sub">${d.volume} lots · ${esc(d.time||'')}</div></div><div class="trade-profit ${d.profit<0?'neg':'pos'}">${money(d.profit)}</div></div>
+  <div class="trade-metrics"><div class="trade-metric"><span>Direction</span><b>${esc(d.type)}</b></div><div class="trade-metric"><span>Close price</span><b>${d.price}</b></div><div class="trade-metric"><span>Result</span><b class="${d.profit<0?'neg':'pos'}">${d.profit<0?'Loss':'Profit'}</b></div></div></div>`).join(''):'<div class="empty-state">No closed trades found in the available history.</div>')}
+ catch(e){pv.innerHTML='<h3>Trade history</h3><p class="note">'+esc(e.message)+'</p>'}}
+async function renderAccount(){
+ const pv=$('#panelView');pv.innerHTML='<h3>Account overview</h3><p class="note">Loading account details…</p>';
+ try{const a=await api('/api/account?login='+S.login);if(panel!=='Account')return;const m=v=>CUR()+Number(v).toFixed(2);
+  pv.innerHTML=`<h3>Account overview</h3><div class="account-hero"><div class="eyebrow">${a.is_demo?'DEMO ACCOUNT':'LIVE ACCOUNT'} · ${esc(a.currency||'')}</div><div class="amount">${m(a.equity)}</div><div class="hero-row"><span>Equity</span><span>Balance ${m(a.balance)}</span></div></div>
+  <div class="account-grid"><div class="account-tile"><span>Balance</span><b>${m(a.balance)}</b></div><div class="account-tile"><span>Floating P/L</span><b class="${a.profit<0?'neg':'pos'}">${money(a.profit)}</b></div><div class="account-tile"><span>Margin used</span><b>${m(a.margin)}</b></div><div class="account-tile"><span>Free margin</span><b>${m(a.margin_free)}</b></div></div>
+  <h3>Account details</h3><div class="account-info"><div class="kv"><span>Account name</span><b>${esc(a.name)}</b></div><div class="kv"><span>Login</span><b>${a.login}</b></div><div class="kv"><span>Server</span><b>${esc(a.server)}</b></div><div class="kv"><span>Account type</span><b>${a.is_demo?'Demo':'Live'}</b></div></div>`}
+ catch(e){pv.innerHTML='<h3>Account overview</h3><p class="note">'+esc(e.message)+'</p>'}}
+function renderSettings(){
+ $('#panelView').innerHTML=`<h3>Connection</h3>
+ <p class="note">This page talks to the bridge (<b>app.py</b>) running on your own PC, next to MetaTrader 5. Your key is stored only in this browser.</p>
+ <label>Bridge address<input id="sBase" value="${esc(S.base)}" autocapitalize="off" autocorrect="off"></label>
+ <label>Bridge key (api_key from config.json)<input id="sKey" type="password" value="${esc(S.key)}" autocapitalize="off" autocorrect="off" placeholder="Paste your key"></label>
+ <button class="wide" data-do="saveconn" style="background:#2196f3;color:#fff;border-color:#2196f3">Save and connect</button>
+ <button class="wide" data-do="pickSym">Symbol: ${esc(S.symbol||'not chosen yet')}</button>
+ <button class="wide" data-do="forget">Forget key on this device</button>
+ <p class="note">Status: ${S.ok?'connected to MT5 (demo)':'not connected'}.<br>Use Chrome or Edge on the same PC that runs MT5. If the browser asks to allow access to local devices or the local network, tap Allow.</p>`}
+
+/* ---------- clicks ---------- */
+$('#confirmYes').addEventListener('click',()=>{const fn=pendingConfirm;clearConfirm();if(fn)fn()});
+$('#confirmNo').addEventListener('click',clearConfirm);
+document.addEventListener('click',e=>{
+ const t=e.target.closest('button,u');if(!t)return;if(t.id==='confirmYes'||t.id==='confirmNo')return;const d=t.dataset;
+ if(t.id==='symBtn'){symSheet();return}
+ if(d.t){S.tf=d.t;LS.set('gm_tf',S.tf);S.C=[];header();if(S.ok)loadCandles().then(poll).catch(x=>toast(x.message,1));return}
+ if(d.m){mode=d.m;if(mode!=='Market'&&S.bid)entry=+(S.bid+(mode==='Limit'?-1:1)*S.point*300).toFixed(S.digits);$('#entv').value=mode==='Market'?'':entry;header();dirty=true;return}
+ if(d.x){const p=S.P.find(p=>p.ticket==d.x);if(p)closePos(+d.x,100);return}
+ if(d.o){cancelPending(+d.o);return}
+ if(d.pc){closePos(+d.pc,100);return}
+ if(d.po){cancelPending(+d.po);return}
+ if(d.n){showPanel(d.n);return}
+ if(d.sym){S.symbol=d.sym;LS.set('gm_symbol',S.symbol);S.C=[];S.P=[];S.O=[];sheet(null);header();if(S.ok)loadCandles().then(poll).catch(x=>toast(x.message,1));return}
+ switch(t.id){
+  case 'be':beAll();return;
+  case 'mi':lots=lots>0.1?+(lots-0.1).toFixed(2):Math.max(0.01,+(lots-0.01).toFixed(2));LS.set('gm_lots',lots);header();return;
+  case 'pu':lots=lots>=0.1?Math.min(1,+(lots+0.1).toFixed(2)):+(lots+0.01).toFixed(2);LS.set('gm_lots',lots);header();return;
+  case 'sltp':defSheet();return;
+  case 'sell':place('sell');return;case 'buy':place('buy');return;
+  case 'tEma':ema=!ema;LS.set('gm_ema',ema?'1':'0');header();dirty=true;return;
+  case 'tLbl':lbl={small:'lines',lines:'off',off:'small'}[lbl];LS.set('gm_lbl',lbl);header();dirty=true;return;
+  case 'em':case 'ep':{const st=S.point*10*(t.id==='em'?-1:1);entry=+((entry||S.bid)+st).toFixed(S.digits);$('#entv').value=entry;dirty=true;return}}
+ if(d.do)doAction(d.do,d.t)});
+$('#entv').addEventListener('input',e=>{entry=+e.target.value||0;dirty=true});
+
+async function beAll(){let ok=0,skip=0;for(const p of S.P){if(p.profit<=0){skip++;continue}
+  try{await api('/api/modify',{login:S.login,ticket:p.ticket,sl:p.price_open,tp:p.tp});ok++}catch(e){skip++}}
+ toast(`✓ Break-even set on ${ok}`+(skip?` · ${skip} skipped (not in profit yet)`:''),!ok);poll()}
+
+async function doAction(a,tk){
+ const t=+tk;
+ if(a==='x'){sheet(null);return}
+ if(a==='editpos'){posSheet(t);return}
+ if(a==='manage'){manageSheet();return}
+ if(a==='manage100'){sheet(null);askConfirm('Close ALL open positions?',async()=>{try{const r=await api('/api/close-all',{login:S.login});toast(`✓ Closed ${r.closed}`+(r.failed?` · ${r.failed} failed`:''),r.failed>0)}catch(e){toast(e.message,1)}poll()});return}
+ if(['manage75','manage50','manage25'].includes(a)){const pct=+a.replace('manage','');const ps=[...S.P];sheet(null);if(!ps.length){toast('No open positions to manage.',1);return}askConfirm(`Close ${pct}% of all ${ps.length} open position(s)?`,async()=>{let ok=0,failed=0;for(const p of ps){try{await api('/api/close',{login:S.login,ticket:p.ticket,percent:pct});ok++}catch(e){failed++}}toast(`✓ Closed ${pct}% on ${ok} position(s)`+(failed?` · ${failed} failed`:''),failed>0);poll()});return}
+ if(a==='savesltp'){const sl=+$('#fsl').value||0,tp=+$('#ftp').value||0;sheet(null);await run(()=>api('/api/modify',{login:S.login,ticket:t,sl,tp}),'✓ SL / TP saved');return}
+ if(a==='be'){const p=S.P.find(p=>p.ticket===t);if(!p)return;sheet(null);await run(()=>api('/api/modify',{login:S.login,ticket:t,sl:p.price_open,tp:p.tp}),'✓ SL moved to break-even');return}
+ if(a==='c50'){sheet(null);await closePos(t,50);return}
+ if(a==='c100'){sheet(null);await closePos(t,100);return}
+ if(a==='savedef'){DEF.sl=Math.max(0,+$('#dsl').value||0);DEF.tp=Math.max(0,+$('#dtp').value||0);LS.set('gm_sl',DEF.sl);LS.set('gm_tp',DEF.tp);sheet(null);header();return}
+ if(a==='closeall'){askConfirm('Close ALL open positions?',async()=>{try{const r=await api('/api/close-all',{login:S.login});toast(`✓ Closed ${r.closed}`+(r.failed?` · ${r.failed} failed`:''),r.failed>0)}catch(e){toast(e.message,1)}poll()});return}
+ if(a==='saveconn'){S.base=($('#sBase').value.trim()||'http://127.0.0.1:8765').replace(/\/+$/,'');S.key=$('#sKey').value.trim();LS.set('gm_base',S.base);LS.set('gm_key',S.key);connect();return}
+ if(a==='pickSym'){if(!S.symbols.length&&!S.gold.length){toast('Connect first, then pick a symbol.',1);return}symSheet();return}
+ if(a==='forget'){S.key='';LS.set('gm_key','');S.ok=false;stopPoll();status('off');renderSettings();toast('Key removed from this device.')}
+}
+
+/* ---------- start ---------- */
+new ResizeObserver(size).observe($('#cw'));
+navUI();header();size();connect();
+</script></body></html>
