@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signed() { return request.auth != null; }
+    function isAdmin() { return signed() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function trader(id) { return get(/databases/$(database)/documents/traders/$(id)).data; }
+
+    // Admin flag: created BY HAND in the console, never from the app.
+    match /admins/{id} { allow read: if signed() && request.auth.uid == id; allow write: if false; }
+
+    // Users: see only your own profile (admin sees all). Nobody can change their own role/status.
+    match /users/{id} {
+      allow read: if isAdmin() || (signed() && request.auth.uid == id);
+      allow create: if signed() && request.auth.uid == id && request.resource.data.roles == ["investor"] && request.resource.data.status == "active";
+      allow update: if isAdmin() || (signed() && request.auth.uid == id && request.resource.data.roles == resource.data.roles && request.resource.data.status == resource.data.status);
+      allow delete: if false;
+    }
+
+    // Public list of approved traders (name + fee %). Only admin writes.
+    match /traders/{id} { allow read: if signed(); allow write: if isAdmin(); }
+
+    // An investor's trading account details. The password is stored ONLY as 'pw' = RSA-encrypted text (admin public key), never plain text. Owner + admin only.
+    match /accounts/{id} {
+      allow read: if isAdmin() || (signed() && request.auth.uid == id);
+      allow create: if signed() && request.auth.uid == id && request.resource.data.status == "submitted"
+        && request.resource.data.keys().hasOnly(['ownerName','broker','server','login','status','createdAt','pw']);
+      allow update: if isAdmin() || (signed() && request.auth.uid == id && resource.data.status == "submitted" && request.resource.data.status == "submitted"
+        && request.resource.data.keys().hasOnly(['ownerName','broker','server','login','status','createdAt','pw']));
+      allow delete: if isAdmin();
+    }
+
+    // Copy links: investor sees own, trader sees only who follows THEM, admin sees all.
+    // Equity / high-water mark are written by admin only. The fee % is locked to the trader's rate.
+    match /follows/{id} {
+      allow read: if isAdmin() || (signed() && (resource.data.investorId == request.auth.uid || resource.data.traderId == request.auth.uid));
+      allow create: if signed() && request.resource.data.investorId == request.auth.uid
+        && id == request.auth.uid + "_" + request.resource.data.traderId
+        && request.resource.data.keys().hasOnly(['investorId','investorName','traderId','traderName','amount','status','feePct','createdAt'])
+        && request.resource.data.status == "active"
+        && exists(/databases/$(database)/documents/accounts/$(request.auth.uid))
+        && exists(/databases/$(database)/documents/traders/$(request.resource.data.traderId))
+        && trader(request.resource.data.traderId).status == "active"
+        && request.resource.data.feePct == trader(request.resource.data.traderId).get('feePct', 5);
+      allow update: if isAdmin() || (signed() && resource.data.investorId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','amount'])
+        && request.resource.data.status in ['active','stopped']);
+      allow delete: if isAdmin();
+    }
+
+    // Fee ledger: written by admin. Trader and investor can read their own rows.
+    match /fees/{id} {
+      allow read: if isAdmin() || (signed() && (resource.data.traderId == request.auth.uid || resource.data.investorId == request.auth.uid));
+      allow write: if isAdmin();
+    }
+
+    // Bridge address used by the terminal.
+    match /platform/{id} { allow read: if signed(); allow write: if isAdmin(); }
+  }
+}
