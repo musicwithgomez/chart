@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Trader · Gomez Trading</title><link rel="stylesheet" href="gm.css"></head><body>
+<div id="views">
+ <section data-v="ov"><div class="kp" id="kpi"></div><div class="card" style="margin-top:14px"><div class="cb" id="fee"></div></div></section>
+ <section data-v="fl"><div class="card tw" id="ft"></div></section>
+ <section data-v="fe"><div class="kp" id="fk" style="margin-bottom:14px"></div><div class="card tw" id="fh"></div></section>
+</div>
+<script type="module">
+import{guard,db,F,esc,money,money2,accrued,hwmOf,FEE_DEFAULT,icon,ini,dt,mount}from"./gm.js";
+const me=await guard(["trader","admin"]),$=s=>document.querySelector(s);
+mount(me,{items:[{id:"ov",label:"Overview",icon:"home",title:"Overview",sub:"How your followers are doing"},{id:"fl",label:"Followers",icon:"users",title:"Followers",sub:"Investors copying you, and only them"},{id:"fe",label:"Fees",icon:"wallet",title:"Fees",sub:"What you earn from your followers' profit"}],
+ extra:me.role==="admin"?`<a class="ni" href="admin.html">${icon("home")}Back to admin</a>`:""}).show(location.hash.slice(1)||"ov");
+const[s,fs,td]=await Promise.all([F.getDocs(F.query(F.collection(db,"follows"),F.where("traderId","==",me.uid))),F.getDocs(F.query(F.collection(db,"fees"),F.where("traderId","==",me.uid))),F.getDoc(F.doc(db,"traders",me.uid))]);
+const fl=s.docs.map(d=>({id:d.id,...d.data()})),ac=fl.filter(f=>f.status==="active"),fe=fs.docs.map(d=>d.data()).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+const pct=td.exists()?td.data().feePct??FEE_DEFAULT:FEE_DEFAULT,sm=l=>fe.filter(x=>x.status===l).reduce((a,x)=>a+(+x.amount||0),0),acc=ac.reduce((a,f)=>a+accrued(f),0);
+const kp=(l,v,t)=>`<div class="card kpi"><small>${l}</small><b>${v}</b><span>${t}</span></div>`;
+$("#kpi").innerHTML=kp("Active followers",ac.length,"Investors copying you now")+kp("Capital following you",money(ac.reduce((a,f)=>a+(+f.amount||0),0)),"Declared by investors")+kp("Fees accruing",money2(acc),"Not yet settled")+kp("Fees earned",money2(sm("due")+sm("paid")),"Settled to date");
+$("#fee").innerHTML=`<div class="al" style="border:0"><div><b>Your performance fee: ${pct}%</b><div class="hint">You earn ${pct}% of any profit your followers make above their high-water mark, which is the highest equity they've been charged on. If a follower loses money, they owe you nothing until they're back above that mark. Fees are settled by the platform.</div></div></div>`;
+$("#fk").innerHTML=kp("Accruing now",money2(acc),"Estimated, not yet settled")+kp("Due to you",money2(sm("due")),"Settled, awaiting payment")+kp("Paid",money2(sm("paid")),"Received");
+$("#ft").innerHTML=fl.length?`<table class="tb"><tr><th>Investor</th><th>Amount</th><th>Equity</th><th>Over high-water mark</th><th>Your fee</th><th>Status</th></tr>${fl.map(f=>{const o=f.equity!=null&&f.hwm!=null?f.equity-hwmOf(f):null;return`<tr><td><div class="pc"><span class="av">${esc(ini(f.investorName))}</span><div><b>${esc(f.investorName)}</b><small>Since ${dt(f.createdAt)}</small></div></div></td><td>${money(f.amount)}</td><td>${f.equity!=null?money2(f.equity):"–"}</td><td>${o==null?"–":(o>=0?"+":"")+money2(o)}</td><td>${money2(accrued(f))}</td><td><span class="pl ${f.status==="active"?"g":""}">${f.status==="active"?"Active":"Stopped"}</span></td></tr>`}).join("")}</table>`:`<div class="em"><b>No followers yet</b>Investors will appear here once they copy you.</div>`;
+$("#fh").innerHTML=fe.length?`<table class="tb"><tr><th>Date</th><th>Investor</th><th>Profit counted</th><th>Fee</th><th>Status</th></tr>${fe.map(x=>`<tr><td>${dt(x.createdAt)}</td><td>${esc(x.investorName)}</td><td>${money2(x.to-x.from)}</td><td><b>${money2(x.amount)}</b> <span class="hint">(${x.pct}%)</span></td><td><span class="pl ${x.status==="paid"?"g":"a"}">${x.status==="paid"?"Paid":"Due"}</span></td></tr>`).join("")}</table>`:`<div class="em"><b>No fees settled yet</b>Fees appear here once a follower's profit is settled.</div>`;
+</script></body></html>
