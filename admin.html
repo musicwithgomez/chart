@@ -1,0 +1,136 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Admin · Gomez Trading</title><link rel="stylesheet" href="gm.css"></head><body>
+<div id="views">
+ <section data-v="ov"><div class="kp" id="kpi"></div><div class="cols"><div class="card"><div class="ch"><h2>Needs your attention</h2></div><div class="cb" id="att"></div></div><div class="card"><div class="ch"><h2>Newest members</h2></div><div class="cb" id="nw"></div></div></div></section>
+ <section data-v="us"><div class="tbar"><input id="q" placeholder="Search by name or email"><div class="chips" id="ch"></div></div><div class="card tw" id="ut"></div></section>
+ <section data-v="tr"><div id="trq"></div><div class="card tw" id="trt"></div></section>
+ <section data-v="cp"><div class="tbar"><button class="b pr" id="syn">Update equity from bridge</button><span class="hint">Reads each linked investor's equity from your bridge.</span></div><div class="kp" id="fk" style="margin-bottom:14px"></div><div class="card tw" id="ct"></div><h3 style="margin:22px 0 10px">Fee ledger</h3><div class="card tw" id="fl"></div></section>
+ <section data-v="ac"><div id="pwk"></div><div id="cq"></div><div class="kp" id="bk"></div><div class="card" id="key" style="margin-top:14px"></div><div class="card tw" id="bt" style="margin-top:14px"></div></section>
+</div>
+<script type="module">
+import{guard,db,F,esc,money,money2,accrued,FEE_DEFAULT,icon,ini,dt,mount,toast,ask,dlg,closeAll,pwGenKeys,pwDecrypt}from"./gm.js";
+const me=await guard(["admin"]),$=s=>document.querySelector(s);
+const sh=mount(me,{items:[
+ {id:"ov",label:"Overview",icon:"home",title:"Overview",sub:"What needs your attention today"},
+ {id:"us",label:"Users",icon:"users",title:"Users",sub:"Everyone on the platform"},
+ {id:"tr",label:"Traders",icon:"star",title:"Traders",sub:"Approved traders and their followers"},
+ {id:"cp",label:"Copying",icon:"link",title:"Copying & fees",sub:"Who copies whom, and the performance fees they owe"},
+ {id:"ac",label:"Accounts",icon:"server",title:"Broker accounts",sub:"MT5 accounts and the copier running on your bridge"}],
+ actions:`<a class="b sm" id="tl" href="#ac">${icon("chart",15)}<span class="hd">Trading terminal</span></a>`,
+ extra:`<a class="ni" href="trader.html">${icon("star")}My trader page</a>`});
+let U=[],FL=[],A=[],FE=[],TR={},flt="all",BR=null;
+const role=u=>TR[u.id]?.status==="active"||(u.roles||[]).includes("trader")?"trader":"investor",live=()=>FL.filter(f=>f.status==="active"),sum=a=>a.reduce((s,f)=>s+(+f.amount||0),0);
+const person=(n,e)=>`<div class="pc"><span class="av">${esc(ini(n))}</span><div><b>${esc(n)}</b><small>${esc(e)}</small></div></div>`;
+const rp=u=>role(u)==="trader"?`<span class="pl g">Trader</span>`:`<span class="pl b">Investor</span>`,st=u=>u.status==="blocked"?`<span class="pl r">Blocked</span>`:`<span class="pl">Active</span>`;
+const empty=(t,s)=>`<div class="em"><b>${t}</b>${s}</div>`;
+const pend=()=>U.filter(u=>u.requestedTrader&&role(u)!=="trader"&&u.status!=="blocked");
+const reqRows=()=>pend().map(u=>`<div class="al">${person(u.displayName,u.email)}<span class="sp"></span><button class="b sm" data-a="deny" data-id="${u.id}">Decline</button><button class="b sm pr" data-a="role" data-id="${u.id}" data-v="trader">Approve</button></div>`).join("");
+const mine=u=>FL.filter(f=>(role(u)==="trader"?f.traderId:f.investorId)===u.id&&f.status==="active");
+async function load(){const g=n=>F.getDocs(F.collection(db,n)),[a,b,c,t,e]=await Promise.all([g("users"),g("follows"),g("accounts"),g("traders"),g("fees")]),m=x=>x.docs.map(d=>({id:d.id,...d.data()}));
+ U=m(a);FL=m(b);A=m(c);FE=m(e).sort((x,y)=>(y.createdAt?.seconds||0)-(x.createdAt?.seconds||0));TR={};m(t).forEach(x=>TR[x.id]=x);render()}
+function render(){
+ const tr=U.filter(u=>role(u)==="trader"),inv=U.filter(u=>role(u)==="investor"),p=pend(),wk=U.filter(u=>u.createdAt?.seconds>Date.now()/1e3-6048e2).length;
+ $("#kpi").innerHTML=[["Total users",U.length,`+${wk} this week`],["Traders",tr.length,`${p.length} request${p.length==1?"":"s"} pending`],["Investors",inv.length,`${new Set(live().map(f=>f.investorId)).size} actively copying`],["Capital copied",money(sum(live())),`${live().length} active link${live().length==1?"":"s"}`]].map(([l,v,s])=>`<div class="card kpi"><small>${l}</small><b>${v}</b><span>${s}</span></div>`).join("");
+ const bl=U.filter(u=>u.status==="blocked").length;let a=p.length?`<p class="lb">Trader requests · ${p.length}</p>${reqRows()}`:"";
+ const wa=A.filter(x=>x.status==="submitted").length;if(wa)a+=`<div class="al"><span class="pl a">${wa} account${wa>1?"s":""} to link</span><span class="hint">Clients waiting to be connected.</span><span class="sp"></span><button class="b sm" data-go="ac">Review</button></div>`;
+ sh.badge("ac",wa);
+ if(BR&&!BR.ok)a+=`<div class="al"><span class="pl r">Bridge offline</span><span class="hint">Copying and the terminal are paused.</span><span class="sp"></span><button class="b sm" data-go="ac">Fix</button></div>`;
+ if(bl)a+=`<div class="al"><span class="pl a">${bl} blocked</span><span class="hint">Members who can't sign in.</span><span class="sp"></span><button class="b sm" data-go="us">View</button></div>`;
+ $("#att").innerHTML=a||empty("All clear","No requests, no problems.");
+ const so=[...U].sort((x,y)=>(y.createdAt?.seconds||0)-(x.createdAt?.seconds||0));
+ $("#nw").innerHTML=so.slice(0,6).map(u=>`<div class="al">${person(u.displayName,dt(u.createdAt))}<span class="sp"></span>${rp(u)}</div>`).join("")||empty("No members yet","Sign-ups will appear here.");
+ sh.badge("tr",p.length);
+ const cnt={all:U.length,trader:tr.length,investor:inv.length,blocked:bl},lab={all:"All",trader:"Traders",investor:"Investors",blocked:"Blocked"};
+ $("#ch").innerHTML=Object.keys(lab).map(k=>`<button class="chip${flt===k?" on":""}" data-f="${k}">${lab[k]}<em>${cnt[k]}</em></button>`).join("");
+ const q=$("#q").value.toLowerCase(),L=so.filter(u=>(flt==="all"||(flt==="blocked"?u.status==="blocked":role(u)===flt))&&(u.displayName+u.email).toLowerCase().includes(q));
+ $("#ut").innerHTML=L.length?`<table class="tb"><tr><th>Member</th><th>Role</th><th>Status</th><th>Joined</th><th></th></tr>${L.map(u=>`<tr data-u="${u.id}"><td>${person(u.displayName,u.email)}</td><td>${rp(u)}${u.id===me.uid?' <span class="pl a">You</span>':""}</td><td>${st(u)}</td><td>${dt(u.createdAt)}</td><td class="r">›</td></tr>`).join("")}</table>`:empty("No members found","Try another search or filter.");
+ $("#trq").innerHTML=p.length?`<div class="card" style="margin-bottom:14px"><div class="ch"><h2>Requests to become a trader</h2></div><div class="cb">${reqRows()}</div></div>`:"";
+ $("#trt").innerHTML=tr.length?`<table class="tb"><tr><th>Trader</th><th>Followers</th><th>Capital following</th><th>Status</th><th></th></tr>${tr.map(u=>`<tr data-u="${u.id}"><td>${person(u.displayName,u.email)}</td><td>${mine(u).length}</td><td>${money(sum(mine(u)))}</td><td>${st(u)}</td><td class="r">›</td></tr>`).join("")}</table>`:empty("No traders yet","Approve a request, or open a member under Users and make them a trader.");
+
+ const ds=A.filter(x=>x.status==="submitted").length,sm=l=>FE.filter(x=>x.status===l).reduce((s,x)=>s+(+x.amount||0),0);
+ $("#fk").innerHTML=kp("Accruing now",money2(live().reduce((s,f)=>s+accrued(f),0)),"Not yet settled")+kp("Due",money2(sm("due")),"Settled, awaiting payment")+kp("Paid",money2(sm("paid")),"Received");
+ $("#ct").innerHTML=FL.length?`<table class="tb"><tr><th>Investor</th><th>Copies</th><th>Amount</th><th>Equity</th><th>Over high-water mark</th><th>Fee</th><th>Status</th><th></th></tr>${FL.map(f=>{const o=f.equity!=null&&f.hwm!=null?f.equity-f.hwm:null,ac=f.status==="active";return `<tr><td><b>${esc(f.investorName)}</b></td><td>${esc(f.traderName)}</td><td>${money(f.amount)}</td><td>${f.equity!=null?money2(f.equity):"–"}</td><td>${o==null?"–":(o>=0?"+":"")+money2(o)}</td><td>${f.feePct??FEE_DEFAULT}% · ${money2(accrued(f))}</td><td><span class="pl ${ac?"g":""}">${ac?"Active":"Stopped"}</span></td><td>${accrued(f)>0?`<button class="b sm pr" data-a="settle" data-id="${f.id}">Settle fee</button> `:""}<button class="b sm ${ac?"dn":""}" data-a="fl" data-id="${f.id}" data-v="${ac?"stopped":"active"}">${ac?"Stop":"Resume"}</button></td></tr>`}).join("")}</table>`:empty("No copy links yet","They appear when an investor starts copying a trader.");
+ $("#fl").innerHTML=FE.length?`<table class="tb"><tr><th>Date</th><th>Trader</th><th>Investor</th><th>Profit counted</th><th>Fee</th><th>Status</th><th></th></tr>${FE.map(x=>`<tr><td>${dt(x.createdAt)}</td><td>${esc(x.traderName)}</td><td>${esc(x.investorName)}</td><td>${money2(x.to-x.from)}</td><td><b>${money2(x.amount)}</b> <span class="hint">(${x.pct}%)</span></td><td><span class="pl ${x.status==="paid"?"g":"a"}">${x.status==="paid"?"Paid":"Due"}</span></td><td>${x.status==="due"?`<button class="b sm" data-a="paid" data-id="${x.id}">Mark paid</button>`:""}</td></tr>`).join("")}</table>`:empty("No fees settled yet","Settle a fee from the table above once equity has grown past the high-water mark.");
+ $("#cq").innerHTML=A.length?`<div class="card tw" style="margin-bottom:14px"><div class="ch"><h2>Client accounts</h2><p class="hint" style="margin:2px 0 8px">Mark an account linked after you've added it to your bridge and set up its copier link.</p></div><table class="tb"><tr><th>Client</th><th>Broker · Server</th><th>MT5 login</th><th>Status</th><th></th></tr>${A.map(x=>`<tr><td><b>${esc(x.ownerName)}</b></td><td>${esc(x.broker)} · ${esc(x.server)}</td><td>${esc(x.login)}${x.pw?` <button class="b sm" data-pw="show" data-id="${x.id}">Password</button>`:""}</td><td><span class="pl ${x.status==="linked"?"g":x.status==="rejected"?"r":"a"}">${x.status==="linked"?"Linked":x.status==="rejected"?"Rejected":"Waiting"}</span></td><td>${x.status==="linked"?`<button class="b sm" data-a="acc" data-id="${x.id}" data-v="submitted">Unlink</button>`:`<button class="b sm pr" data-a="acc" data-id="${x.id}" data-v="linked">Mark linked</button> <button class="b sm dn" data-a="acc" data-id="${x.id}" data-v="rejected">Reject</button>`}</td></tr>`).join("")}</table></div>`:"";
+}
+function openUser(id){
+ const u=U.find(x=>x.id===id),tr=role(u)==="trader",m=mine(u),self=id===me.uid;
+ dlg(`<div class="pc big">${`<span class="av">${esc(ini(u.displayName))}</span>`}<div><b>${esc(u.displayName)}</b><small>${esc(u.email)}</small></div></div>
+ <div style="margin:14px 0 6px">${rp(u)} ${st(u)} ${self?'<span class="pl a">You</span>':""}</div>
+ <div class="kv"><span>Joined</span><b>${dt(u.createdAt)}</b></div><div class="kv"><span>${tr?"Active followers":"Traders copied"}</span><b>${m.length}</b></div><div class="kv"><span>${tr?"Capital following":"Capital allocated"}</span><b>${money(sum(m))}</b></div><div class="kv"><span>User ID</span><b class="mono">${esc(id)}</b></div>
+ ${tr?`<div class="kv"><span>Performance fee</span><span><input id="fp" type="number" min="0" max="50" step="0.5" value="${TR[id]?.feePct??FEE_DEFAULT}" style="width:76px;padding:6px"> % <button class="b sm" data-a="fee" data-id="${id}">Save</button></span></div>`:""}
+ ${self?`<div class="ra" style="margin-top:22px"><button class="b" data-a="selft" data-id="${id}" data-v="${tr?"off":"on"}">${tr?"Stop listing me as a trader":"List me as a trader"}</button></div><p class="hint">Listed, investors can copy you like any other trader.</p>`:`<div class="ra" style="margin-top:22px;flex-wrap:wrap"><button class="b" data-a="role" data-id="${id}" data-v="${tr?"investor":"trader"}">Make ${tr?"investor":"trader"}</button><button class="b ${u.status==="blocked"?"":"dn"}" data-a="block" data-id="${id}">${u.status==="blocked"?"Unblock":"Block"} member</button></div>`}`,"dr");
+}
+$("#q").oninput=render;
+const ping=async()=>{try{await call("/api/health",await cfg(),4e3);BR={ok:true}}catch(e){BR={ok:!!e.http}}render()};
+// ----- bridge (your Python app.py) -----
+const cfg=async()=>{let b=localStorage.getItem("gm_base")||"";try{const d=await F.getDoc(F.doc(db,"platform","bridge"));if(d.exists()&&d.data().url)b=d.data().url}catch(e){}return{base:(b||"http://127.0.0.1:8765").replace(/\/+$/,""),key:localStorage.getItem("gm_key")||""}};
+const call=async(p,c,ms=7e3)=>{const k=new AbortController(),t=setTimeout(()=>k.abort(),ms);try{const r=await fetch(c.base+p,{headers:{"X-Gomez-Key":c.key},signal:k.signal});if(!r.ok){const e=Error(r.status==401||r.status==403?"Wrong or missing key":"Bridge error "+r.status);e.http=1;throw e}return await r.json()}finally{clearTimeout(t)}};
+const kp=(l,v,s)=>`<div class="card kpi"><small>${l}</small><b>${v}</b><span>${s}</span></div>`;
+async function loadAc(){
+ const c=await cfg();
+ $("#key").innerHTML=`<div class="cb"><b>Cloudflare link</b><p class="hint" style="margin:2px 0 10px">Paste the new link here every time you start the tunnel. The Trading terminal button opens it.</p><div class="tbar" style="margin:0 0 16px"><input id="bu" style="max-width:480px" placeholder="https://something.trycloudflare.com" value="${/127\.0\.0\.1|localhost/.test(c.base)?"":esc(c.base)}"><button class="b pr" id="bus">Save link</button></div><b>Bridge key</b><div class="tbar" style="margin:8px 0 0"><input id="bk2" type="password" placeholder="Bridge key" value="${c.key?"••••••••":""}"><button class="b" id="bks">Save key</button></div><p class="hint" style="margin:10px 0 0">The key is stored on this device only.</p></div>`;
+ try{const[ac,cs]=await Promise.all([call("/api/accounts",c),call("/api/copy/status",c)]);BR={ok:true};
+  $("#bk").innerHTML=kp("Bridge","Online","Reachable")+kp("MT5 accounts",ac.accounts.length,"Configured on your PC")+kp("Copier",cs.running?"Running":"Stopped","Master to slave")+kp("Open trades copied",cs.links.length,"Right now");
+  $("#bt").innerHTML=`<table class="tb"><tr><th>Account</th><th>Login</th><th>Server</th><th>Type</th><th>Balance / Equity</th></tr>${ac.accounts.map(a=>`<tr><td><b>${esc(a.name)}</b></td><td>${a.login}</td><td>${esc(a.server)}</td><td><span class="pl ${a.is_demo?"":"r"}">${a.is_demo?"Demo":"LIVE"}</span></td><td id="bal${a.login}"><button class="b sm" data-bal="${a.login}">Load</button></td></tr>`).join("")}</table>`;
+ }catch(x){BR={ok:!!x.http};$("#bk").innerHTML=kp("Bridge",x.http?"Key problem":"Offline",x.http?"Reachable, key rejected":"Can't be reached");
+  $("#bt").innerHTML=empty(x.http?"The bridge rejected the key":"Can't reach your bridge",x.http?"Paste the correct key above and save.":"Check that app.py and your tunnel are running, then reopen the terminal through the tunnel once so the address updates.")}
+ render();
+}
+const setTerm=async()=>{const c=await cfg();$("#tl").href=/127\.0\.0\.1|localhost/.test(c.base)?"#ac":c.base};
+async function saveLink(){let u=$("#bu").value.trim().replace(/\/+$/,"");if(u&&!/^https?:\/\//.test(u))u="https://"+u;if(!u){toast("Paste your Cloudflare link first",1);return}
+ localStorage.setItem("gm_base",u);try{await F.setDoc(F.doc(db,"platform","bridge"),{url:u,updatedAt:F.serverTimestamp()})}catch(e){toast(e.message,1);return}
+ toast("Link saved");setTerm();loadAc()}
+sh.hooks.ac=loadAc;
+document.body.addEventListener("click",async e=>{
+ const t=e.target,g=t.closest("[data-go]"),f=t.closest("[data-f]"),r=t.closest("tr[data-u]"),b=t.closest("[data-a]"),l=t.closest("[data-bal]");
+ if(g){closeAll();sh.show(g.dataset.go);return}if(f){flt=f.dataset.f;render();return}if(r){openUser(r.dataset.u);return}
+ if(t.id==="bus"){saveLink();return}
+ if(t.id==="bks"){const v=$("#bk2").value.trim();if(v&&!v.startsWith("•"))localStorage.setItem("gm_key",v);loadAc();return}
+ if(l){l.disabled=true;try{const a=await call("/api/account?login="+l.dataset.bal,await cfg());$("#bal"+l.dataset.bal).textContent=`${a.balance} / ${a.equity} ${a.currency||""}`}catch(x){$("#bal"+l.dataset.bal).textContent=x.message}return}
+ if(t.id==="syn"){t.disabled=true;let n=0;const c=await cfg();
+  for(const f of live()){const ac=A.find(x=>x.id===f.investorId&&x.status==="linked");if(!ac)continue;try{const r=await call("/api/account?login="+ac.login,c,2e4),e=+r.equity,up={equity:e,equityAt:F.serverTimestamp()};if(f.hwm==null){up.hwm=e;up.startEquity=e}await F.updateDoc(F.doc(db,"follows",f.id),up);n++}catch(x){}}
+  toast(n?`Updated ${n} account${n==1?"":"s"}`:"Nothing updated. Check the bridge and that accounts are marked linked",!n);t.disabled=false;await load();return}
+ if(!b)return;const{a,id,v}=b.dataset,u=U.find(x=>x.id===id);
+ try{
+  if(a==="role"){if(v==="investor"&&!await ask("Remove trader access?",`${esc(u.displayName)} can no longer be copied and their followers stop copying.`,"Make investor",1))return;
+   await F.updateDoc(F.doc(db,"users",id),{roles:[v],requestedTrader:false});
+   await F.setDoc(F.doc(db,"traders",id),{displayName:u.displayName,status:v==="trader"?"active":"inactive",feePct:TR[id]?.feePct??FEE_DEFAULT,updatedAt:F.serverTimestamp()},{merge:true});
+   if(v==="investor")await Promise.all(FL.filter(x=>x.traderId===id&&x.status==="active").map(x=>F.updateDoc(F.doc(db,"follows",x.id),{status:"stopped"})));
+   toast(v==="trader"?`${u.displayName} is now a trader`:"Changed to investor")}
+  if(a==="fee"){const p=parseFloat($("#fp").value);if(!(p>=0&&p<=50)){toast("Enter a fee between 0 and 50",1);return}await F.setDoc(F.doc(db,"traders",id),{feePct:p},{merge:true});toast("Fee set to "+p+"% for new copy links")}
+  if(a==="selft"){await F.setDoc(F.doc(db,"traders",id),{displayName:me.data.displayName||me.u.email,status:v==="on"?"active":"inactive",feePct:TR[id]?.feePct??FEE_DEFAULT,updatedAt:F.serverTimestamp()},{merge:true});toast(v==="on"?"You are listed as a trader":"Listing removed")}
+  if(a==="acc"){await F.updateDoc(F.doc(db,"accounts",id),{status:v,...(v==="linked"?{linkedAt:F.serverTimestamp()}:{})});toast(v==="linked"?"Account marked linked":v==="rejected"?"Account rejected":"Account unlinked")}
+  if(a==="settle"){const f=FL.find(x=>x.id===id),am=accrued(f);if(!await ask("Settle this fee?",`Charge <b>${money2(am)}</b> (${f.feePct??FEE_DEFAULT}% of ${money2(f.equity-f.hwm)} profit) and move the high-water mark up to ${money2(f.equity)}.`,"Settle fee"))return;
+   await F.addDoc(F.collection(db,"fees"),{followId:id,traderId:f.traderId,traderName:f.traderName,investorId:f.investorId,investorName:f.investorName,amount:Math.round(am*100)/100,pct:f.feePct??FEE_DEFAULT,from:f.hwm,to:f.equity,status:"due",createdAt:F.serverTimestamp()});
+   await F.updateDoc(F.doc(db,"follows",id),{hwm:f.equity});toast("Fee settled")}
+  if(a==="paid"){await F.updateDoc(F.doc(db,"fees",id),{status:"paid",paidAt:F.serverTimestamp()});toast("Marked as paid")}
+  if(a==="deny"){await F.updateDoc(F.doc(db,"users",id),{requestedTrader:false});toast("Request declined")}
+  if(a==="block"){const k=u.status!=="blocked";if(k&&!await ask(`Block ${esc(u.displayName)}?`,"They won't be able to use the platform until you unblock them.","Block",1))return;await F.updateDoc(F.doc(db,"users",id),{status:k?"blocked":"active"});toast(k?"Member blocked":"Member unblocked")}
+  if(a==="fl"){if(v==="stopped"&&!await ask("Stop this copy link?","The investor will stop copying this trader.","Stop copying",1))return;await F.updateDoc(F.doc(db,"follows",id),{status:v});toast(v==="stopped"?"Copy link stopped":"Copy link resumed")}
+  closeAll();await load();
+ }catch(x){toast(x.message,1)}
+});
+// ----- investor passwords (encrypted in their browser; only this browser's private key can open them) -----
+const PK={pub:null};let SNIP="";
+const backup=p=>{const l=document.createElement("a");l.href=URL.createObjectURL(new Blob([JSON.stringify(p)],{type:"application/json"}));l.download="gomez-private-key-BACKUP.json";l.click()};
+async function pwGen(){const g=await pwGenKeys();localStorage.setItem("gm_priv",JSON.stringify(g.priv));await F.setDoc(F.doc(db,"platform","crypto"),{pub:g.pub,updatedAt:F.serverTimestamp()});PK.pub=g.pub;backup(g.priv);toast("Password encryption set up. Save the downloaded backup key somewhere safe.")}
+async function pwk(){
+ try{const d=await F.getDoc(F.doc(db,"platform","crypto"));PK.pub=d.exists()?d.data().pub||null:null}catch(e){PK.pub=null}
+ // First time ever (no key published, none in this browser): set it up automatically.
+ if(!PK.pub&&!PK.tried&&!localStorage.getItem("gm_priv")){PK.tried=true;try{await pwGen()}catch(e){toast("Auto setup failed: "+e.message,1)}}
+ const has=!!localStorage.getItem("gm_priv");
+ $("#pwk").innerHTML=`<div class="card" style="margin-bottom:14px"><div class="cb"><div class="al" style="border:0"><div><b>Investor password encryption</b><div class="hint">${!PK.pub?"Not set up. Investors can't submit passwords yet.":has?"Active. The private key is stored in this browser only.":"Public key is published, but this browser has no private key, so you can't open passwords here."}</div></div><span class="sp"></span>${!PK.pub?`<button class="b pr" data-pw="gen">Set up</button>`:has?`<button class="b" data-pw="bak">Download backup key</button>`:`<label class="b">Import private key<input id="pwf" type="file" accept=".json" hidden></label>`}</div>${PK.pub&&has?`<p class="hint" style="margin:4px 0 0">Keep the backup file safe and private. If you lose it, stored passwords can't be recovered.</p>`:""}</div></div>`}
+document.body.addEventListener("change",async e=>{if(e.target.id!=="pwf")return;try{const p=JSON.parse(await e.target.files[0].text());if(p.kty!=="RSA"||!p.d)throw new Error("Not a private key file");localStorage.setItem("gm_priv",JSON.stringify(p));toast("Private key imported");await pwk()}catch(x){toast(x.message,1)}});
+document.body.addEventListener("click",async e=>{const b=e.target.closest("[data-pw]");if(!b)return;const k=b.dataset.pw,id=b.dataset.id;
+ try{
+  if(k==="gen"){await pwGen();await pwk()}
+  if(k==="bak"){backup(JSON.parse(localStorage.getItem("gm_priv")))}
+  if(k==="show"){const x=A.find(q=>q.id===id),priv=JSON.parse(localStorage.getItem("gm_priv")||"null");if(!priv){toast("This browser has no private key. Import it under Broker accounts.",1);return}
+   const pw=await pwDecrypt(priv,x.pw);SNIP=JSON.stringify({label:x.ownerName,path:"C:\\Program Files\\MetaTrader 5\\terminal64.exe",login:+x.login,password:pw,server:x.server},null,2);
+   dlg(`<h3>${esc(x.ownerName)}</h3><p>Add this to the "terminals" list in config.json, then restart the bridge. Don't share it.</p><div class="kv"><span>Login</span><b class="mono">${esc(x.login)}</b></div><div class="kv"><span>Password</span><b class="mono">${esc(pw)}</b></div><div class="ra" style="margin-top:18px;flex-wrap:wrap"><button class="b" data-pw="close">Close</button><button class="b dn" data-pw="del" data-id="${esc(id)}">Delete stored password</button><button class="b pr" data-pw="copy">Copy config entry</button></div>`)}
+  if(k==="copy"){await navigator.clipboard.writeText(SNIP);toast("Copied")}
+  if(k==="close")closeAll();
+  if(k==="del"){if(!await ask("Delete stored password?","Do this once it's in your config.json. The investor can enter it again later.","Delete",1))return;await F.updateDoc(F.doc(db,"accounts",id),{pw:F.deleteField()});SNIP="";closeAll();toast("Deleted");await load()}
+ }catch(x){toast(x.message,1)}});
+await load();pwk();setTerm();ping();sh.show(location.hash.slice(1)||"ov");
+</script></body></html>
