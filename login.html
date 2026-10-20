@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gomez Trading - Sign in</title>
+<style>
+:root{--bg:#f6f8f7;--card:#fff;--line:#e3e7e5;--tx:#111;--mu:#7a8581;--ac:#2e9e6b;--bad:#d9484f;--ok:#2e9e6b}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--tx);font:15px system-ui,sans-serif;padding:16px}
+.c{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 10px 40px rgba(16,24,20,.07)}
+h1{margin:0 0 4px;font-size:22px}p.s{margin:0 0 18px;color:var(--mu);font-size:13px}
+.tabs{display:flex;gap:6px;margin-bottom:16px}.tabs button{flex:1;padding:9px;border:1px solid var(--line);background:none;color:var(--mu);border-radius:9px;cursor:pointer}
+.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:600}
+label{display:block;font-size:12px;color:var(--mu);margin:12px 0 4px}
+input[type=email],input[type=password],input[type=text]{width:100%;padding:11px;background:#fff;border:1px solid var(--line);border-radius:9px;color:var(--tx);font-size:15px}
+.btn{width:100%;margin-top:16px;padding:12px;border:0;border-radius:9px;background:var(--ac);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+.btn.g{background:#fff;color:#222;border:1px solid var(--line);margin-top:0;display:flex;gap:8px;justify-content:center;align-items:center}
+.btn:disabled{opacity:.5}.or{text-align:center;color:var(--mu);font-size:12px;margin:14px 0}
+.msg{margin-top:12px;font-size:13px;min-height:18px}.msg.e{color:var(--bad)}.msg.o{color:var(--ok)}
+.ck{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--mu);margin-top:12px}.ck input{margin-top:2px}
+a{color:var(--ac);cursor:pointer}.hide{display:none}.row{display:flex;gap:8px}.row label{flex:1;display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:10px;color:var(--tx);margin:0}
+</style></head><body>
+<div class="c">
+ <h1>Gomez Trading</h1><p class="s">Copy trading. Free to join - a performance fee applies only on profit.</p>
+ <div class="tabs"><button id="tIn" class="on">Sign in</button><button id="tUp">Create account</button></div>
+ <button class="btn g" id="goog"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>Continue with Google</button>
+ <div class="or">or use email</div>
+ <div id="upOnly" class="hide"><label>Name</label><input type="text" id="name" autocomplete="name"></div>
+ <label>Email</label><input type="email" id="email" autocomplete="email">
+ <label>Password</label><input type="password" id="pw" autocomplete="current-password">
+ <div id="upExtra" class="hide">
+  <label>I want to join as</label>
+  <div class="row"><label><input type="radio" name="r" value="investor" checked> Investor</label><label><input type="radio" name="r" value="trader"> Trader</label></div>
+  <div class="ck"><input type="checkbox" id="terms"><span>I accept the terms, understand trading involves risk of loss, and agree to the performance fee charged on profits of traders I follow.</span></div>
+ </div>
+ <button class="btn" id="go">Sign in</button>
+ <div class="msg" id="msg"></div>
+ <p class="s" style="margin:12px 0 0;text-align:center"><a id="forgot">Forgot password?</a></p>
+</div>
+<script type="module">
+// 1) Firebase console > Project settings > Your apps > Web app: paste your config here.
+const CONFIG={apiKey:"AIzaSyBDnlqxra1KMnuNb_5b32lYbl1-TOKmNDU",authDomain:"gomeztrading-60c2d.firebaseapp.com",projectId:"gomeztrading-60c2d",storageBucket:"gomeztrading-60c2d.firebasestorage.app",messagingSenderId:"348445408639",appId:"1:348445408639:web:b68630c3e3ed858231ee4a"};
+// where each role lands (pages are built in the next step)
+const HOME={admin:"admin.html",trader:"trader.html",investor:"investor.html"};
+
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,sendPasswordResetEmail,sendEmailVerification,updateProfile,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+const app=initializeApp(CONFIG),auth=getAuth(app),db=getFirestore(app);
+await setPersistence(auth,browserLocalPersistence);
+const $=s=>document.querySelector(s);let up=false,busy=false;
+const say=(t,k)=>{$("#msg").textContent=t;$("#msg").className="msg "+(k||"")};
+const err=e=>({"auth/invalid-credential":"Wrong email or password.","auth/email-already-in-use":"That email already has an account - sign in instead.","auth/weak-password":"Password needs at least 8 characters.","auth/invalid-email":"Invalid email address.","auth/popup-closed-by-user":"Sign-in cancelled.","auth/too-many-requests":"Too many attempts. Try again later."})[e.code]||e.message;
+function mode(u){up=u;$("#tIn").classList.toggle("on",!u);$("#tUp").classList.toggle("on",u);$("#upOnly").classList.toggle("hide",!u);$("#upExtra").classList.toggle("hide",!u);$("#go").textContent=u?"Create account":"Sign in";$("#pw").autocomplete=u?"new-password":"current-password";say("")}
+$("#tIn").onclick=()=>mode(false);$("#tUp").onclick=()=>mode(true);
+
+// Create the profile on first login. Everyone starts as an active client; trader access is granted by the admin.
+async function ensureProfile(u,extra={}){
+ const ref=doc(db,"users",u.uid),s=await getDoc(ref);
+ if(!s.exists())await setDoc(ref,{email:u.email,displayName:extra.name||u.displayName||u.email.split("@")[0],roles:["investor"],status:"active",requestedTrader:!!extra.trader,terms:{accepted:true,at:new Date().toISOString()},createdAt:serverTimestamp()});
+}
+async function route(u){
+ const [a,p]=await Promise.all([getDoc(doc(db,"admins",u.uid)),getDoc(doc(db,"users",u.uid))]);
+ const d=p.data()||{};
+ if(d.status==="blocked"){say("This account is blocked. Contact support.","e");await auth.signOut();return}
+ const next=new URLSearchParams(location.search).get("next");
+ const roles=[...(a.exists()?["admin"]:[]),...(d.roles||[]).map(x=>x==="client"?"investor":x)];
+ const home=roles.includes("admin")?HOME.admin:roles.includes("trader")?HOME.trader:HOME.investor;
+ location.replace(next&&/^[\w.-]+\.html(\?.*)?$/.test(next)?next:home); // admin/trader can switch role inside the app
+}
+async function run(fn){if(busy)return;busy=true;$("#go").disabled=true;try{await fn()}catch(e){say(err(e),"e")}busy=false;$("#go").disabled=false}
+
+$("#go").onclick=()=>run(async()=>{
+ const em=$("#email").value.trim(),pw=$("#pw").value;
+ if(!em||pw.length<8)throw{message:"Enter your email and a password of 8+ characters."};
+ if(up){
+  if(!$("#terms").checked)throw{message:"Please accept the terms to continue."};
+  const nm=$("#name").value.trim();if(!nm)throw{message:"Enter your name."};
+  const c=await createUserWithEmailAndPassword(auth,em,pw);await updateProfile(c.user,{displayName:nm});
+  await ensureProfile(c.user,{name:nm,trader:document.querySelector("input[name=r]:checked").value==="trader"});
+  await sendEmailVerification(c.user);say("Account created. Check your inbox to verify your email.","o");
+  setTimeout(()=>route(c.user),1500);
+ }else{const c=await signInWithEmailAndPassword(auth,em,pw);await ensureProfile(c.user);await route(c.user)}
+});
+$("#goog").onclick=()=>run(async()=>{
+ if(up&&!$("#terms").checked)throw{message:"Please accept the terms first."};
+ const c=await signInWithPopup(auth,new GoogleAuthProvider());
+ await ensureProfile(c.user,{trader:up&&document.querySelector("input[name=r]:checked").value==="trader"});await route(c.user)});
+$("#forgot").onclick=()=>run(async()=>{const em=$("#email").value.trim();if(!em)throw{message:"Type your email first."};await sendPasswordResetEmail(auth,em);say("Reset link sent - check your inbox.","o")});
+onAuthStateChanged(auth,u=>{if(u&&!busy)route(u).catch(()=>{})});
+</script></body></html>
