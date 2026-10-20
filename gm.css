@@ -1,0 +1,12 @@
+:root{--bg:#0b0e14;--card:#131824;--line:#232b3d;--tx:#e8ecf4;--mu:#8b95ab;--ac:#d4af37;--bad:#ef5350;--ok:#26a69a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px system-ui,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5;flex-wrap:wrap}
+header b{font-size:16px}.tag{background:var(--ac);color:#111;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700}.sp{flex:1}
+a.b,button.b{border:1px solid var(--line);background:none;color:var(--tx);border-radius:8px;padding:7px 11px;font-size:13px;cursor:pointer;text-decoration:none}
+button.b.p{background:var(--ac);color:#111;border-color:var(--ac);font-weight:700}button.b.d{color:var(--bad)}button.b.s{padding:4px 8px;font-size:12px}
+nav.t{display:flex;gap:6px;padding:10px 16px;overflow:auto}nav.t button{border:1px solid var(--line);background:none;color:var(--mu);border-radius:9px;padding:8px 13px;white-space:nowrap;cursor:pointer}nav.t button.on{background:var(--ac);color:#111;border-color:var(--ac);font-weight:600}
+main{padding:0 16px 40px;max-width:1100px;margin:0 auto}h2{font-size:15px;margin:22px 0 10px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.k{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}.k small{color:var(--mu);display:block;margin-bottom:4px}.k b{font-size:22px}
+.w{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:560px}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mu);font-weight:500;font-size:12px}tr:last-child td{border:0}
+.pill{border-radius:20px;padding:2px 9px;font-size:11px;border:1px solid var(--line);color:var(--mu)}.pill.admin,.pill.trader{color:var(--ac);border-color:var(--ac)}.pill.ok,.pill.active{color:var(--ok);border-color:var(--ok)}.pill.blocked,.pill.stopped{color:var(--bad);border-color:var(--bad)}
+input,select{background:#0e121b;border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:8px;font-size:14px}.empty{color:var(--mu);padding:16px}.note{color:var(--mu);font-size:12px;margin:8px 0}
