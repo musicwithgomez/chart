@@ -862,7 +862,7 @@ function draw(){
  const Y=p=>8+(hi-p)/(hi-lo)*(ph-16),X=k=>k*bw+bw/2;
  geo={ph,cw,bw,inv:y=>hi-(y-8)/(ph-16)*(hi-lo),Y:p=>Y(p)};
  // watermark
- g.fillStyle='rgba(80,90,86,.12)';g.font='900 42px -apple-system,Arial';g.textAlign='center';g.fillText('GOMEZ TRADING',cw/2,ph*.46);g.font='800 22px -apple-system,Arial';g.fillText('GMZ INV',cw/2,ph*.46+28);g.textAlign='left';
+ g.fillStyle='rgba(80,90,86,.12)';g.font='900 42px -apple-system,Arial';g.textAlign='center';g.fillText('GOLDMINE',cw/2,ph*.46);g.font='800 22px -apple-system,Arial';g.fillText('SYNC',cw/2,ph*.46+28);g.textAlign='left';
  // grid + price axis
  const pxPerPrice=(ph-16)/Math.max(1e-9,hi-lo);
  // Pick finer tick intervals as the user zooms vertically, keeping labels legible.
@@ -2066,6 +2066,85 @@ function drawExtras(Y,cw,ph,first,bw){
   const tx='🔔 '+fx(a.p),w=rg.measureText(tx).width+10;rg.fillStyle='rgba(230,150,20,.95)';rg.beginPath();rg.roundRect(cw+(62-w)/2,y-8,w,16,4);rg.fill();
   rg.fillStyle='#fff';rg.textAlign='center';rg.fillText(tx,cw+31,y+3.5);rg.textAlign='left'});
  rg.restore()}
+/* ===== indicators, drawing tools, trade automation, risk HUD, journal (desktop keys; ? = help) ===== */
+const tIdx=t=>{const C=S.C,n=C.length;if(t>=C[n-1].time)return n-1+(t-C[n-1].time)/S.tfs;let lo=0,hi=n-1;while(lo<hi){const m=(lo+hi)>>1;C[m].time<t?lo=m+1:hi=m}return lo};
+const idxT=i=>{const C=S.C;i=Math.floor(i);return C[i]?C[i].time:C[C.length-1].time+(i-(C.length-1))*S.tfs};
+const flag=(k,d)=>LS.get('gm_'+k,d)==='1',setFlag=(k,v)=>LS.set('gm_'+k,v?'1':'0');
+let IND={w:flag('vwap','0'),s:flag('sess','0'),u:flag('vol','0'),r:flag('rsi','0')},TL={},AUTO={trail:{},part:{},risk:{},done:{},oco:[]},PEND=null,LIM=+LS.get('gm_dlim',0)||0,DAY={};
+try{TL=JSON.parse(LS.get('gm_tools','{}'))||{}}catch(e){}try{AUTO={...AUTO,...JSON.parse(LS.get('gm_auto','{}'))}}catch(e){}try{DAY=JSON.parse(LS.get('gm_day','{}'))||{}}catch(e){}
+const tlSave=()=>LS.set('gm_tools',JSON.stringify(TL)),auSave=()=>LS.set('gm_auto',JSON.stringify(AUTO));
+const NEED={v:1,f:2,y:2,c:3,m:2,l:3},NAMES={v:'Vertical line',f:'Fibonacci',y:'Ray',c:'Channel',m:'Measure',l:'Long/short'};
+const HELP='Keys: A alert · V vline · F fib · Y ray · C channel · M measure · L long/short (click-keys at crosshair) · Shift+X delete nearest · W VWAP · S Asia range · U volume · R RSI · P PDH/PDL · Shift+T trailing · Shift+R partial@R · Shift+O link pendings OCO · Shift+D daily loss limit · J journal CSV';
+document.addEventListener('keydown',e=>{const t=e.target;if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName)||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();
+ if(e.key==='Escape'){PEND=null;return}
+ if(e.key==='?'){toast(HELP);return}
+ if(e.shiftKey){
+  if(k==='t'){const v=prompt('Trailing stop distance in price units for '+S.symbol+' (0 = off)',AUTO.trail[S.symbol]||0);if(v!==null){AUTO.trail[S.symbol]=+v||0;auSave();toast('Trailing '+(+v?'on: '+v:'off'))}return}
+  if(k==='r'){const v=prompt('Partial close for '+S.symbol+' as percent@R, e.g. 50@1 (empty = off)',AUTO.part[S.symbol]?AUTO.part[S.symbol].pct+'@'+AUTO.part[S.symbol].r:'');if(v!==null){const m=/^(\d+)@([\d.]+)$/.exec(v.trim());if(m)AUTO.part[S.symbol]={pct:Math.min(100,+m[1]),r:+m[2]};else delete AUTO.part[S.symbol];auSave();toast(m?'Partial: '+m[1]+'% at '+m[2]+'R':'Partial close off')}return}
+  if(k==='o'){const O=(S.allO||[]).filter(o=>o.symbol===S.symbol);if(O.length<2)return toast('Need 2+ pending orders on '+S.symbol,1);AUTO.oco.push({t:O.map(o=>o.ticket),sym:S.symbol,n0:(S.allP||[]).filter(p=>p.symbol===S.symbol).length});auSave();toast('OCO linked: '+O.length+' pending orders');return}
+  if(k==='d'){const v=prompt('Daily loss limit in account currency (0 = off). New trades are blocked once reached.',LIM);if(v!==null){LIM=Math.abs(+v)||0;LS.set('gm_dlim',LIM);toast(LIM?'Daily loss limit '+LIM:'Daily loss limit off')}return}
+  if(k==='x'&&geo&&XH.on){const all=TL[S.symbol]||[];if(!all.length)return;const first=S.C.length-1-view.pan-(view.n-view.gap)+1;let bi=-1,bd=40;
+   all.forEach((o,i)=>o.pts.forEach(q=>{const x=(tIdx(q.t)-first)*geo.bw+geo.bw/2,d=o.k==='v'?Math.abs(x-XH.x):Math.hypot(x-XH.x,geo.Y(q.p)-XH.y);if(d<bd){bd=d;bi=i}}));
+   if(bi>=0){all.splice(bi,1);tlSave();dirty=true;toast('Tool removed')}return}
+  return}
+ if('wsur'.includes(k)&&k.length===1){IND[k]=!IND[k];setFlag({w:'vwap',s:'sess',u:'vol',r:'rsi'}[k],IND[k]);dirty=true;toast({w:'VWAP',s:'Asia range',u:'Volume',r:'RSI 14'}[k]+(IND[k]?' on':' off'));return}
+ if(k==='j'){journal();return}
+ if(NEED[k]&&geo&&XH.on&&XH.x>=0&&XH.x<geo.cw&&XH.y>=0&&XH.y<geo.ph){
+  const first=S.C.length-1-view.pan-(view.n-view.gap)+1,pt={t:idxT(first+Math.floor(XH.x/geo.bw)),p:+(+geo.inv(XH.y)).toFixed(S.digits)};
+  if(!PEND||PEND.k!==k)PEND={k,pts:[]};PEND.pts.push(pt);
+  if(PEND.pts.length>=NEED[k]){(TL[S.symbol]=TL[S.symbol]||[]).push({k,pts:PEND.pts});PEND=null;tlSave();toast(NAMES[k]+' placed')}
+  else toast(NAMES[k]+': point '+(PEND.pts.length+1)+' of '+NEED[k]+(k==='l'?' ('+['entry','stop loss','take profit'][PEND.pts.length]+')':''));dirty=true}});
+let _rsi=null,_rk='',_ss=null,_sk='';
+const _de=drawExtras;drawExtras=function(Y,cw,ph,first,bw){_de(Y,cw,ph,first,bw);try{drawMore(Y,cw,ph,first,bw)}catch(e){}};
+function drawMore(Y,cw,ph,first,bw){const C=S.C;if(!C.length)return;const X=i=>(i-first)*bw+bw/2,hi=Math.min(C.length-1,first+Math.ceil(cw/bw)),lo=Math.max(0,first);
+ const L=(x1,y1,x2,y2,col,dash)=>{rg.setLineDash(dash||[]);rg.strokeStyle=col;rg.lineWidth=1.2;rg.beginPath();rg.moveTo(x1,y1);rg.lineTo(x2,y2);rg.stroke();rg.setLineDash([])};
+ const T=(s,x,y,col)=>{rg.fillStyle=col||'#333';rg.font='700 10px -apple-system,Arial';rg.textAlign='left';rg.fillText(s,x,y)};
+ rg.save();rg.beginPath();rg.rect(0,0,cw,ph);rg.clip();
+ const vol=c=>c.volume||c.tick_volume||c.tv||1;
+ if(IND.u){let mx=1;for(let i=lo;i<=hi;i++)mx=Math.max(mx,vol(C[i]));rg.fillStyle='rgba(90,105,120,.28)';for(let i=lo;i<=hi;i++){const h=vol(C[i])/mx*ph*.1;rg.fillRect(X(i)-bw*.35,ph-h,bw*.7,h)}}
+ if(IND.r){const k=S.symbol+S.tf+C.length+C[C.length-1].close;if(k!==_rk){_rk=k;let g=0,l=0;_rsi=C.map((c,i)=>{if(i===0)return 50;const d=c.close-C[i-1].close;if(i<=14){g+=Math.max(d,0)/14;l+=Math.max(-d,0)/14}else{g=(g*13+Math.max(d,0))/14;l=(l*13+Math.max(-d,0))/14}return i<14?50:l===0?100:100-100/(1+g/l)})}
+  const top=ph*.62,h=ph*.14,ry=v=>top+h*(1-v/100);rg.fillStyle='rgba(255,255,255,.6)';rg.fillRect(0,top,cw,h);L(0,ry(70),cw,ry(70),'rgba(194,56,63,.5)',[3,4]);L(0,ry(30),cw,ry(30),'rgba(46,158,107,.5)',[3,4]);
+  rg.strokeStyle='#7a4fd0';rg.lineWidth=1.2;rg.beginPath();for(let i=lo;i<=hi;i++){const y=ry(_rsi[i]);i===lo?rg.moveTo(X(i),y):rg.lineTo(X(i),y)}rg.stroke();T('RSI '+_rsi[C.length-1].toFixed(1),4,top+10,'#7a4fd0')}
+ if(IND.w){const day=Math.floor(C[C.length-1].time/86400);let a=0,b=0,st=0;rg.strokeStyle='#e0592a';rg.lineWidth=1.4;rg.beginPath();
+  for(let i=C.length-1;i>=0&&Math.floor(C[i].time/86400)===day;i--)st=i;for(let i=st;i<C.length;i++){const c=C[i],v=vol(c);a+=(c.high+c.low+c.close)/3*v;b+=v;const y=Y(a/b);i===st?rg.moveTo(X(i),y):rg.lineTo(X(i),y)}rg.stroke()}
+ if(IND.s&&S.tfs<=3600){const key=S.symbol+S.tf+C.length;if(key!==_sk){_sk=key;_ss=null;const q0=cetP(C[C.length-1].time);let H=-1e18,Lw=1e18,s0=-1;
+   for(let i=C.length-1;i>=Math.max(0,C.length-400);i--){const q=cetP(C[i].time);if(q.d!==q0.d)break;if(q.h>=1&&q.h<9){H=Math.max(H,C[i].high);Lw=Math.min(Lw,C[i].low);s0=i}}if(s0>=0)_ss={h:H,l:Lw,s:s0}}
+  if(_ss)[['ASIA H',_ss.h],['ASIA L',_ss.l]].forEach(([n,v])=>{const y=Y(v);L(X(_ss.s),y,cw,y,'rgba(20,150,150,.8)',[5,4]);T(n+' '+fx(v),X(_ss.s)+4,y-3,'#127f7f')})}
+ (TL[S.symbol]||[]).concat(PEND?[{k:PEND.k,pts:PEND.pts,pv:1}]:[]).forEach(o=>{const P=o.pts.map(q=>({x:X(tIdx(q.t)),y:Y(q.p),p:q.p,i:tIdx(q.t)})),a=P[0],b=P[1];
+  if(o.k==='v'){L(a.x,0,a.x,ph,'rgba(40,60,90,.6)',[4,4])}
+  else if(o.k==='f'&&b){[0,.236,.382,.5,.618,.786,1].forEach(r=>{const p=a.p+(b.p-a.p)*r,y=Y(p);L(Math.min(a.x,b.x),y,cw,y,r===.5||r===.618?'rgba(200,120,20,.9)':'rgba(120,120,140,.7)',[3,3]);T(r+'  '+fx(p),Math.min(a.x,b.x)+3,y-2,'#555')})}
+  else if(o.k==='y'&&b&&b.x!==a.x){const m=(b.y-a.y)/(b.x-a.x);L(a.x,a.y,cw,a.y+m*(cw-a.x),'rgba(47,125,246,.9)')}
+  else if(o.k==='c'&&b){const m=b.x!==a.x?(b.y-a.y)/(b.x-a.x):0,c3=P[2],off=c3?c3.y-(a.y+m*(c3.x-a.x)):0;L(a.x,a.y,cw,a.y+m*(cw-a.x),'rgba(47,125,246,.9)');if(c3){L(a.x,a.y+off,cw,a.y+m*(cw-a.x)+off,'rgba(47,125,246,.9)');rg.fillStyle='rgba(47,125,246,.08)';rg.beginPath();rg.moveTo(a.x,a.y);rg.lineTo(cw,a.y+m*(cw-a.x));rg.lineTo(cw,a.y+m*(cw-a.x)+off);rg.lineTo(a.x,a.y+off);rg.fill()}}
+  else if(o.k==='m'&&b){rg.fillStyle=b.p>=a.p?'rgba(46,158,107,.15)':'rgba(194,56,63,.15)';rg.fillRect(a.x,a.y,b.x-a.x,b.y-a.y);const dp=b.p-a.p,sec=Math.abs(o.pts[1].t-o.pts[0].t),tm=sec>=86400?(sec/86400).toFixed(1)+'d':Math.floor(sec/3600)+'h'+pad2(Math.floor(sec%3600/60))+'m';
+   T((dp>=0?'+':'')+fx(dp)+'  ('+(dp/pipSz()).toFixed(1)+' pips)  '+Math.round(Math.abs(b.i-a.i))+' bars · '+tm,Math.min(a.x,b.x)+4,Math.min(a.y,b.y)-4,'#26312b')}
+  else if(o.k==='l'&&P.length>=2){const w=28*bw,sl=P[1],tp=P[2];rg.fillStyle='rgba(194,56,63,.2)';rg.fillRect(a.x,Math.min(a.y,sl.y),w,Math.abs(sl.y-a.y));
+   L(a.x,a.y,a.x+w,a.y,'#26312b');if(tp){rg.fillStyle='rgba(46,158,107,.2)';rg.fillRect(a.x,Math.min(a.y,tp.y),w,Math.abs(tp.y-a.y));const rr=Math.abs(tp.p-a.p)/Math.abs(a.p-sl.p),risk=Math.abs(a.p-sl.p)*lots*S.contract;
+    T((tp.p>a.p?'LONG':'SHORT')+'  R:R '+rr.toFixed(2)+'  risk '+CUR()+risk.toFixed(2)+' @'+lots.toFixed(2)+'L',a.x+4,Math.min(a.y,tp.y,sl.y)-4,'#26312b')}}
+  P.forEach(q=>{rg.fillStyle='#fff';rg.strokeStyle='#26312b';rg.beginPath();rg.arc(q.x,q.y,3,0,7);rg.fill();rg.stroke()})});
+ rg.restore();
+ // risk HUD: day P/L, drawdown, exposure, ATR14
+ if(S.acct){const eq=+S.acct.equity||0,exp=(S.allP||[]).reduce((s,p)=>s+(+p.volume||0),0);let atr=0;if(C.length>15){for(let i=C.length-14;i<C.length;i++)atr+=Math.max(C[i].high-C[i].low,Math.abs(C[i].high-C[i-1].close),Math.abs(C[i].low-C[i-1].close))/14}
+  const d=DAY.pl||0,dd=DAY.peak?(DAY.peak-eq)/DAY.peak*100:0,tx=`Day ${money(d)} · DD ${dd.toFixed(1)}% · Exp ${exp.toFixed(2)}L · ATR ${fx(atr)}`+(LIM?` · limit ${LIM}`+(d<=-LIM?' LOCKED':''):'');
+  rg.save();rg.font='700 10.5px -apple-system,Arial';const w=rg.measureText(tx).width+12;rg.fillStyle=LIM&&d<=-LIM?'rgba(194,56,63,.92)':'rgba(29,43,39,.72)';rg.beginPath();rg.roundRect(48,6,w,18,5);rg.fill();rg.fillStyle='#fff';rg.textAlign='left';rg.fillText(tx,54,18.5);rg.restore()}}
+// daily equity tracking (CET day) + lockout on new orders
+setInterval(()=>{if(!S.acct||!S.C.length)return;const q=cetP(S.C[S.C.length-1].time),dk=q.y+'-'+q.mo+'-'+q.d,eq=+S.acct.equity||0;
+ if(DAY.k!==dk){DAY={k:dk,eq:eq,peak:eq,pl:0}}DAY.peak=Math.max(DAY.peak,eq);DAY.pl=eq-DAY.eq;LS.set('gm_day',JSON.stringify(DAY));dirty=true},2000);
+const _place=place;place=async function(side){if(LIM&&(DAY.pl||0)<=-LIM)return toast('Daily loss limit reached ('+LIM+'). New trades are blocked until tomorrow (CET).',1);return _place(side)};
+// trailing stop, partial close at R, OCO (run in this browser tab only)
+let _auBusy=false;setInterval(async()=>{if(_auBusy||!S.ok||!S.bid)return;_auBusy=true;
+ try{for(const p of (S.allP||[])){const buy=p.type==='BUY',sl=+p.sl||0;if(sl&&!AUTO.risk[p.ticket]){AUTO.risk[p.ticket]=Math.abs(p.price_open-sl);auSave()}
+   const tr=AUTO.trail[p.symbol];if(tr&&p.symbol===S.symbol){const n=+(buy?S.bid-tr:S.ask+tr).toFixed(S.digits);if(buy?(n>sl+S.point&&n<S.bid):(!sl||n<sl-S.point)&&n>S.ask)await api('/api/modify',{login:S.login,ticket:p.ticket,sl:n,tp:+p.tp||0})}
+   const pt=AUTO.part[p.symbol],rk=AUTO.risk[p.ticket];if(pt&&rk&&!AUTO.done[p.ticket]&&p.symbol===S.symbol&&(buy?S.bid-p.price_open:p.price_open-S.ask)>=pt.r*rk){AUTO.done[p.ticket]=1;auSave();await api('/api/close',{login:S.login,ticket:p.ticket,percent:pt.pct});toast('Partial close '+pt.pct+'% at '+pt.r+'R')}}
+  for(const g of AUTO.oco.slice()){const np=(S.allP||[]).filter(p=>p.symbol===g.sym).length,left=g.t.filter(t=>(S.allO||[]).some(o=>o.ticket===t));
+   if(np>g.n0&&left.length<g.t.length){for(const t of left)await api('/api/cancel',{login:S.login,ticket:t});AUTO.oco=AUTO.oco.filter(x=>x!==g);auSave();toast('OCO: other pending orders cancelled')}else if(!left.length){AUTO.oco=AUTO.oco.filter(x=>x!==g);auSave()}}}
+ catch(e){}finally{_auBusy=false}},1000);
+// journal: win rate by session (CET) + CSV download
+async function journal(){try{const r=await api(`/api/history?login=${S.login}&limit=1000`),D=(r.deals||[]).filter(d=>+d.profit),rows=[['time_cet','symbol','type','volume','profit','session']],ses={};
+ D.forEach(d=>{const t=+d.time_epoch||Date.parse(d.time)/1000||0,q=cetP(t),m=q.h*60+q.mi,s=m>=60&&m<540?'Asia':m>=540&&m<930?'London':m>=930&&m<1320?'New York':'Off hours',pr=+d.profit+(+d.commission||0)+(+d.swap||0);
+  const o=ses[s]=ses[s]||{n:0,w:0,pl:0};o.n++;o.w+=pr>0?1:0;o.pl+=pr;rows.push([q.y+'-'+pad2(q.mo)+'-'+pad2(q.d)+' '+pad2(q.h)+':'+pad2(q.mi),d.symbol,d.type,d.volume,pr.toFixed(2),s])});
+ const sum=Object.entries(ses).map(([k,o])=>k+': '+o.n+' trades, win '+Math.round(o.w/o.n*100)+'%, '+money(o.pl)).join(' | ')||'No closed trades found';
+ const csv=rows.map(a=>a.join(',')).join('\n')+'\n\n'+Object.entries(ses).map(([k,o])=>`${k},${o.n},${(o.w/o.n*100).toFixed(0)}%,${o.pl.toFixed(2)}`).join('\n'),a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='journal_'+Date.now()+'.csv';a.click();toast(sum)}catch(e){toast('Journal: '+e.message,1)}}
 </script></body></html>
 
 <style>@media(max-width:899px){#cw.pane-open ~ #chipbar{left:8px!important;right:8px!important;top:48px!important}#cw.pane-open ~ #chipbar #chips{flex-wrap:wrap!important;max-width:calc(100% - 8px)!important}#cw.pane-open ~ #chipbar #chips>*{font-size:10px!important;padding:5px 7px!important}#cw.pane-open #drawMenu{bottom:52px!important}}#cw.pane-open #chips .be,#cw.pane-open #chips .bk,#cw.pane-open #chips [data-do=manage]{margin-left:4px}</style>
@@ -2228,6 +2307,7 @@ function drawExtras(Y,cw,ph,first,bw){
 /* popups: whole sheet visible above the floating nav, scrolls if tall */
 @media(max-width:899px){
  #scrim{position:fixed;z-index:79}
+ #confirmUI{position:fixed;left:12px;right:12px;bottom:max(14px,env(safe-area-inset-bottom));width:auto;z-index:120} /* confirm must sit ABOVE the bottom sheet (z 80), or layering/basket confirms are invisible on phones */
  #sheet{position:fixed;left:0;right:0;bottom:0;z-index:80;max-height:calc(100dvh - 20px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:max(20px,env(safe-area-inset-bottom))}
  #sheet .bk-list{max-height:none}
  #sheet .mg-primary{position:sticky;bottom:0;z-index:2;box-shadow:0 -8px 14px #fff}
