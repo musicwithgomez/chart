@@ -2,6 +2,43 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Goldmine Sync</title>
+<meta name="theme-color" content="#f6f8f7">
+<script id="gmTheme">
+(function(){
+ var dk=false;try{dk=localStorage.getItem('gm_theme')==='dark'}catch(e){}
+ window.GM_DARK=dk;if(dk)document.documentElement.classList.add('dark');
+ var H=212/360,cache=new Map();
+ var U=[[0,.86],[.1,.80],[.25,.70],[.4,.60],[.5,.54],[.6,.48],[.7,.40],[.8,.31],[.88,.25],[.93,.19],[.97,.16],[1,.205]];
+ function ip(p,x){if(x<=p[0][0])return p[0][1];for(var i=1;i<p.length;i++){if(x<=p[i][0])return p[i-1][1]+(p[i][1]-p[i-1][1])*(x-p[i-1][0])/(p[i][0]-p[i-1][0])}return p[p.length-1][1]}
+ function parse(t){t=t.trim().toLowerCase();var m;
+  if(t==='white')return[255,255,255,1];if(t==='black')return[0,0,0,1];
+  if(t[0]==='#'){var h=t.slice(1);if(!/^[0-9a-f]+$/.test(h))return null;if(h.length===3||h.length===4)h=h.replace(/./g,function(c){return c+c});if(h.length!==6&&h.length!==8)return null;
+   return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16),h.length===8?parseInt(h.slice(6,8),16)/255:1]}
+  m=t.match(/^rgba?\(([^)]*)\)$/);if(m){var p=m[1].split(/[\s,\/]+/).filter(Boolean);if(p.length<3)return null;
+   var v=p.slice(0,3).map(function(x){return x.slice(-1)==='%'?parseFloat(x)*2.55:parseFloat(x)});var a=p.length>3?(p[3].slice(-1)==='%'?parseFloat(p[3])/100:parseFloat(p[3])):1;return[v[0],v[1],v[2],a]}
+  return null}
+ function rgb2hsl(r,g,b){r/=255;g/=255;b/=255;var mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,h=0,s=0,d=mx-mn;
+  if(d){s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6}return[h,s,l]}
+ function hsl2rgb(h,s,l,a){function f(p,q,t){if(t<0)t+=1;if(t>1)t-=1;return t<1/6?p+(q-p)*6*t:t<.5?q:t<2/3?p+(q-p)*(2/3-t)*6:p}
+  var r,g,b;if(!s){r=g=b=l}else{var q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;r=f(p,q,h+1/3);g=f(p,q,h);b=f(p,q,h-1/3)}
+  r=Math.round(r*255);g=Math.round(g*255);b=Math.round(b*255);
+  return a>=.999?'#'+[r,g,b].map(function(x){return(x<16?'0':'')+x.toString(16)}).join(''):'rgba('+r+','+g+','+b+','+(+a.toFixed(2))+')'}
+ var cl=function(x,a,b){return Math.max(a,Math.min(b,x))};
+ function map(str){var c=parse(str);if(!c)return str;var r=c[0],g=c[1],b=c[2],a=c[3],x=rgb2hsl(r,g,b),h=x[0],s=x[1],l=x[2],hd=h*360;
+  if(a<.999&&l<.12)return'rgba(0,0,0,'+(+Math.min(.85,a*1.6).toFixed(2))+')';
+  if(str.trim().toLowerCase()==='#f5f2ea')return'#1b2024';
+  if(s<.22||(hd>=25&&hd<=60&&l>.8&&s<.8)||(l>.93&&(Math.max(r,g,b)-Math.min(r,g,b))/255<.04))return hsl2rgb(H,.14,ip(U,l),a);
+  if(l>=.82)return hsl2rgb(h,Math.min(s*.55,.38),.19+(1-l)*.55,a);
+  if(l<=.30)return hsl2rgb(h,s*.75,.72,a);
+  return hsl2rgb(h,s*.88,cl(l,.52,.66),a)}
+ function mc(v){if(typeof v!=='string')return v;var k=cache.get(v);if(k===undefined){k=map(v);if(cache.size>4000)cache.clear();cache.set(v,k)}return k}
+ if(window.CanvasRenderingContext2D){var P=CanvasRenderingContext2D.prototype;
+  ['fillStyle','strokeStyle','shadowColor'].forEach(function(n){var d=Object.getOwnPropertyDescriptor(P,n);if(!d||!d.set)return;
+   Object.defineProperty(P,n,{configurable:true,enumerable:d.enumerable,get:d.get,set:function(v){d.set.call(this,window.GM_DARK?mc(v):v)}})});
+  if(window.CanvasGradient){var ac=CanvasGradient.prototype.addColorStop;CanvasGradient.prototype.addColorStop=function(o,c){return ac.call(this,o,window.GM_DARK?mc(c):c)}}}
+ window.gmMapColor=mc;
+})();
+</script>
 <style>
 :root{--bg:#f6f8f7;--chart:#f5f2ea;--ink:#111;--mut:#8b9490;--grn:#2e9e6b;--grnl:#d6f3e4;--red:#d9484f;--blu:#2196f3;--line:#e3e7e5}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -612,6 +649,8 @@ button.prow:active{background:#f4f7f5}
  #drawMenu{bottom:58px}
 }
 </style>
+<style id="inlinefix">.dtxt{width:100%;padding:8px;border:1px solid #dce3df!important;border-radius:7px}.okmark{margin-left:auto;color:#1e9a65}.nofx{color:#8a948e;font-style:normal}.mini.clr{color:#58645d!important;background:#fff!important;border-color:#dbe2de!important}.cperr{color:#c2383f;font-size:12px;text-align:right}</style>
+<style id="themecss">.thm{flex:none;width:28px;height:28px;border:0;border-radius:50%;background:none;color:var(--mut);display:grid;place-items:center;padding:0;margin:0 0 0 -2px;cursor:pointer;opacity:.7;transition:opacity .15s,background .15s}.thm:hover{opacity:1;background:rgba(127,127,127,.16)}.thm svg{width:17px;height:17px}.thm .sun{display:none}html.dark .thm .sun{display:block}html.dark .thm .moon{display:none}html.dark{color-scheme:dark}</style>
 <style id="authgate">html{visibility:hidden}</style>
 <script type="module">
 /* Login gate: not signed in -> login.html. (Role-level security comes next; the bridge key still protects the API.) */
@@ -666,9 +705,307 @@ onAuthStateChanged(auth,async u=>{
 #drawMenu:has(#drawSettings.fib){max-height:min(70vh,520px)!important;overflow:auto!important}</style>
 <style id="nozoom">html,body{overscroll-behavior:none;touch-action:manipulation}</style>
 <script>["gesturestart","gesturechange","gestureend"].forEach(e=>document.addEventListener(e,x=>x.preventDefault(),{passive:false}))</script>
+<style id="darkcss">/* generated dark theme: calm slate, every colour re-mapped */
+html.dark{--bg:#22282d;--chart:#1b2024;--ink:#dadee3;--mut:#8e9baa;--grn:#3aa877;--grnl:#2c523e;--red:#e0676d;--blu:#4c9de8;--line:#39424c}
+html.dark,html.dark body{background:#546170}
+html.dark .top .sym i{color:#8b98a7}
+html.dark .dot{background:#d49a35}
+html.dark .dot.ok{background:#39c689}
+html.dark .dot.off{background:#cf3a3f}
+html.dark .pill{border:1.5px solid #3a5f4e;color:#55d39b}
+html.dark .pill.neg{background:#4e2323;border-color:#633637;color:#c66267}
+html.dark .bid{color:#d55a53}
+html.dark .ask{color:#69de9b}
+html.dark .tfs button{color:#9ea9b6}
+html.dark .tfs button.on{color:#5bcd9e;outline:1.5px solid #3a5f4e}
+html.dark #cw{border-top:1px solid #3d4650}
+html.dark .tb button{border:1px solid #414b57;background:rgba(41,48,55,0.8);color:#9da8b5}
+html.dark .tb button.on{background:#294b3a;border-color:#3c5d4c;color:#61c799}
+html.dark #tm{background:#566473;color:#5ad89f}
+html.dark #toast{background:#246b58;color:#71f4ba;border:1px solid #389a6d}
+html.dark #toast.bad{background:#622d31;color:#f4c2c5;border-color:#b84248}
+html.dark .be{background:#4f4024;border:1.5px solid #655534;color:#e79d41}
+html.dark .bk{background:#22354c;border:1.5px solid #334b66;color:#5a8fce}
+html.dark .row2 .buy,html.dark .row2 .sell{color:#dadee3}
+html.dark .row2 em{color:#aeb7c2}
+html.dark .row2 u{color:#e47474}
+html.dark .mode button.on{background:#2a513e;color:#5bcd9e;outline:1.5px solid #3c5d4c}
+html.dark .ent input{border:1.5px solid #404a55;background:#2d343c}
+html.dark .ent button{background:#303740}
+html.dark .lots button{background:#303740}
+html.dark .lots .sltp{border:1.5px solid #404a55;color:#95a1af}
+html.dark .go button{color:#eef0f2}
+html.dark #sell{background:#556170}
+html.dark .nav button{color:#95a1af}
+html.dark #sheet{background:#2d343c;box-shadow:0 -10px 40px rgba(0,0,0,0.43)}
+html.dark #sheet button,html.dark .pn button.wide{border:1.5px solid #404a55;background:#2d343c}
+html.dark #sheet button.bad{border-color:#613839;color:#c66267}
+html.dark #sheet .manage-levels{background:#23292f;border:1px solid #39414b}
+html.dark #sheet .manage-levels label{color:#aeb7c2}
+html.dark #sheet .manage-levels button{background:#2c4a39;border-color:#3d5c4b;color:#75d2a9}
+html.dark #sheet .manage-divider{background:#313942}
+html.dark #sheet input,html.dark .pn input{border:1.5px solid #404a55}
+html.dark .pn .r button{border:1.5px solid #404a55;background:#2d343c}
+html.dark .buy{color:#509bd8}
+html.dark .sell{color:#d65f64}
+html.dark .pos{color:#55d39b}
+html.dark .neg{color:#c66267}
+html.dark .demo{color:#55d39b}
+html.dark #confirmUI{background:#2d343c;border:1px solid #3c454f;box-shadow:0 8px 28px rgba(0,0,0,0.21)}
+html.dark #confirmYes{background:#2c523e;color:#72d4a9}
+html.dark #confirmNo{background:#4e2323;color:#c66267}
+html.dark .pn .trade-card{background:#2d343c;border:1px solid #38404a;box-shadow:0 3px 12px rgba(0,0,0,0.05)}
+html.dark .pn .trade-badge{background:#2a3037;color:#a5afbb}
+html.dark .pn .trade-badge.buy{background:#22394d;color:#559bd2}
+html.dark .pn .trade-badge.sell{background:#4c2222;color:#c66267}
+html.dark .pn .trade-metric{background:#23292f}
+html.dark .pn .trade-actions button{border:1px solid #3c4550;background:#2d343c}
+html.dark .pn .trade-actions button.primary{background:#2c4a39;border-color:#3d5c4b;color:#75d2a9}
+html.dark .pn .trade-actions button.danger{color:#c66267;background:#2a3038;border-color:#60393b}
+html.dark .pn .account-hero{background:linear-gradient(135deg,#38574c,#345b4b);color:#eef0f2}
+html.dark .pn .account-hero .eyebrow{color:#bbd1c7}
+html.dark .pn .account-hero .hero-row{color:#d4e3db}
+html.dark .pn .account-tile{background:#2d343c;border:1px solid #38404a}
+html.dark .pn .account-info{background:#2d343c;border:1px solid #38404a}
+html.dark .pn .empty-state{background:#2d343c;border:1px dashed #3d4651}
+@media (min-width: 900px){html.dark #chips button{box-shadow:0 3px 14px rgba(0,0,0,0.11)}html.dark #row>*{background:rgba(45,52,60,0.85);box-shadow:0 2px 8px rgba(0,0,0,0.06)}html.dark #mode,html.dark #ent,html.dark .lots,html.dark .go{background:rgba(42,49,56,0.93);box-shadow:0 8px 30px rgba(0,0,0,0.18);border-left:1px solid #39424c;border-right:1px solid #39424c}html.dark #mode{border-top:1px solid #39424c}html.dark .mode button{background:#2d343c}html.dark .mode button.on{color:#5bcd9e;outline:1.5px solid #3c5d4c}html.dark #ent{border-left:1px solid #39424c;border-right:1px solid #39424c}html.dark .go{border-bottom:1px solid #39424c}}
+@media (min-width:900px){html.dark #tradeWidget{background:#556271;color:#eaecef;border:1px solid #8190a0;box-shadow:0 10px 30px rgba(0,0,0,0.32)}html.dark #tradeWidget.docked{background:#22282d;color:#d7dbe1;border-color:#3d4651}html.dark #tradeManageArea{border-top:1px solid #3c454f}html.dark #tradeManageArea h4{color:#d1d6dc}html.dark #tradeManageArea .sm{color:#98a4b1}html.dark #tradeManageArea .manage-levels{background:#2d343c;border:1px solid #3a434d}html.dark #tradeManageArea label{color:#a8b2bd}html.dark #tradeManageArea input{border:1px solid #3f4853;background:#2d343c;color:#d7dbe1}html.dark #tradeManageArea button{border:1px solid #3e4752;background:#2d343c;color:#cbd1d8}html.dark #tradeManageArea .manage-levels button{background:#2c4a39;border-color:#3d5c4b;color:#75d2a9}html.dark #tradeManageArea .manage-divider{background:#374049}html.dark #tradeManageArea button.bad{color:#d1575e;border-color:#60393c;background:#293037}html.dark #tradeWidgetHead{background:#272d34;border-bottom:1px solid #3d4651;color:#cbd1d8}html.dark #tradeWidgetHead .dragHint{color:#a7b1bd}html.dark #tradeWidgetHead button,html.dark #tradeRestore{border:1px solid #3f4954;background:#2d343c;color:#cbd1d8}html.dark #tradeWidget #mode,html.dark #tradeWidget #ent,html.dark #tradeWidget .lots,html.dark #tradeWidget .go{background:#2d343c;color:#d1d6dc}html.dark #tradeWidget #mode{border-bottom:1px solid #3a434d}html.dark #tradeWidget #ent{background:#23292f;color:#9faab7}html.dark #tradeWidget .lots{border-bottom:1px solid #3a434d;background:#2d343c}html.dark #tradeWidget .go{background:#2d343c}html.dark #tradeWidget .tb button[data-do="manage"]{background:#2d343c;color:#cbd1d8;border-color:#3f4954}html.dark #tradeWidget #mode button{color:#9faab6;background:#23282f;border-color:#3b434e}html.dark #tradeWidget #mode button.on{background:#2c523e;color:#79cea7;outline:1px solid #3c5d4c}}
+html.dark #sell{background:#d8313c}
+html.dark #buy{background:#226fe7}
+html.dark .tb button[data-do="manage"]{background:#2b4737;border-color:#3c5d4c;color:#79cea7}
+html.dark #sheet .mgrow label,html.dark #tradeManageArea .mgrow label{color:#a8b2bd}
+html.dark #sheet .mgrow input,html.dark #tradeManageArea .mgrow input{background:#2d343c;color:#d7dbe1;border:1px solid #3f4853}
+html.dark #sheet .mgrow button,html.dark #tradeManageArea .mgrow button{background:#2c4a39;border:1px solid #3d5c4b;color:#75d2a9}
+html.dark #sheet .mgsizes button,html.dark #tradeManageArea .mgsizes button{background:#2d343c;color:#cbd1d8;border:1px solid #3e4752}
+html.dark #sheet .mgsizes button.bad,html.dark #tradeManageArea .mgsizes button.bad{background:#472020;color:#c66267;border-color:#60393b}
+html.dark #sheet .mgdone,html.dark #tradeManageArea .mgdone{background:#262c33;color:#b3bcc6;border:1px solid #3b434e}
+@media (min-width:900px){html.dark #app::before{background:#2d343c}html.dark #tfs{background:#262c33}html.dark .tfs button.on{background:#2d343c;color:#57d19d;box-shadow:0 1px 3px rgba(0,0,0,0.21),inset 0 0 0 1.5px #3a5f4e}html.dark .top .bid{background:#4a2121;color:#d55a53}html.dark .top .ask{background:#2b4839;color:#69de9b}html.dark #tradeWidget{background:#22282d;color:#d1d6dc;border:1px solid #3d4651;box-shadow:0 10px 30px rgba(0,0,0,0.21)}html.dark #tradeWidgetHead button.on{background:#2c523e;border-color:#3c5d4c;color:#79cea7}html.dark #tradeWidgetHead button:focus-visible{box-shadow:0 0 0 2px #3c5d4c}html.dark #tradeWidget .lots button,html.dark #tradeWidget .ent button{background:#292f36;color:#cbd1d8;border:1px solid #3f4853}html.dark #tradeWidget .lots .v{color:#d7dbe1}html.dark #tradeWidget .lots small{color:#94a0ae}html.dark #tradeWidget .lots .sltp{background:#2d343c;color:#b3bcc6;border:1px solid #3f4853}html.dark #tradeWidget .ent input{background:#2d343c;color:#d7dbe1;border:1px solid #3f4853}html.dark #tradeWidget .ent p{color:#94a0ae}html.dark #tradeWidget #sell{background:#d8313c;color:#eef0f2}html.dark #tradeWidget #buy{background:#226fe7;color:#eef0f2}html.dark #tradeWidget #ent{color:#9faab7}}
+html.dark button:focus-visible,html.dark input:focus-visible{outline:2px solid #5fb992}
+html.dark .mgbtn{background:#2d343c;border:1.5px solid #3e4853;color:#c6ccd4}
+html.dark #scrim{background:rgba(0,0,0,0.53)}
+html.dark .mg-grab{background:#3a434d}
+html.dark :is(#sheet,#tradeManageArea) .mg h4{color:#d7dbe1}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-x{background:#292f36;color:#aab4bf}
+html.dark .mg-sec{color:#a8b2bd}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-field label{color:#aeb7c2}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-in input{border:1.5px solid #3f4853;background:#2d343c;color:#d7dbe1}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-clr{color:#c66267;background:#2a3038;border:1.5px solid #60393b}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-primary{background:#36966a;border-color:#379569;color:#eef0f2}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-alt{background:#4c3d22;border-color:#655534;color:#e6a142}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-sizes button{background:#2d343c;color:#cbd1d8;border:1.5px solid #3e4752}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-sizes button.bad{background:#472020;color:#c66267;border-color:#60393b}
+html.dark .bk-lvl{color:#aeb7c2}
+html.dark .bk-lvl b{color:#d7dbe1}
+html.dark .bk-list{border:1px solid #39414b;background:#23292f}
+html.dark .bk-row+.bk-row{border-top:1px solid #363e47}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-sizes button.on{background:#2b4737;border-color:#3c5d4c;color:#79cea7}
+@media (min-width:900px){html.dark #tradeWidgetHead #tradeManage{background:#2b4737;border-color:#3c5d4c;color:#79cea7}html.dark #tradeWidgetHead #tradeManage.on{background:#2c523e}}
+html.dark .seg{background:#2d343c}
+html.dark .seg button{color:#95a1af}
+html.dark .seg button.on{background:#2d343c;color:#57d19d;box-shadow:0 1px 3px rgba(0,0,0,0.21),inset 0 0 0 1.5px #3a5f4e}
+html.dark .list{background:#2d343c}
+html.dark button.prow:active{background:#24292f}
+html.dark .tag{background:#22394d;color:#559bd2}
+html.dark .tag.sell{background:#4c2222;color:#c66267}
+html.dark .act button,html.dark .mini{border:1px solid #3c4550;background:#2d343c;color:#cbd1d8}
+html.dark .act .danger,html.dark .mini{color:#c66267;background:#2a3038;border-color:#60393b}
+html.dark .pn .wide.danger{color:#c66267;border-color:#60393b;background:#2a3038}
+html.dark .stat{background:#2d343c}
+html.dark .dayh{color:#a8b2bd}
+html.dark #sheet .chiprow button,html.dark #sheet .smore{color:#95a1af;border:1.5px solid #3b434e;background:#2d343c}
+html.dark #sheet .chiprow button.on{background:#2a513e;color:#57d19d;border-color:#3c5d4c}
+html.dark #sheet .smore{color:#57d19d;border-color:#3d5c4c}
+html.dark #sheet .sgrp{color:#a8b2bd}
+html.dark #sheet .srow .star{color:#b1bac4}
+html.dark #sheet .srow .star.on{color:#e7b341}
+html.dark .top .acc{border:1.5px solid #3e4853;background:#2d343c;color:#c3cad2}
+html.dark .top .acc i{color:#8b98a7}
+html.dark #sheet .arow{border:1.5px solid #3b434e;background:#2d343c}
+html.dark #sheet .arow.on{border-color:#3a5f4e;background:#264734}
+@media (min-width:900px){html.dark #symDock{background:#22282d;border-left:1px solid #3d4651;color:#d7dbe1}html.dark #symDockHead{background:#272d34;border-bottom:1px solid #3d4651;color:#cbd1d8}html.dark #symDockHead button{border:1px solid #3f4954;background:#2d343c;color:#cbd1d8}html.dark #symDockBody input{border:1.5px solid #3f4853;background:#2d343c;color:#d7dbe1}html.dark #symDockBody .chiprow button,html.dark #symDockBody .smore{color:#95a1af;border:1.5px solid #3b434e;background:#2d343c}html.dark #symDockBody .chiprow button.on{background:#2a513e;color:#57d19d;border-color:#3c5d4c}html.dark #symDockBody .smore{color:#57d19d;border-color:#3d5c4c}html.dark #symDockBody .sgrp{color:#a8b2bd}html.dark #symDockBody .sm{color:#94a0ae}html.dark #symDockBody .srow{border-bottom:1px solid #39424c}html.dark #symDockBody .srow .sname{color:#d7dbe1}html.dark #symDockBody .srow .sname:hover{color:#57d19d}html.dark #symDockBody .srow .star{color:#b1bac4}html.dark #symDockBody .srow .star.on{color:#e7b341}html.dark #sheet .mg-head .mg-dock{color:#cbd1d8;background:#292f36}}
+html.dark .pn select{border:1.5px solid #404a55;background:#2d343c}
+html.dark .cp-hero{background:linear-gradient(135deg,#38574c,#345b4b);color:#eef0f2}
+html.dark .cp-hero.on{background:linear-gradient(135deg,#2a654f,#2a654b)}
+html.dark .cp-top{color:#ccddd4}
+html.dark .cp-pill{background:rgba(45,52,60,0.12);color:#d4e3db}
+html.dark .cp-hero.on .cp-pill{background:rgba(50,215,148,0.19);color:#71f4b9}
+html.dark .cp-bal{color:#ccddd4}
+html.dark .cp-stats div{background:rgba(45,52,60,0.08)}
+html.dark .cp-stats span{color:#bbd1c7}
+html.dark .cp-warn{background:rgba(45,52,60,0.1);color:#f4e5c2}
+html.dark .cp-warn.bad{background:rgba(186,64,70,0.33);color:#eef0f2}
+html.dark .pn .wide.cp-go{background:#2d343c;color:#75d2a4;border-color:#303840}
+html.dark .cp-hero .wide.danger{background:#2d343c}
+html.dark .cp-card{background:#2d343c;border:1px solid #38404a}
+html.dark .copt{border:1.5px solid #3b434e;background:#2d343c}
+html.dark .copt.on{border-color:#3a5f4e;background:#22282d}
+html.dark .coptb .rad{border:2px solid #46515d}
+html.dark .copt.on .rad{border-color:#279164}
+html.dark .copt.on .rad:after{background:#2aa26f}
+html.dark .cin span{color:#a8b2bd}
+html.dark .chint{color:#79cea9}
+html.dark .pn .tg{background:#3b444f}
+html.dark .tg i{background:#2d343c;box-shadow:0 1px 3px rgba(0,0,0,0.32)}
+html.dark .tg.on{background:#36966a}
+html.dark .cpl.ok span{color:#76d1a7}
+html.dark .cpl.warn span{color:#e6a142}
+html.dark .cpl.err span{color:#c66267}
+@media (max-width:899px){html.dark #chipbar .acc{border:1.5px solid #3e4853;background:#252b31;color:#c3cad2;box-shadow:0 2px 8px rgba(0,0,0,0.07)}html.dark #chipbar .acc i{color:#8b98a7}html.dark .lots .v{background:#2d343c;border:1.5px solid #39424c}html.dark .lots .sltp{background:#2d343c}}
+html.dark .lyx .lyhead{background:#566372;color:#eef0f2}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lyhead button{background:rgba(45,52,60,0.11);color:#eef0f2}
+html.dark .lyx .p-blue{background:#23354d;color:#5b88cd}
+html.dark .lyx .p-grey{background:#2c333b;color:#b3bcc6}
+html.dark .lyx .p-gold{background:#554826;color:#e3b245}
+html.dark .lyx .t-blue>b{background:#23354d;color:#5b88cd}
+html.dark .lyx .t-red>b{background:#4c2226;color:#c66267}
+html.dark .lyx .t-green>b{background:#2c4c3a;color:#77cfa8}
+html.dark .lyx .t-grey>b{background:#2c333b;color:#b3bcc6}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lyi input{border:1.5px solid #3f4853;background:#2d343c;color:#d7dbe1}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lyi button{background:#566372;color:#eef0f2}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lytog button{background:#566372;color:#eef0f2}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lytog button.on{background:#bf9426;color:#eef0f2}
+html.dark .lyx .lystats div{background:#292f36}
+html.dark .lyx .lystats span{color:#9ca8b5}
+html.dark .lyx .lystats small{color:#9ca8b5}
+html.dark .lyx .lystats b.neg{color:#c66267}
+html.dark .lyx .lystats b.pos{color:#57d19d}
+html.dark .lyx .lymsg{background:#554826;color:#dfba68}
+html.dark .lyx .lynote{color:#9ca8b5}
+html.dark .lyx .lynote.neg{color:#c66267}
+html.dark .ly-rows{border:1px solid #39424c;background:#2d343c}
+html.dark .ly-row{border-bottom:1px solid #343b44}
+html.dark .ly-row i{color:#8e9baa}
+html.dark .ly-row b:last-child{color:#c66267}
+html.dark .ly-row.h{color:#9ca8b5;background:#23292f}
+html.dark .lyx .lyfoot{background:#22282d}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lyside .s{background:#4b2222;border-color:#633637;color:#c66267}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lyside .b{background:#23394d;border-color:#354e64;color:#559bd2}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lyside .s.on{background:#cf3a3f;border-color:#d0494e;color:#eef0f2}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lyside .b.on{background:#348dd5;border-color:#388dd2;color:#eef0f2}
+html.dark :is(#sheet,#tradeManageArea) .lyx #lyGo{background:#bf9426;color:#eef0f2}
+html.dark :is(#sheet,#tradeManageArea) .lyx #lyGo:disabled{background:#38414b;color:#8e9baa}
+html.dark :is(#sheet,#tradeManageArea) .lyx .lyback{background:#566372;color:#eef0f2}
+@media (min-width:900px){html.dark #row{background:#2a3138}html.dark #row>*{background:#2d343c!important;border:1px solid #39424c;border-left:4px solid #48535f}html.dark #row>.buy{border-left-color:#388dd2}html.dark #row>.sell{border-left-color:#d0494e}html.dark #row>* u{background:#242930;color:#c66267}}
+html.dark .acct-eq i{color:#8e9baa}
+html.dark .aq{background:#2d343c;border:1px solid #38404a}
+html.dark .aq span{color:#9ca8b5}
+html.dark .aq b.pos{color:#55d39b}
+html.dark .aq b.neg{color:#c66267}
+html.dark .aq small{color:#96a2b0}
+html.dark .aq.main{background:linear-gradient(135deg,#38574c,#345b4b);border-color:#6b9f8c}
+html.dark .aq.main span{color:#bbd1c7}
+html.dark .aq.main b{color:#eef0f2}
+html.dark .aq.main small{color:#d2e0d9}
+html.dark .acct-sub{color:#9ca8b5}
+html.dark .account-tile small{color:#8e9baa}
+html.dark #chartSideRail{background:var(--bg,#22282d);border-right:1px solid #3b434e}
+html.dark .rail-btn{color:#a9b3be}
+html.dark .rail-btn:hover,html.dark .rail-btn.on{background:#2f493a;color:#72d4a9}
+html.dark #drawMenu{background:#252b31;border:1px solid #3b434e;box-shadow:8px 0 24px rgba(0,0,0,0.11);color:#cbd1d8}
+html.dark .pane-head button{color:#9ea9b6}
+html.dark #drawMenu button{background:#2d343c;color:#c2c9d1}
+html.dark #drawMenu button:hover,html.dark #drawMenu button.on{background:#282e35;border-color:#41584b;color:#72d4a9}
+html.dark #drawMenu label{color:#9faab7}
+html.dark #drawMenu input[type=color]{border:1px solid #3c454f;background:#2d343c}
+html.dark #drawMenu select{border:1px solid #3c454f;background:#2d343c;color:#cbd1d8}
+html.dark #drawMenu .hint{color:#94a0ae}
+html.dark #drawSettings{border-top:1px solid #38414b}
+html.dark .settings-title{color:#b5bdc7}
+html.dark .indicator-row .indicator-check{background:#2d493a;color:#74d2a6}
+html.dark .indicator-row:not(.active) .indicator-check{background:#282f36;color:#95a1af}
+html.dark .indicator-row small{color:#8e9baa}
+@media (max-width:899px){html.dark #chartSideRail{border:1px solid #3b434e;background:rgba(37,43,49,0.93);box-shadow:0 3px 14px rgba(0,0,0,0.15)}html.dark #drawMenu{border:1px solid #3b434e;box-shadow:0 8px 28px rgba(0,0,0,0.21)}}
+@media (min-width:900px){html.dark #chips .chart-tool{border:1px solid #3e4853;background:#2d343c;color:#c2c9d1;box-shadow:0 3px 12px rgba(0,0,0,0.11)}html.dark #chips .chart-tool.on{background:#2b4737;border-color:#3c5d4c;color:#79cea7}}
+html.dark #chipbar .acc,html.dark #accBtn,html.dark #accBtnM{border:1px solid #3e4752!important;background:#242a30!important;color:#c8cfd6!important;box-shadow:0 2px 7px rgba(0,0,0,0.06)!important}
+html.dark #chipbar .acc:hover,html.dark #accBtn:hover,html.dark #accBtnM:hover{background:#2c4537!important;border-color:#3f5a4a!important}
+html.dark #drawUndo{border-color:#3d4650!important;background:#262c33!important;color:#73d3a5!important}
+html.dark #chartSideRail .rail-btn.active{background:#2f493a;color:#72d4a9}
+html.dark .rail-sep{background:#363e47}
+@media (max-width:899px){html.dark #railGrip i{background:#48535f}html.dark #chartSideRail.rail-hidden{background:rgba(37,43,49,0.8)}html.dark #chartSideRail.rail-dragging{box-shadow:0 6px 22px rgba(0,0,0,0.32)}}
+html.dark .dtxt{border:1px solid #3c454f!important}
+html.dark .okmark{color:#57d19d}
+html.dark .nofx{color:#8e9baa}
+html.dark .mini.clr{color:#a8b2bd!important;background:#2d343c!important;border-color:#3c4550!important}
+html.dark .cperr{color:#c66267}
+html.dark .thm:hover{background:rgba(86,99,114,0.16)}
+html.dark .sess{border-top:1px solid var(--line,#38414b)}
+html.dark .sess button{color:#8e9baa}
+html.dark .sess button:hover{color:#c3cad2}
+html.dark #drawMenu .fb-ck{color:#c2c9d1!important}
+html.dark .fb-lv input[type=number]{border:1px solid #3c454f}
+html.dark #drawMenu .wseg button{background:#2d343c;border:1px solid #3c454f}
+html.dark .mg-note.pos{color:#55d39b}
+html.dark .mg-note.neg{color:#c66267}
+html.dark .mg-slider{border:1.5px solid #39424c;background:#2a3138}
+html.dark .mg-sl-top{color:#aeb7c2}
+html.dark .mg-sl-top b{color:#79cea7}
+html.dark #mgPct::-webkit-slider-runnable-track{background:linear-gradient(to right,#36966a var(--p),#343c45 var(--p))}
+html.dark #mgPct::-webkit-slider-thumb{background:#2d343c;border:3px solid #379569;box-shadow:0 2px 8px rgba(0,0,0,0.32)}
+html.dark #mgPct::-moz-range-track{background:#343c45}
+html.dark #mgPct::-moz-range-progress{background:#36966a}
+html.dark #mgPct::-moz-range-thumb{background:#2d343c;border:3px solid #379569;box-shadow:0 2px 8px rgba(0,0,0,0.32)}
+html.dark #mgPct:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(55,149,105,0.2)}
+html.dark .mg-sl-sub{color:#9da9b5}
+html.dark .mg-sl-sub b.pos{color:#55d39b}
+html.dark .mg-sl-sub b.neg{color:#c66267}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-slider .mg-alt{background:#2b4737;border-color:#3c5d4c;color:#79cea7}
+html.dark :is(#sheet,#tradeManageArea) .mg .mg-sizes button.good{background:#274632;color:#76d1a7;border-color:#3d5c4b}
+html.dark .mt-total.neg,html.dark .mt-row .r.neg,html.dark .mt-sec .neg,html.dark .mt-kv .neg{color:#d16156}
+html.dark .mt-total.pos,html.dark .mt-row .r.pos,html.dark .mt-sec .pos,html.dark .mt-kv .pos{color:#77d0aa}
+html.dark .mt-kv{color:#dadee3}
+html.dark .mt-sec{background:#252b31;color:#dadee3;border-top:1px solid #373f49;border-bottom:1px solid #373f49}
+html.dark .mt-sec span{color:#8f9caa}
+html.dark .mt-row{background:#2d343c;border-bottom:1px solid #343c45;color:#dadee3}
+html.dark .mt-row.open{background:#262c33}
+html.dark .mt-row .t b{color:#dadee3}
+html.dark .mt-row .t i.b{color:#4082e7}
+html.dark .mt-row .t i.s{color:#d16156}
+html.dark .mt-row .s{color:#98a4b2}
+html.dark .mt-act{background:#262c33;border-bottom:1px solid #343c45}
+html.dark .mt-act button{background:#226fe7;color:#eef0f2}
+html.dark .mt-act button.danger{background:#d38a36}
+html.dark .mt-cancel{border:1.5px solid #cd5247;color:#d16156;background:#2d343c}
+html.dark .mt-closeall{border:1.5px solid #623b37;background:#272d34;color:#cd645b}
+html.dark .mt-empty{color:#8f9caa}
+html.dark .mt-tabs{background:rgba(45,52,60,0.95);box-shadow:0 4px 20px rgba(0,0,0,0.19),0 0 0 1px rgba(0,0,0,0.08)}
+html.dark .mt-tabs button{color:#dadee3}
+html.dark .mt-tabs button.on{background:#2c333b;color:#4082e7}
+html.dark .mt-sum{border-top:1px solid #373f49}
+@media (max-width:899px){html.dark{--chart:#2d343c;--bg:#2d343c}html.dark,html.dark body,html.dark #app{background:#2d343c}html.dark .top{border-bottom:1px solid #38414b;background:#2d343c}html.dark .top .tfs button{color:#8f9caa}html.dark .top .tfs button.on{color:#4082e7;border-bottom-color:#3379e6}html.dark #chartView{background:#2d343c}html.dark #chartView>.go{background:#2d343c}html.dark .lots{background:#2d343c;border-bottom:1px solid #38414b}html.dark .lots button{color:#dadee3}html.dark #chartView .lots #lv{color:#dadee3}html.dark #mi::before,html.dark #pu::before{color:#dadee3}html.dark #chipbar{background:#2d343c;border-top:1px solid #343c45}html.dark #chipbar .mode button{background:#252b31;color:#afb8c3}html.dark #chipbar .mode button.on{background:#23334d;color:#4082e7}html.dark #chipbar .sltp{background:#252b31;color:#afb8c3}html.dark #chartView>#row{background:#2d343c}html.dark .nav{background:rgba(45,52,60,0.94);box-shadow:0 8px 30px rgba(0,0,0,0.3),0 0 0 1px rgba(0,0,0,0.09)}html.dark .nav button{color:#dadee3}html.dark .nav .on{background:#2c333b;color:#4082e7}html.dark #panelView{background:#2d343c}}
+html.dark #magnetBtn.active{background:#544526;color:#e2a646}
+html.dark .mt-total.pos,html.dark .mt-row .r.pos,html.dark .mt-sec .pos,html.dark .mt-kv .pos{color:#4082e7}
+html.dark .mt-total.neg,html.dark .mt-row .r.neg,html.dark .mt-sec .neg,html.dark .mt-kv .neg{color:#d16156}
+html.dark .mt-kv span{color:#dadee3}
+html.dark .mt-kv b{color:#dadee3}
+html.dark .mt-sec .dots{color:#8f9caa}
+html.dark .mt-row .s{color:#98a4b2}
+html.dark .mt-row .r2 .s{color:#8f9caa}
+html.dark .mt-sum{border-top:1px solid #373f49}
+@media (max-width:899px){html.dark #sheet .mg-primary{box-shadow:0 -8px 14px #303840}html.dark #sell{background:#226fe7!important;color:#eef0f2}html.dark #buy{background:#cd483c!important;color:#eef0f2}html.dark #chartView .lots #mi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dadee3' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E")}html.dark #chartView .lots #pu{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dadee3' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 15l7-7 7 7'/%3E%3C/svg%3E")}}
+html.dark .pi-side.b{color:#4082e7}
+html.dark .pi-side.s{color:#d16156}
+html.dark .pi-pl.pos,html.dark .pi-kv .pos{color:#4082e7}
+html.dark .pi-pl.neg,html.dark .pi-kv .neg{color:#d16156}
+html.dark .pi-kv .mut{color:#8f9caa}
+html.dark .pi-kv{border-bottom:1px solid #343c45;color:#dadee3}
+html.dark .pi-act button{background:#226fe7;color:#eef0f2}
+html.dark .pi-act button.danger{background:#cd483c}
+@media (max-width:899px){html.dark #chartView .lots #mi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dadee3' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E")}html.dark #chartView .lots #pu{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dadee3' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 15l7-7 7 7'/%3E%3C/svg%3E")}html.dark #chartView .lots #lv{color:#8f9caa}}
+html.dark .tfp-grid button{border:1.5px solid #3b434e;background:#2d343c;color:#afb8c3}
+html.dark .tfp-grid button.vis{border:3px solid #3379e6;color:#4082e7}
+html.dark .tfp-grid button.cur{background:#23334d}
+html.dark #chartView .lots #lv{color:#dadee3!important}
+html.dark #sheet .pi-act button{background:#226fe7!important;color:#eef0f2!important}
+html.dark #sheet .pi-act button.danger{background:#cd483c!important}
+html.dark .acc-switch{border:1.5px solid #344965;background:#213049;color:#dadee3}
+html.dark .acc-switch small{color:#95a1af}
+html.dark .acc-switch i{color:#4082e7}
+@media (max-width:899px){html.dark .top .tfs button.tfmore{background:#2d343c;color:#4082e7;box-shadow:-10px 0 8px 2px #303840}}
+html.dark,html.dark body{background:#101417!important}html.dark ::selection{background:#3b5870;color:#eaf0f4}html.dark input::placeholder{color:#6f7b84}
+</style>
 </head><body>
 <div id="app">
-<div class="top"><button class="sym" id="symBtn">GOLD <i>▼</i></button><span class="dot" id="dot"></span><span class="pill" id="pl">+$0.00</span><button class="acc" id="accBtn" style="display:none">Account <i>▼</i></button><span class="sp"></span><span class="bid" id="hb">–</span><span class="ask" id="ha">–</span></div>
+<div class="top"><button class="sym" id="symBtn">GOLD <i>▼</i></button><span class="dot" id="dot"></span><span class="pill" id="pl">+$0.00</span><button class="acc" id="accBtn" style="display:none">Account <i>▼</i></button><span class="sp"></span><span class="bid" id="hb">–</span><span class="ask" id="ha">–</span><button class="thm" id="thmBtn" title="Dark mode" aria-label="Toggle dark mode"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 8.5 8.5 0 1020 14.5z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></div>
 <div class="tfs" id="tfs"></div>
 <div id="chartView">
  <div id="cw"><canvas id="c"></canvas><canvas id="riskOverlay" aria-hidden="true"></canvas>
@@ -677,7 +1014,7 @@ onAuthStateChanged(auth,async u=>{
   <div id="chartSideRail" aria-label="Chart tools"><div id="railGrip" title="Drag to move · tap to hide/show" aria-label="Move or hide toolbar"><i></i><i></i></div><button class="rail-btn on" data-draw="select" title="Select" aria-label="Select"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 7-6 2-2 6z"/></svg></button><button class="rail-btn" data-draw="line" title="Horizontal line" aria-label="Horizontal line"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg></button><button class="rail-btn" data-draw="trend" title="Trendline" aria-label="Trendline"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19L20 5"/><circle cx="4" cy="19" r="1.6" fill="currentColor"/><circle cx="20" cy="5" r="1.6" fill="currentColor"/></svg></button><button class="rail-btn" data-draw="rect" title="Rectangle / zone" aria-label="Rectangle / zone"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="1.5"/></svg></button><button class="rail-btn" data-draw="fib" title="Fib retracement" aria-label="Fib retracement"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18M3 10h18M3 15h18M3 20h18"/><circle cx="6" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="5" r="1.6" fill="currentColor"/></svg></button><button class="rail-btn" data-draw="label" title="Text label" aria-label="Text label"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg></button><i class="rail-sep"></i><button class="rail-btn" data-draw="delete" title="Delete selected" aria-label="Delete selected"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button><button class="rail-btn" id="drawUndo" title="Undo drawing" aria-label="Undo drawing"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg></button><button class="rail-btn" id="drawClear" title="Clear all drawings" aria-label="Clear all drawings"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button><i class="rail-sep"></i><button class="rail-btn" id="magnetBtn" title="Magnet: snap to candle open / high / low / close" aria-label="Magnet snap"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v9a6 6 0 0012 0V3"/><path d="M6 7h4M14 7h4"/></svg></button><button class="rail-btn" id="indicatorEma" title="EMA on/off" aria-label="EMA on/off"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 16c3-8 6-8 9-3s6 3 9-6"/></svg></button><button class="rail-btn" id="indicatorLabels" title="Trade labels on/off" aria-label="Trade labels on/off"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H10l-4 4v-4H4z"/></svg></button></div>
   <div id="drawMenu"><div class="pane-head"><h4 id="drawMenuTitle">Drawing settings</h4><button id="drawPaneClose" aria-label="Close">×</button></div>
    <div id="drawToolGrid" hidden></div><div id="indicatorList" hidden></div><p id="drawHint" hidden></p>
-   <div id="drawSettings"><div class="settings-title">Selected drawing settings</div><label for="drawColor">Color</label><input id="drawColor" type="color" value="#2f7df6"><label for="drawStyle">Line style</label><select id="drawStyle"><option value="solid">Solid</option><option value="dash">Dashed</option><option value="dot">Dotted</option></select><label for="drawBorder" id="lblBorder">Border color</label><input id="drawBorder" type="color" value="#2f7df6"><label id="lblWidth">Line width</label><div id="drawWidth" class="wseg" role="group" aria-label="Line width"><button type="button" data-w="1" title="1 px"><i style="height:1px"></i>1px</button><button type="button" data-w="2" title="2 px"><i style="height:2px"></i>2px</button><button type="button" data-w="3" title="3 px"><i style="height:3px"></i>3px</button></div><label for="drawText">Label text</label><input id="drawText" type="text" placeholder="Note…" style="width:100%;padding:8px;border:1px solid #dce3df;border-radius:7px"><button class="wide" id="drawApplyText">Apply label text</button>
+   <div id="drawSettings"><div class="settings-title">Selected drawing settings</div><label for="drawColor">Color</label><input id="drawColor" type="color" value="#2f7df6"><label for="drawStyle">Line style</label><select id="drawStyle"><option value="solid">Solid</option><option value="dash">Dashed</option><option value="dot">Dotted</option></select><label for="drawBorder" id="lblBorder">Border color</label><input id="drawBorder" type="color" value="#2f7df6"><label id="lblWidth">Line width</label><div id="drawWidth" class="wseg" role="group" aria-label="Line width"><button type="button" data-w="1" title="1 px"><i style="height:1px"></i>1px</button><button type="button" data-w="2" title="2 px"><i style="height:2px"></i>2px</button><button type="button" data-w="3" title="3 px"><i style="height:3px"></i>3px</button></div><label for="drawText">Label text</label><input id="drawText" type="text" placeholder="Note…" class="dtxt"><button class="wide" id="drawApplyText">Apply label text</button>
 <div id="fibBox"><div class="fb-row"><label class="fb-ck"><input type="checkbox" id="fbTrend"> Trend line</label><input type="color" id="fbTrendC" value="#787b86"></div>
 <div class="fb-row"><select id="fbStyle"><option value="solid">Solid</option><option value="dash">Dashed</option><option value="dot">Dotted</option></select><select id="fbW"><option value="1">1 px</option><option value="2">2 px</option><option value="3">3 px</option></select></div>
 <div class="fb-row"><select id="fbExt"><option value="none">Don't extend</option><option value="right">Extend lines right</option><option value="left">Extend lines left</option><option value="both">Extend both sides</option></select></div>
@@ -1290,7 +1627,7 @@ let manageOpen=false,mgSig='';
 const accName=a=>a?(a.name||a.label||a.alias||('#'+a.login)):'';
 function accSheet(){
  const list=S.accounts||[];
- const rows=list.map(a=>`<button class="arow${a.login==S.login?' on':''}" data-acc="${esc(a.login)}"><span><b>${esc(accName(a))}</b><small>${esc(a.login)}${a.server?' · '+esc(a.server):''}${a.currency?' · '+esc(a.currency):''}</small></span>${a.login==S.login?'<span style="margin-left:auto;color:#1e9a65">✓</span>':''}</button>`).join('');
+ const rows=list.map(a=>`<button class="arow${a.login==S.login?' on':''}" data-acc="${esc(a.login)}"><span><b>${esc(accName(a))}</b><small>${esc(a.login)}${a.server?' · '+esc(a.server):''}${a.currency?' · '+esc(a.currency):''}</small></span>${a.login==S.login?'<span class="okmark">✓</span>':''}</button>`).join('');
  sheet(`<div class="mg"><div class="mg-grab"></div><div class="mg-head"><div><h4>Accounts</h4><p class="mg-sub">Pick the account you trade on</p></div>${MGX}</div>${rows||'<p class="mg-empty">No accounts configured in config.json.</p>'}</div>`,'acc')}
 function switchAcct(l){if(l==S.login){sheet(null);return}
  S.login=+l;LS.set('gm_login',S.login);sheet(null);S.C=[];S.P=[];S.O=[];S.allP=[];S.allO=[];S.acct=null;S.bid=S.ask=0;header();connect()}
@@ -1474,7 +1811,7 @@ function bkPreview(){
   ${bkWhy(r,t,set,held)}
   ${Math.abs(r.k-1)>0.01?`<p class="mg-note">Amounts are in ${esc((S.acct&&S.acct.currency)||'account currency')} (1 USD ≈ ${r.k.toFixed(3)}, taken from your live P&amp;L).</p>`:''}
   ${bad.length?`<p class="mg-note neg">${bad.length} position${bad.length>1?'s are':' is'} too close to the current price to take this level.</p>`:''}
-  <div class="bk-list">${r.rows.map(x=>`<div class="bk-row"><span class="${x.p.type.toLowerCase()}"><b>${x.p.type}</b> ${x.p.volume} @ ${fx(x.p.price_open)}</span><span>${x.set?x.field.toUpperCase()+' '+fx(r.L):(x.field?`<i style="color:#8a948e;font-style:normal">no ${x.want.toUpperCase()} possible</i>`:'—')}</span><span class="${x.pl<0?'neg':'pos'}">${money(x.pl)}</span></div>`).join('')}</div>`;
+  <div class="bk-list">${r.rows.map(x=>`<div class="bk-row"><span class="${x.p.type.toLowerCase()}"><b>${x.p.type}</b> ${x.p.volume} @ ${fx(x.p.price_open)}</span><span>${x.set?x.field.toUpperCase()+' '+fx(r.L):(x.field?`<i class="nofx">no ${x.want.toUpperCase()} possible</i>`:'—')}</span><span class="${x.pl<0?'neg':'pos'}">${money(x.pl)}</span></div>`).join('')}</div>`;
  go.disabled=!set.length;go.textContent=set.length?`Apply to ${set.length} position${set.length>1?'s':''}`:'Nothing to apply'}
 document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('#basketTarget'))bkPreview()});
 async function bkApply(){
@@ -1697,7 +2034,7 @@ function cpHTML(){
  <button class="wide" data-do="copysave" style="background:#2196f3;color:#fff;border-color:#2196f3">Save settings</button>
  <p class="note">Saved settings apply to the next copied trade. Changing master or slave needs copying to be stopped.</p>
  <h3>Currently copied</h3><div id="cpLinks"></div>
- <div class="dayh" style="padding-top:18px"><span>ACTIVITY LOG</span><button class="mini" style="color:#58645d;background:#fff;border-color:#dbe2de" data-do="copyclear">Clear</button></div><div id="cpLog"></div></div>`}
+ <div class="dayh" style="padding-top:18px"><span>ACTIVITY LOG</span><button class="mini clr" data-do="copyclear">Clear</button></div><div id="cpLog"></div></div>`}
 function cpHints(){
  const c=CP.cfg||{},L=(CP.st&&CP.st.last)||{},v=id=>cpNum('#'+id,1,CP_LIM[id][0],CP_LIM[id][1]),set=(id,t)=>{const e=$('#'+id+'H');if(e)e.textContent=t};
  const ratio=L.m_bal>0&&L.s_bal!=null?L.s_bal/L.m_bal:null;
@@ -1763,7 +2100,7 @@ async function cpStopCopy(){try{await api('/api/copy/stop',{});toast('Copying st
 async function cpCheck(){
  const box=$('#cpAcc');if(!box)return;box.textContent='Logging in to both accounts…';
  try{const r=await api('/api/copy/check',{master:+$('#cpM').value,slave:+$('#cpS').value});
-  box.innerHTML=r.accounts.map(a=>a.ok?`<div class="kv"><span>${a.role==='master'?'Master':'Slave'} · ${esc(a.name)} (${a.login})</span><b>${cpBal(a.balance,a.currency)}</b></div>`:`<div class="kv"><span>${a.role==='master'?'Master':'Slave'} · ${a.login}</span><b style="color:#c2383f;font-size:12px;text-align:right">${esc(a.error)}</b></div>`).join('');
+  box.innerHTML=r.accounts.map(a=>a.ok?`<div class="kv"><span>${a.role==='master'?'Master':'Slave'} · ${esc(a.name)} (${a.login})</span><b>${cpBal(a.balance,a.currency)}</b></div>`:`<div class="kv"><span>${a.role==='master'?'Master':'Slave'} · ${a.login}</span><b class="cperr">${esc(a.error)}</b></div>`).join('');
   const m=r.accounts.find(a=>a.role==='master'),sl=r.accounts.find(a=>a.role==='slave');
   if(m&&sl&&m.ok&&sl.ok){CP.st.last=Object.assign({},CP.st.last,{m_bal:m.balance,m_ccy:m.currency,s_bal:sl.balance,s_ccy:sl.currency});cpHints();cpPaint()}}
  catch(e){box.textContent=e.message}}
@@ -2060,6 +2397,14 @@ async function drTick(){
   if(j!==DR.last){DR.last=j;try{await gmCloud.setDrawings(sym,JSON.parse(j))}catch(e){DR.last='';console.warn('drawings not saved',e)}}
  }finally{DR.busy=false}}
 setInterval(drTick,700);
+
+/* ---------- dark mode (saved per user through LS -> Firestore) ---------- */
+function applyTheme(dk,save){document.documentElement.classList.toggle('dark',!!dk);window.GM_DARK=!!dk;
+ const m=document.querySelector('meta[name=theme-color]');if(m)m.content=dk?'#22272d':'#f6f8f7';
+ const b=$('#thmBtn');if(b){b.title=dk?'Light mode':'Dark mode';b.setAttribute('aria-label',b.title)}
+ if(save)LS.set('gm_theme',dk?'dark':'light');dirty=true}
+$('#thmBtn').addEventListener('click',()=>applyTheme(!window.GM_DARK,true));
+applyTheme(LS.get('gm_theme','light')==='dark',false);
 
 /* ---------- start ---------- */
 new ResizeObserver(size).observe($('#cw'));
