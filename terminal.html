@@ -1267,7 +1267,7 @@ function draw(){
  const Y=p=>8+(hi-p)/(hi-lo)*(ph-16),X=k=>k*bw+bw/2;
  geo={ph,cw,bw,inv:y=>hi-(y-8)/(ph-16)*(hi-lo),Y:p=>Y(p)};
  // watermark
- g.fillStyle='rgba(80,90,86,.12)';g.font='900 42px -apple-system,Arial';g.textAlign='center';g.fillText('GOLDMINE',cw/2,ph*.46);g.font='800 22px -apple-system,Arial';g.fillText('SYNC',cw/2,ph*.46+28);g.textAlign='left';
+ g.fillStyle='rgba(80,90,86,.12)';g.font='900 42px -apple-system,Arial';g.textAlign='center';g.fillText('TRADECORE',cw/2,ph*.46);g.font='800 22px -apple-system,Arial';g.fillText('SYNC',cw/2,ph*.46+28);g.textAlign='left';
  // grid + price axis
  const pxPerPrice=(ph-16)/Math.max(1e-9,hi-lo);
  // Pick finer tick intervals as the user zooms vertically, keeping labels legible.
