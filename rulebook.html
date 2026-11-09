@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Risk Rulebook · Goldmine Pro</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--bg:#07090e;--panel:#0f131b;--panel2:#141924;--line:#1e2531;--text:#eef1f6;--mut:#8a94a8;--gold:#f5b73b;--gold2:#e0960c;--green:#16c784;--red:#f0454f}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{color:var(--text);font:15px/1.55 Inter,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto;padding:28px 20px 64px}
+.top{display:flex;align-items:center;gap:10px;font-weight:900;font-size:17px;margin-bottom:22px}.top svg{width:30px;height:30px;flex:none}
+.top span{font-size:10px;color:var(--gold);background:rgba(245,183,59,.14);padding:3px 7px;border-radius:6px;letter-spacing:.1em}
+.top .grow{flex:1}.top small{font-size:12px;color:var(--mut);font-weight:600}
+.top button{font:inherit;font-size:13px;font-weight:800;padding:9px 16px;border-radius:10px;border:0;background:linear-gradient(135deg,#f9c95a,#e0960c);color:#1a1203;cursor:pointer}
+.hero{padding:28px;border-radius:20px;border:1px solid #3a2e14;background:radial-gradient(600px 260px at 0% 0%,rgba(245,183,59,.16),transparent 70%),#0f0d09;margin-bottom:16px}
+.eye{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+h1{font-size:clamp(28px,4.6vw,40px);line-height:1.08;letter-spacing:-.03em;margin:8px 0 10px}
+h1 em{font-style:normal;color:var(--gold)}
+.hero p{color:#c9bfa9;max-width:620px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
+.kpis div{padding:12px 14px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid #2c2414}
+.kpis small{display:block;font-size:10.5px;color:#a8987b;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.kpis b{display:block;font-size:22px;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:tabular-nums}
+.kpis .dn{color:var(--red)}
+.rule{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:16px;padding:22px 24px;border-radius:18px;border:1px solid var(--line);background:var(--panel);margin-bottom:14px;break-inside:avoid}
+.rule>.n{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--gold);color:#1a1203;font-size:18px;font-weight:900}
+.rule>.body{min-width:0}
+.rule h2{font-size:19px;line-height:1.25;letter-spacing:-.015em;margin:7px 0 8px}
+.rule p{color:#aab3c3}.rule p b{color:var(--text)}
+.big{display:flex;align-items:baseline;gap:10px;margin:2px 0 8px}.big b{font-size:32px;font-weight:900;letter-spacing:-.03em;color:var(--red);font-variant-numeric:tabular-nums}.big span{color:var(--mut);font-size:13px}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-variant-numeric:tabular-nums;table-layout:fixed}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);font-size:14px}
+th{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em;text-align:right}th:first-child,td:first-child{text-align:left}
+td{text-align:right}td b{color:var(--gold)}
+tbody tr:nth-child(odd) td{background:rgba(255,255,255,.02)}
+.note{margin-top:12px;padding:11px 14px;border-radius:12px;font-size:13.5px;line-height:1.5}
+.warn{background:rgba(240,69,79,.08);border:1px solid rgba(240,69,79,.3);color:#ffc9cc}
+.ok{background:rgba(22,199,132,.07);border:1px solid rgba(22,199,132,.28);color:#bfeedd}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pair div{padding:12px 14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line)}
+.pair small{display:block;font-size:10.5px;color:var(--mut);font-weight:800;text-transform:uppercase;letter-spacing:.06em}.pair b{font-size:22px;font-variant-numeric:tabular-nums}
+.check{list-style:none;display:grid;gap:9px;margin-top:10px}
+.check li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:12px;align-items:start}
+.check li::before{content:'';width:18px;height:18px;border-radius:5px;border:2px solid var(--gold);margin-top:2px}
+.cta{display:flex;align-items:center;gap:18px;justify-content:space-between;padding:22px 24px;border-radius:18px;border:1px solid rgba(245,183,59,.4);background:radial-gradient(500px 220px at 0% 0%,rgba(245,183,59,.14),transparent 70%),#0f131b;break-inside:avoid}
+.cta h3{font-size:19px;letter-spacing:-.015em}.cta p{color:var(--mut);font-size:13.5px;margin-top:4px}
+.btn{flex:none;display:inline-flex;padding:13px 22px;border-radius:12px;font-weight:900;color:#1a1203;background:linear-gradient(135deg,#f9c95a,#e0960c);text-decoration:none}
+.fine{color:#566074;font-size:11px;line-height:1.5;margin-top:16px}
+.pagehead{display:none}
+@media (max-width:640px){.kpis,.pair{grid-template-columns:1fr 1fr}.hero{padding:20px}.rule{grid-template-columns:1fr;row-gap:10px;padding:18px}.cta{flex-direction:column;align-items:stretch;text-align:center}}
+/* PDF: same dark design, two clean A4 pages */
+@page{size:A4;margin:0}
+@media print{
+  html,body{background:#07090e!important}
+  body{font-size:12.5px}
+  .wrap{max-width:none;padding:12mm 13mm 8mm}
+  .top{margin-bottom:5mm}.top button{display:none}
+  .hero{padding:6mm 7mm;margin-bottom:4mm}.kpis{margin-top:4mm}
+  h1{font-size:30px}
+  .rule{padding:5mm 6mm;margin-bottom:3.5mm;grid-template-columns:34px minmax(0,1fr)}
+  .rule>.n{width:34px;height:34px;font-size:16px}
+  .rule h2{font-size:16px;margin-top:5px}
+  th,td{padding:5px 10px;font-size:12px}
+  .p2{break-before:page}
+  .pagehead{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--mut);font-weight:700;margin-bottom:5mm;padding-bottom:3mm;border-bottom:1px solid var(--line)}
+  .btn{padding:9px 16px}
+  .fine{margin-top:4mm}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+// Your Risk Rulebook: built from the numbers you put in the calculator on the Goldmine Pro website.
+// Educational risk arithmetic only, not financial advice.
+const Q = new URLSearchParams(location.search), num = (k, d) => { const v = parseFloat(Q.get(k)); return isFinite(v) && v > 0 ? v : d };
+const bal = num('bal', 10000), dl = num('dl', 5), risk = num('risk', 1), stop = num('stop', 4), n = Math.min(10, Math.round(num('n', 3))), xau = (Q.get('mkt') || 'xau') !== 'eur';
+const unit = xau ? 100 : 10, su = xau ? '$ move' : 'pips', sym = xau ? 'XAUUSD' : 'EURUSD';
+const money = v => '$' + Math.round(v).toLocaleString('en-US'), lots = (r, s) => Math.max(0, Math.floor(r / (s * unit) * 100) / 100);
+const R = bal * risk / 100, D = bal * dl / 100, streak = Math.floor(dl / risk + 1e-9), per = Math.max(0.01, Math.floor(lots(R, stop) / n * 100) / 100);
+const stops = xau ? [2, 3, 5, 8, 12, 20] : [8, 10, 15, 20, 30, 50];
+const site = Q.get('site') || 'terminal_test.html';
+const LOGO = '<svg viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffdc91"/><stop offset="1" stop-color="#e0960c"/></linearGradient></defs><path d="M16 2.5 28.5 9.5v13L16 29.5 3.5 22.5v-13z" fill="url(#g)"/><path d="M9.5 19.5l4.2-5 3.3 3.2 5.5-6.7" fill="none" stroke="#1a1203" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const rule = (n, title, body, cls = '') => `<section class="rule ${cls}"><div class="n">${n}</div><div class="body"><h2>${title}</h2>${body}</div></section>`;
+document.getElementById('app').innerHTML = `
+  <div class="top">${LOGO}Goldmine <span>PRO</span><i class="grow"></i><small>Made ${today}</small><button onclick="print()">⤓ Save as PDF</button></div>
+  <section class="hero"><div class="eye">Your Risk Rulebook</div>
+    <h1>Five rules for a <em>${money(bal)}</em> account.</h1>
+    <p>Built from your numbers: ${risk}% risk per trade and a ${dl}% daily loss limit on ${sym}. Print it, keep it next to your screen, follow it on every trade.</p>
+    <div class="kpis"><div><small>Account</small><b>${money(bal)}</b></div><div><small>Max loss per trade</small><b>${money(R)}</b></div><div><small>Stop for the day at</small><b class="dn">−${money(D)}</b></div><div><small>Losses in a row</small><b>${streak}</b></div></div></section>
+
+  ${rule(1, `Risk ${risk}% per trade: decide the money, then the lot.`,
+    `<p>Place the stop first, then size the lot. Your maximum loss per trade is <b>${money(R)}</b>. Lot = risk ÷ (stop × ${unit} per lot).</p>
+    <table><colgroup><col style="width:40%"><col style="width:30%"><col style="width:30%"></colgroup><thead><tr><th>Stop distance</th><th>Max lots</th><th>Loss if stopped</th></tr></thead><tbody>
+      ${stops.map(s => `<tr><td>${s} ${su}</td><td><b>${lots(R, s).toFixed(2)}</b></td><td>${money(lots(R, s) * s * unit)}</td></tr>`).join('')}</tbody></table>`)}
+
+  ${rule(2, `Stop for the day at −${dl}%.`,
+    `<div class="big"><b>−${money(D)}</b><span>= ${streak} full losses in a row at your risk</span></div>
+    <p>When the day reaches −${dl}%, you close the platform. No exceptions, no "one more to win it back".</p>
+    <div class="note warn">The most expensive trade is the one after a bad morning. Write the limit down before the session starts.</div>`)}
+
+  <div class="pagehead p2"><span>Goldmine Pro · Risk Rulebook · ${money(bal)} account</span><span>page 2</span></div>
+  ${rule(3, 'Layer in with one total risk.',
+    `<p>Scaling in? All layers together still risk ${risk}% (${money(R)}).</p>
+    <div class="pair"><div><small>Entries</small><b>${n}</b></div><div><small>Lots per layer (${stop} ${su} stop)</small><b>≈ ${per.toFixed(2)}</b></div></div>
+    <p style="margin-top:10px">Deeper layers can be bigger, as long as the total stays ${money(R)}.</p>`)}
+
+  ${rule(4, 'Your fat-finger ceiling.',
+    `<div class="pair"><div><small>Biggest lot you ever type on ${sym}</small><b>${lots(R, stops[0]).toFixed(2)}</b></div><div><small>One extra zero on ${per.toFixed(2)}</small><b style="color:var(--red)">${(per * 10).toFixed(2)} lots</b></div></div>
+    <div class="note warn">That typo puts about ${money(per * 10 * stop * unit)} at risk on a single entry${per * 10 * stop * unit > D ? ', more than your whole daily limit' : ''}. Anything above your ceiling is a typo, not a trade.</div>`)}
+
+  ${rule(5, 'Run this check before every trade.',
+    `<ul class="check"><li>I know where my stop is, before I enter.</li><li>The money at risk is ${money(R)} or less.</li><li>Today's result is above −${money(D)}.</li><li>The lot is below my fat-finger ceiling (${lots(R, stops[0]).toFixed(2)}).</li><li>I know where I take partial profit and when I move to break-even.</li></ul>
+    <div class="note ok">Goldmine Pro does all five on every order: it sizes the lot from your risk, shows the money at risk before you click, and locks new trades at −${dl}%.</div>`)}
+
+  <section class="cta"><div><h3>Let Goldmine enforce these rules</h3><p>Your risk, your daily limit and your layers, applied automatically next to your MT5. 7 days free.</p></div>
+    <a class="btn" href="${new URL(site, location.href).href.split('#')[0]}#signup">Try it free →</a></section>
+  <p class="fine">Educational risk arithmetic based on standard contract sizes (gold 100 oz, EURUSD 100,000), not financial advice. Your broker's contract size may differ; Goldmine reads the exact value from MT5. Trading leveraged products carries a high risk of losing money.</p>`;
+</script>
+</body>
+</html>
