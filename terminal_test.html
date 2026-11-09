@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Goldmine Pro · Scale in, protect and exit MT5 trades in one click</title>
-<meta name="description" content="Web terminal for MetaTrader 5: layered entries sized by risk, basket break-even, close the worst positions, drag SL/TP on the chart and an automatic trading journal. Any MT5 broker. 7 days free, no card.">
+<title>Goldmine Pro · The risk manager MT5 never gave you</title>
+<meta name="description" content="For every MetaTrader 5 trader, live or funded: lots sized from your risk, ten positions managed like one, a daily loss limit that locks trading, partial take profits and an automatic journal. 7 days free, no card.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Goldmine Pro · Scale in. Protect. Exit. All in one click.">
-<meta property="og:description" content="The MT5 terminal for traders who stack positions: layers by risk, basket break-even, close the worst entries, automatic journal. 7 days free.">
+<meta property="og:title" content="Goldmine Pro · The risk manager MT5 never gave you">
+<meta property="og:description" content="Lots sized from your risk, ten positions managed like one, and a daily loss limit you can't break. For every MT5 trader, live or funded. 7 days free.">
 <meta property="og:image" content="lp-basket.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#1e9a65">
@@ -384,6 +384,402 @@ input.in:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--a
 .plans{padding-top:16px}
 .plan .tag{z-index:3;top:-14px;padding:5px 14px;font-size:11.5px;letter-spacing:.06em;background:#13201a;color:#fff;border:2px solid var(--acc);box-shadow:0 8px 20px -8px rgba(30,154,101,.6)}
 .plan.best{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 7%,var(--panel)),var(--panel) 40%)}
+/* ================= landing v2 (dark, gold) ================= */
+body.lp2{background:#0a0d13}
+body.lp2 .nav,.lp{--bg:#0a0d13;--panel:#10141c;--panel2:#151a24;--hover:#1c2230;--line:#1e2531;--line2:#2b3445;--text:#e8ecf3;--mut:#8a94a8;--dim:#566074;
+  --acc:#f5b73b;--accbg:rgba(245,183,59,.13);--accline:rgba(245,183,59,.35);--acctx:#1a1203;--up:#16c784;--upbg:rgba(22,199,132,.13);--dn:#f0454f;--dnbg:rgba(240,69,79,.13);color:var(--text)}
+body.lp2 .nav{background:rgba(10,13,19,.82);border-bottom-color:#1a202b}
+body.lp2 .nav .btn.acc{background:linear-gradient(135deg,#f7c14f,#e0960c);color:#1a1203}
+.lp{background:#0a0d13;overflow:hidden;font-size:15px}
+.lp .wrap{max-width:1180px}
+.lp h1,.lp h2,.lp h3,.lp h4{letter-spacing:-.025em;color:#f3f5f9}
+.lp-eye{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#f5b73b;margin-bottom:12px}
+.lp-head{text-align:center;max-width:760px;margin:0 auto 34px}
+.lp-head h2{font-size:clamp(26px,3.6vw,42px);line-height:1.1;font-weight:850}
+.lp-head h2 span{color:#f5b73b}
+.lp-head p{color:var(--mut);font-size:clamp(14.5px,1.6vw,17px);line-height:1.6;margin-top:14px}
+.lp-sec{padding:76px 0;position:relative}
+.lp-sec+.lp-sec{border-top:1px solid #131924}
+
+/* buttons */
+.lp-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 20px;border-radius:12px;font-weight:800;font-size:14.5px;text-decoration:none;border:1px solid transparent;cursor:pointer;text-align:center;line-height:1.2;transition:transform .15s,filter .15s,background .15s}
+.lp-btn.lg{min-height:52px;padding:12px 26px;font-size:15.5px;border-radius:14px}
+.lp-btn.full{width:100%}
+.lp-btn.gold{background:linear-gradient(135deg,#f9c95a,#e0960c);color:#1a1203;box-shadow:0 14px 40px -14px rgba(245,183,59,.65)}
+.lp-btn.gold:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.lp-btn.ghost{background:rgba(255,255,255,.04);border-color:#2b3445;color:#e8ecf3}
+.lp-btn.ghost:hover{background:rgba(255,255,255,.08)}
+.lp-btn:disabled{opacity:.55;cursor:default;transform:none}
+.lp-cta{display:flex;gap:10px;flex-wrap:wrap}.lp-cta.c{justify-content:center;margin-top:34px}
+
+/* announce */
+.lp-ann{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 8px;padding:9px 16px;font-size:13px;color:#d9dee8;text-decoration:none;background:linear-gradient(90deg,#141008,#231a0b,#141008);border-bottom:1px solid #2c2210;text-align:center}
+.lp-ann b{color:#f5c25b}.lp-ann u{color:#fff;font-weight:700;text-underline-offset:3px}
+.lp-dot{width:8px;height:8px;border-radius:50%;background:#16c784;box-shadow:0 0 0 0 rgba(22,199,132,.6);animation:lpPulse 2s infinite}
+@keyframes lpPulse{70%{box-shadow:0 0 0 8px rgba(22,199,132,0)}100%{box-shadow:0 0 0 0 rgba(22,199,132,0)}}
+
+/* hero */
+.lp-hero{padding:64px 0 70px;position:relative}
+.lp-hero::before{content:'';position:absolute;inset:-30% -20% auto;height:900px;pointer-events:none;
+  background:radial-gradient(600px 380px at 75% 30%,rgba(245,183,59,.16),transparent 70%),radial-gradient(500px 360px at 10% 10%,rgba(22,199,132,.08),transparent 70%)}
+.lp-hero::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:linear-gradient(#141a24 1px,transparent 1px),linear-gradient(90deg,#141a24 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 70%)}
+.lp-hgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:48px;align-items:center;position:relative;z-index:1}
+.lp-hero h1{font-size:clamp(38px,5.2vw,66px);line-height:1.02;font-weight:900;letter-spacing:-.04em}
+.lp-hero h1 span{display:block;background:linear-gradient(90deg,#ffd982,#f5b73b 45%,#e0960c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lp-sub{color:#aab3c3;font-size:clamp(15px,1.6vw,18px);line-height:1.6;margin:20px 0 28px;max-width:560px}
+.lp-checks{list-style:none;display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:20px;font-size:13px;color:var(--mut);font-weight:600}
+.lp-checks li::before{content:'✓';color:#16c784;font-weight:900;margin-right:6px}
+.lp-hvis{position:relative}
+.lp-frame{border-radius:16px;border:1px solid #273042;background:#0e121a;box-shadow:0 40px 100px -30px rgba(0,0,0,.8),0 0 0 1px rgba(245,183,59,.06);overflow:hidden;position:relative}
+.lp-frame .bar{display:flex;align-items:center;gap:6px;height:32px;padding:0 12px;background:#121722;border-bottom:1px solid #1e2531;font-size:11px;color:var(--mut);font-weight:700}
+.lp-frame .bar i{width:9px;height:9px;border-radius:50%;background:#2b3445}.lp-frame .bar span{margin-left:8px}
+.lp-frame .vp{position:relative;overflow:hidden;height:340px}
+.lp-frame iframe{position:absolute;left:0;top:0;width:1440px;height:880px;border:0;transform-origin:0 0;pointer-events:none}
+.lp-open{position:absolute;right:12px;bottom:12px;z-index:2;padding:9px 14px;border-radius:10px;font-weight:800;font-size:12.5px;background:rgba(10,13,19,.85);color:#f5c25b;border:1px solid rgba(245,183,59,.4);backdrop-filter:blur(6px);cursor:pointer}
+.lp-open:hover{background:#151a24}
+.lp-chip{position:absolute;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:rgba(16,20,28,.92);border:1px solid #273042;box-shadow:0 20px 50px -20px rgba(0,0,0,.8);backdrop-filter:blur(8px);animation:lpFloat 6s ease-in-out infinite}
+.lp-chip i{font-style:normal;font-size:18px}.lp-chip small{display:block;font-size:11px;color:var(--mut);font-weight:700}.lp-chip b{font-size:13px;white-space:nowrap}
+.lp-chip.c1{left:-26px;bottom:-20px}.lp-chip.c2{right:-18px;top:-22px;animation-delay:-3s}
+.lp-chip.c1 b{color:#f0454f}.lp-chip.c2 b{color:#16c784}
+@keyframes lpFloat{50%{transform:translateY(-8px)}}
+
+/* pain */
+.lp-pains{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.lp-painc{padding:24px;border-radius:18px;background:linear-gradient(180deg,#121722,#0e121a);border:1px solid #1e2531}
+.lp-painc b{display:block;font-size:30px;font-weight:900;letter-spacing:-.03em;color:#f0454f}
+.lp-painc small{display:block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:4px 0 12px}
+.lp-painc p{color:#aab3c3;line-height:1.55;font-size:14.5px}
+.lp-punch{text-align:center;margin:30px auto 0;max-width:720px;font-size:clamp(15px,1.8vw,19px);color:#aab3c3;line-height:1.5}
+.lp-punch b{color:#f3f5f9}
+
+/* calculator */
+.lp-calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:0;border-radius:22px;overflow:hidden;border:1px solid #273042;background:#0e121a;box-shadow:0 40px 100px -40px rgba(245,183,59,.25)}
+.lp-cin{padding:28px;display:grid;gap:16px;align-content:start;border-right:1px solid #1e2531}
+.lp-f label{display:block;font-size:12px;font-weight:800;color:var(--mut);margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em}
+.lp-g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.lp-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px;border-radius:12px;background:#151a24;border:1px solid #1e2531}
+.lp-seg button{height:36px;border-radius:9px;font-weight:800;font-size:13px;color:var(--mut);white-space:nowrap;padding:0 4px}
+.lp-seg button.on{background:#f5b73b;color:#1a1203}
+.lp-inp{display:flex;align-items:center;height:44px;border-radius:12px;background:#151a24;border:1px solid #1e2531;padding:0 12px;gap:6px}
+.lp-inp:focus-within{border-color:#f5b73b}
+.lp-inp input{flex:1;min-width:0;background:none;border:0;color:#f3f5f9;font-size:17px;font-weight:800;outline:none;font-variant-numeric:tabular-nums}
+.lp-inp span{color:var(--mut);font-size:12.5px;font-weight:700;white-space:nowrap}
+.lp-step{display:grid;grid-template-columns:44px 1fr 44px;height:44px;border-radius:12px;background:#151a24;border:1px solid #1e2531;overflow:hidden}
+.lp-step button{font-size:18px;color:var(--mut);font-weight:800}.lp-step button:hover{color:#fff;background:#1c2230}
+.lp-step b{display:grid;place-items:center;font-size:17px}
+.lp-fine{font-size:11.5px;color:var(--dim);line-height:1.5}
+.lp-cout{padding:28px;display:grid;gap:14px;align-content:start;background:radial-gradient(400px 260px at 100% 0%,rgba(245,183,59,.08),transparent 70%)}
+.lp-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.lp-kpis div{padding:14px;border-radius:14px;background:#151a24;border:1px solid #1e2531;min-width:0}
+.lp-kpis small{display:block;font-size:11px;font-weight:800;color:var(--mut);line-height:1.3;min-height:28px}
+.lp-kpis b{display:block;font-size:clamp(20px,2.4vw,28px);font-weight:900;letter-spacing:-.03em;margin:6px 0 2px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lp-kpis b i{font-style:normal;font-size:.55em;color:var(--mut)}
+.lp-kpis em{font-style:normal;font-size:11.5px;color:var(--mut)}
+.lp-kpis .dn{color:#f0454f}
+.lp-alert,.lp-fix{padding:16px 18px;border-radius:14px;line-height:1.55;font-size:14px;color:#c9d0dc}
+.lp-alert{background:rgba(240,69,79,.08);border:1px solid rgba(240,69,79,.3)}
+.lp-alert>b{color:#f0454f}.lp-fix>b{color:#16c784}
+.lp-alert>b,.lp-fix>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.lp-alert strong{color:#fff}.lp-alert .bad{color:#f0454f;font-weight:900}
+.lp-fix{background:rgba(22,199,132,.07);border:1px solid rgba(22,199,132,.28)}
+.lp-cempty{color:var(--mut);padding:30px 0;text-align:center}
+
+/* versus */
+.lp-vs{border-radius:20px;border:1px solid #1e2531;overflow:hidden;background:#0e121a}
+.lp-vsh,.lp-vsr{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr);gap:16px;padding:16px 22px;align-items:center}
+.lp-vsh{background:#121722;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.lp-vsh .g{color:#f5b73b}
+.lp-vsr{border-top:1px solid #1a202b;font-size:14.5px}
+.lp-vsr span{font-weight:700;color:#f3f5f9}
+.lp-vsr em{font-style:normal;color:#8a94a8}
+.lp-vsr strong{color:#f3f5f9;display:flex;gap:8px;align-items:baseline}
+.lp i.y{font-style:normal;color:#16c784;font-weight:900}
+
+/* a trading day */
+.lp-day{display:grid;gap:22px;position:relative}
+.lp-moment{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:44px;align-items:center;padding:26px;border-radius:24px;background:linear-gradient(180deg,#0f131b,#0c1017);border:1px solid #1a202b}
+.lp-moment.rev{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}.lp-moment.rev .lp-mtxt{order:2}
+.lp-time{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.lp-time b{font-size:13px;font-weight:900;color:#1a1203;background:#f5b73b;padding:4px 10px;border-radius:8px;font-variant-numeric:tabular-nums}
+.lp-time span{font-size:12px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+.lp-mtxt h3{font-size:clamp(21px,2.4vw,28px);line-height:1.15;font-weight:850;margin-bottom:12px}
+.lp-mtxt p{color:#aab3c3;line-height:1.65}
+.lp-shot{border-radius:14px;overflow:hidden;border:1px solid #273042;cursor:zoom-in;background:#151a24;aspect-ratio:4/3}
+.lp-shot img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.lp-shot.noimg{display:none}
+.lp-lock{border-radius:14px;border:1px solid #273042;background:#10141c;padding:22px;display:grid;gap:14px}
+.lp-lockh{display:flex;justify-content:space-between;font-weight:800}.lp-lockh .dn{color:#f0454f;font-size:22px}
+.lp-gauge small{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);font-weight:700;margin-bottom:6px}
+.lp-gauge div{height:10px;border-radius:6px;background:#1c2230;overflow:hidden}.lp-gauge i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#f5b73b,#f0454f)}
+.lp-lockmsg{padding:12px 14px;border-radius:10px;background:rgba(240,69,79,.1);border:1px solid rgba(240,69,79,.3);color:#ffc9cc;font-weight:700;font-size:13.5px;line-height:1.5}
+.lp-lockbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lp-lockbtns span{height:46px;border-radius:10px;display:grid;place-items:center;font-weight:900;color:#5d6676;background:#151a24;border:1px dashed #2b3445}
+
+/* fit */
+.lp-fit{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.lp-fitc{padding:28px;border-radius:20px;border:1px solid #1e2531;background:#0e121a}
+.lp-fitc h3{font-size:20px;margin-bottom:14px}
+.lp-fitc ul{list-style:none;display:grid;gap:11px;color:#c9d0dc;line-height:1.45}
+.lp-fitc li{display:flex;gap:10px}
+.lp-fitc.yes{border-color:rgba(22,199,132,.3)}.lp-fitc.yes li::before{content:'✓';color:#16c784;font-weight:900}
+.lp-fitc.no li::before{content:'✕';color:#f0454f;font-weight:900}.lp-fitc.no li{color:#8a94a8}
+
+/* trust */
+.lp-trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.lp-tc{padding:22px;border-radius:18px;border:1px solid #1e2531;background:#0e121a}
+.lp-tc span{font-size:22px}.lp-tc h4{font-size:16px;margin:10px 0 6px}.lp-tc p{color:#8a94a8;font-size:14px;line-height:1.55}
+
+/* pricing */
+.lp .ivl{margin:-10px 0 30px}
+.lp-plans{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.15fr) minmax(0,.9fr);gap:14px;align-items:center;padding-top:14px}
+.lp-plan{position:relative;padding:26px;border-radius:20px;border:1px solid #1e2531;background:#0e121a;display:flex;flex-direction:column}
+.lp-plan.best{padding:34px 28px;border:1.5px solid rgba(245,183,59,.6);background:radial-gradient(500px 240px at 50% 0%,rgba(245,183,59,.12),transparent 70%),#10141c;box-shadow:0 40px 90px -40px rgba(245,183,59,.45)}
+.lp-tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:5px 14px;border-radius:20px;background:#f5b73b;color:#1a1203;font-size:11.5px;font-weight:900;letter-spacing:.04em}
+.lp-plan h4{font-size:18px}.lp-who{color:var(--mut);font-size:13.5px;margin:6px 0 16px;line-height:1.45}
+.lp-pr{display:flex;align-items:baseline;gap:5px}.lp-pr b{font-size:42px;font-weight:900;letter-spacing:-.04em}.lp-pr span{color:var(--mut);font-weight:700}
+.lp-eq{font-size:12.5px;color:var(--mut);margin:4px 0 18px}
+.lp-plan ul{list-style:none;display:grid;gap:9px;margin-top:20px;font-size:13.5px}
+.lp-plan li{display:flex;gap:9px;color:#c9d0dc}.lp-plan li::before{content:'✓';color:#16c784;font-weight:900}
+.lp-plan li.no{color:#4d5666}.lp-plan li.no::before{content:'–';color:#4d5666}
+.lp-life{margin-top:20px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:22px;align-items:center;padding:22px 26px;border-radius:20px;border:1px solid #3a2e14;background:radial-gradient(500px 200px at 0% 0%,rgba(245,183,59,.18),transparent 60%),#120f09}
+.lp-badge{font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#f5c25b;background:rgba(245,183,59,.14);padding:4px 10px;border-radius:20px}
+.lp-life h4{font-size:19px;margin:10px 0 4px}.lp-life p{color:#b9ad95;font-size:13.5px}
+.lp-lifep{text-align:right}.lp-lifep b{display:block;font-size:34px;font-weight:900;letter-spacing:-.03em}.lp-lifep small{color:#b9ad95}
+.lp-rr{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 22px;margin-top:24px;font-size:13px;color:var(--mut);font-weight:600}
+
+/* faq */
+.lp-faq{max-width:800px;margin:0 auto;display:grid;gap:10px}
+.lp-faq details{border:1px solid #1e2531;border-radius:16px;background:#0e121a;padding:18px 20px}
+.lp-faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px;font-weight:800;font-size:15px}
+.lp-faq summary::-webkit-details-marker{display:none}
+.lp-faq summary::after{content:'+';color:#f5b73b;font-size:20px;line-height:1}.lp-faq details[open] summary::after{content:'–'}
+.lp-faq p{color:#aab3c3;line-height:1.65;margin-top:10px;font-size:14.5px}
+
+/* final + footer */
+.lp-final{text-align:center;padding:60px 28px;border-radius:28px;border:1px solid #3a2e14;background:radial-gradient(700px 300px at 50% 0%,rgba(245,183,59,.2),transparent 70%),#0f0d09}
+.lp-final h2{font-size:clamp(26px,3.8vw,44px);line-height:1.1;font-weight:900}
+.lp-final p{color:#b9ad95;margin-top:14px;line-height:1.6}
+.lp-foot{border-top:1px solid #131924;padding:34px 0 90px;color:var(--mut);font-size:12.5px}
+.lp-foot .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin-bottom:16px}
+.lp-foot a{text-decoration:none}.lp-foot a:hover{color:#fff}
+.lp-foot p{line-height:1.6;margin-top:8px;max-width:900px}
+.lp .stickycta{--panel:#10141c;--line2:#2b3445}
+.lp .stickycta .btn.acc{background:linear-gradient(135deg,#f9c95a,#e0960c);color:#1a1203}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.lp-chip,.lp-dot{animation:none}}
+
+/* responsive */
+@media (max-width:980px){
+  .lp-hgrid{grid-template-columns:1fr;gap:40px}
+  .lp-htxt{text-align:center}.lp-sub{margin-left:auto;margin-right:auto}.lp-cta{justify-content:center}.lp-checks{justify-content:center}
+  .lp-chip.c1{left:8px}.lp-chip.c2{right:8px}
+  .lp-calc{grid-template-columns:1fr}.lp-cin{border-right:0;border-bottom:1px solid #1e2531}
+  .lp-moment,.lp-moment.rev{grid-template-columns:1fr;gap:20px}.lp-moment.rev .lp-mtxt{order:0}
+  .lp-plans{grid-template-columns:1fr;max-width:460px;margin:0 auto}.lp-plan.best{order:-1}
+  .lp-trust{grid-template-columns:1fr 1fr}
+  .lp-life{grid-template-columns:1fr;text-align:center}.lp-lifep{text-align:center}
+}
+@media (max-width:640px){
+  .lp-sec{padding:54px 0}.lp-hero{padding:40px 0 56px}
+  .lp-pains,.lp-trust,.lp-fit{grid-template-columns:1fr}
+  .lp-kpis{grid-template-columns:1fr 1fr}.lp-kpis div:last-child{grid-column:1/-1}
+  .lp-cin,.lp-cout{padding:20px}
+  .lp-vsh{display:none}
+  .lp-vsr{grid-template-columns:1fr;gap:6px;padding:16px 18px}
+  .lp-vsr em::before{content:'MT5: ';font-weight:700;color:#5d6676}
+  .lp-moment{padding:18px;border-radius:18px}
+  .lp-chip{padding:8px 11px}.lp-chip b{font-size:12px}.lp-chip.c2{display:none}.lp-chip.c1{bottom:-26px}
+  .lp-btn.lg{width:100%}
+  .lp-final{padding:40px 20px}
+}
+/* ================= landing motion layer ================= */
+/* scroll progress */
+.lp-prog{position:fixed;left:0;right:0;top:0;height:3px;z-index:60;background:linear-gradient(90deg,#16c784,#f5b73b,#ffd982);transform-origin:0 50%;transform:scaleX(0);box-shadow:0 0 12px rgba(245,183,59,.7);pointer-events:none}
+/* ticker tape */
+.lp-tape{position:relative;overflow:hidden;height:38px;border-bottom:1px solid #151b26;background:#080a10;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.lp-tape-in{display:flex;width:max-content;height:100%;align-items:center;animation:lpTape 60s linear infinite}
+.lp-tape:hover .lp-tape-in{animation-play-state:paused}
+@keyframes lpTape{to{transform:translateX(-50%)}}
+.lp-tape .tk{display:inline-flex;align-items:center;gap:8px;padding:0 22px;font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap;border-right:1px solid #151b26;border-radius:4px;transition:background .6s}
+.lp-tape .tk b{color:#e8ecf3;font-weight:800;letter-spacing:.02em}.lp-tape .tk em{font-style:normal;color:#aab3c3;font-family:ui-monospace,'SF Mono',Consolas,monospace}
+.lp-tape .tk i{font-style:normal;font-weight:800;font-size:11.5px}.lp-tape .tk i.up{color:#16c784}.lp-tape .tk i.dn{color:#f0454f}
+.lp-tape .tk.fu{animation:lpFlashU .9s}.lp-tape .tk.fd{animation:lpFlashD .9s}
+.lp-tape .tk.sim{color:#566074;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+@keyframes lpFlashU{0%{background:rgba(22,199,132,.22)}100%{background:transparent}}
+@keyframes lpFlashD{0%{background:rgba(240,69,79,.22)}100%{background:transparent}}
+/* hero canvas */
+.lp-hcv{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.9;mask-image:linear-gradient(180deg,transparent,#000 25%,#000 70%,transparent);-webkit-mask-image:linear-gradient(180deg,transparent,#000 25%,#000 70%,transparent)}
+.lp-hero h1 span{font-variant-ligatures:none}
+@media (min-width:981px){.lp-hcv{mask-image:linear-gradient(90deg,rgba(0,0,0,.14),rgba(0,0,0,.14) 44%,#000 64%);-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.14),rgba(0,0,0,.14) 44%,#000 64%)}}
+@media (max-width:980px){.lp-hcv{opacity:.38}}
+.lp-frame{transition:transform .25s ease-out;transform-style:preserve-3d;will-change:transform}
+.lp-frame::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.06) 50%,transparent 60%);background-size:250% 100%;animation:lpGlare 7s ease-in-out infinite}
+@keyframes lpGlare{0%,60%{background-position:120% 0}100%{background-position:-60% 0}}
+/* gold button shine */
+.lp-btn.gold{position:relative;overflow:hidden;isolation:isolate}
+.lp-btn.gold::after{content:'';position:absolute;top:-50%;bottom:-50%;width:40%;left:-60%;z-index:-1;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:lpShine 4.5s ease-in-out infinite}
+@keyframes lpShine{0%,70%{left:-60%}100%{left:130%}}
+/* spotlight cards */
+.lp-spot{position:relative}
+.lp-spot::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;z-index:0;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(245,183,59,.10),transparent 45%)}
+.lp-spot:hover::before{opacity:1}
+.lp-spot>*:not(.lp-tag){position:relative;z-index:1}
+/* console + stats */
+.lp-hood{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:stretch}
+.lp-console{border-radius:20px;border:1px solid #273042;background:#06080c;overflow:hidden;box-shadow:0 40px 100px -40px rgba(0,0,0,.9),inset 0 0 0 1px rgba(245,183,59,.04)}
+.lp-console .bar{display:flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-bottom:1px solid #161c27;background:#0c1018;font-size:12px;color:#8a94a8;font-weight:700}
+.lp-console .bar i{width:10px;height:10px;border-radius:50%;background:#2b3445}.lp-console .bar i:nth-child(1){background:#f0454f}.lp-console .bar i:nth-child(2){background:#f5b73b}.lp-console .bar i:nth-child(3){background:#16c784}
+.lp-console .bar span{margin-left:8px}.lp-console .bar em{margin-left:auto;font-style:normal;color:#566074;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.lp-log{padding:18px 18px 22px;min-height:300px;font-family:ui-monospace,'SF Mono',Consolas,'Cascadia Mono',monospace;font-size:13.5px;line-height:1.75;color:#c9d0dc;background:repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 2px,transparent 2px 4px)}
+.lp-log .ln{white-space:pre-wrap;word-break:break-word;animation:lpLn .25s ease-out}
+.lp-log .ln span{color:#4d5666;margin-right:12px}
+.lp-log .ln.ok{color:#16c784}.lp-log .ln.gold{color:#f5c25b}.lp-log .ln.bad{color:#ff7d85}.lp-log .ln.dim{color:#7d8799}
+.lp-log .caret{display:inline-block;width:8px;height:15px;margin-left:2px;vertical-align:-2px;background:#f5b73b;animation:lpBlink .9s steps(1) infinite}
+@keyframes lpBlink{50%{opacity:0}}
+@keyframes lpLn{from{opacity:0;transform:translateX(-6px)}}
+.lp-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lp-stat{padding:22px;border-radius:18px;border:1px solid #1e2531;background:linear-gradient(180deg,#10141c,#0c1017);display:flex;flex-direction:column;justify-content:flex-end;min-height:140px;overflow:hidden}
+.lp-stat b{font-size:clamp(38px,4.4vw,54px);font-weight:900;letter-spacing:-.04em;line-height:1;background:linear-gradient(90deg,#ffd982,#f5b73b 50%,#e0960c);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.lp-stat b small{font-size:.42em;letter-spacing:0;margin-left:4px}
+.lp-stat b i{font-style:normal}.lp-stat em{font-style:normal;color:#8a94a8;font-size:13.5px;font-weight:600;margin-top:8px;line-height:1.4}
+/* timeline rail */
+.lp-day{padding-left:40px}
+.lp-rail{position:absolute;left:12px;top:30px;bottom:30px;width:2px;background:#1a202b;border-radius:2px}
+.lp-rail i{position:absolute;left:0;top:0;width:100%;height:0;background:linear-gradient(180deg,#16c784,#f5b73b);box-shadow:0 0 14px rgba(245,183,59,.7);border-radius:2px;transition:height .15s linear}
+.lp-moment{position:relative}
+.lp-moment::before{content:'';position:absolute;left:-35px;top:44px;width:12px;height:12px;border-radius:50%;background:#0a0d13;border:2px solid #2b3445;transition:all .35s}
+.lp-moment.lit::before{background:#f5b73b;border-color:#f5b73b;box-shadow:0 0 0 6px rgba(245,183,59,.15),0 0 18px rgba(245,183,59,.8)}
+.lp-moment.lit{border-color:#2a2414}
+.lp-moment .lp-shot img{transition:transform 6s ease-out}
+.lp-moment.lit .lp-shot img{transform:scale(1.04)}
+/* staggered children when a block reveals */
+.rv:not(.in) .lp-vsr,.rv:not(.in) .lp-tc,.rv:not(.in) .lp-painc,.rv:not(.in) .lp-stat,.rv:not(.in) .lp-plan{opacity:0;transform:translateY(18px)}
+.lp-vsr,.lp-tc,.lp-painc,.lp-stat,.lp-plan{transition:opacity .55s ease,transform .55s ease;transition-delay:calc(var(--i,0) * 80ms)}
+/* animated border on the best plan */
+@property --lpAng{syntax:'<angle>';inherits:false;initial-value:0deg}
+.lp-plan.best{border-color:transparent;background:radial-gradient(500px 240px at 50% 0%,rgba(245,183,59,.12),transparent 70%) padding-box,linear-gradient(#10141c,#10141c) padding-box,conic-gradient(from var(--lpAng),#f5b73b,#2b3445 25%,#16c784 50%,#2b3445 75%,#f5b73b) border-box;animation:lpSpin 6s linear infinite}
+@keyframes lpSpin{to{--lpAng:360deg}}
+/* pain numbers glitch once in view */
+.lp-pains.in .lp-painc b{animation:lpGlitch .6s steps(2) 1;animation-delay:calc(var(--i,0) * 120ms + .2s)}
+@keyframes lpGlitch{0%{transform:translate(0);text-shadow:none}25%{transform:translate(-3px,1px);text-shadow:3px 0 #16c784,-3px 0 #4c8dff}50%{transform:translate(3px,-1px);text-shadow:-3px 0 #f5b73b,3px 0 #4c8dff}100%{transform:none;text-shadow:none}}
+@media (max-width:980px){.lp-hood{grid-template-columns:1fr}}
+@media (max-width:640px){.lp-day{padding-left:26px}.lp-rail{left:6px}.lp-moment::before{left:-26px;top:30px;width:10px;height:10px}.lp-log{font-size:12px;min-height:270px;padding:14px}.lp-stat{min-height:118px;padding:18px}.lp-tape{height:34px}}
+@media (prefers-reduced-motion:reduce){.lp-tape-in,.lp-frame::after,.lp-btn.gold::after,.lp-plan.best,.lp-log .caret{animation:none}.rv:not(.in) .lp-vsr,.rv:not(.in) .lp-tc,.rv:not(.in) .lp-painc,.rv:not(.in) .lp-stat,.rv:not(.in) .lp-plan{opacity:1;transform:none}}
+.lp-phonebox{aspect-ratio:4/3;border-radius:14px;border:1px solid #273042;overflow:hidden;cursor:zoom-in;display:flex;justify-content:center;background:radial-gradient(420px 280px at 50% 70%,rgba(245,183,59,.14),transparent 70%),linear-gradient(180deg,#0f131b,#0a0d13)}
+.lp-phone{width:46%;margin-top:7%;align-self:flex-start;border-radius:28px;border:7px solid #1c2230;outline:1px solid #2b3445;overflow:hidden;box-shadow:0 40px 80px -20px rgba(0,0,0,.9),0 0 60px -20px rgba(245,183,59,.35);transform:rotate(-3deg);transition:transform .6s}
+.lp-moment.lit .lp-phone{transform:rotate(0) translateY(-4%)}
+.lp-phone img{width:100%;display:block}
+/* ================= 3D risk engine ================= */
+.lp-engine{padding-top:40px}
+.eng{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:stretch}
+.eng-stage{--c:#f5b73b;position:relative;height:640px;border-radius:26px;overflow:hidden;cursor:crosshair;touch-action:pan-y;background:#05070b;
+  border:1px solid color-mix(in srgb,var(--c) 28%,#1e2531);transition:border-color .8s,box-shadow .8s;
+  box-shadow:0 60px 160px -60px color-mix(in srgb,var(--c) 45%,transparent),0 0 0 1px rgba(255,255,255,.02),inset 0 0 120px rgba(0,0,0,.6)}
+.eng-stage[data-mode=layers]{--c:#4c8dff}.eng-stage[data-mode=partial]{--c:#16c784}.eng-stage[data-mode=lock]{--c:#f0454f}
+.eng-stage.charging{cursor:grabbing}
+.eng-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.2s}
+.eng-stage.ready canvas{opacity:1}
+.eng-fallback{position:absolute;inset:0;display:grid;place-items:center;color:#566074;font:700 13px ui-monospace,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;pointer-events:none;transition:opacity .6s}
+.eng-stage.ready .eng-fallback{opacity:0}
+/* scanlines + vignette + a sweeping scan bar */
+.eng-stage::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.55)),repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px)}
+.eng-scan{position:absolute;left:0;right:0;height:120px;top:-120px;z-index:2;pointer-events:none;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--c) 10%,transparent),transparent);animation:engScan 6s linear infinite}
+@keyframes engScan{to{top:100%}}
+/* corner brackets */
+.eng-br{position:absolute;z-index:3;width:26px;height:26px;border:2px solid var(--c);opacity:.75;transition:border-color .8s;pointer-events:none}
+.eng-br.c1{top:14px;left:14px;border-right:0;border-bottom:0;border-top-left-radius:8px}.eng-br.c2{top:14px;right:14px;border-left:0;border-bottom:0;border-top-right-radius:8px}
+.eng-br.c3{bottom:14px;left:14px;border-right:0;border-top:0;border-bottom-left-radius:8px}.eng-br.c4{bottom:14px;right:14px;border-left:0;border-top:0;border-bottom-right-radius:8px}
+.eng-hud{position:absolute;z-index:3;top:26px;display:flex;align-items:center;gap:8px;height:28px;padding:0 12px;border-radius:8px;background:rgba(5,7,11,.6);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(6px);
+  font:700 11.5px ui-monospace,'SF Mono',Consolas,monospace;letter-spacing:.12em;color:#aab3c3;white-space:nowrap}
+.eng-hud b{color:var(--c);transition:color .8s}
+.eng-hud.hl{left:50px}.eng-hud.hr{right:50px;color:var(--c)}
+.eng-read{position:absolute;z-index:3;left:30px;bottom:30px;display:grid;gap:6px;pointer-events:none}
+.eng-read div{display:flex;align-items:baseline;gap:10px;font:700 12px ui-monospace,'SF Mono',Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+.eng-read div:nth-child(2){animation-delay:.08s}.eng-read div:nth-child(3){animation-delay:.16s}
+.eng-read small{color:#566074;min-width:96px;font-size:10.5px}.eng-read b{color:#eef1f6;font-size:15px;text-shadow:0 0 14px var(--c)}
+.eng-hint{position:absolute;z-index:3;right:30px;bottom:30px;display:flex;gap:6px;pointer-events:none}
+.eng-hint span{padding:5px 9px;border-radius:7px;border:1px solid rgba(255,255,255,.08);background:rgba(5,7,11,.55);font:700 10.5px ui-monospace,Consolas,monospace;letter-spacing:.06em;color:#8a94a8;text-transform:uppercase}
+.eng-stage.charging .eng-hint span:nth-child(2){color:#05070b;background:var(--c);border-color:var(--c)}
+/* side panel */
+.eng-side{display:flex;flex-direction:column;gap:12px}
+.eng-tabs{display:grid;gap:8px}
+.eng-tabs button{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1px solid #1e2531;background:#0e121a;color:#aab3c3;font-weight:800;font-size:14.5px;text-align:left;transition:all .25s}
+.eng-tabs button i{font-style:normal;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#151a24;font-size:16px;transition:all .25s}
+.eng-tabs button:hover{border-color:#2b3445;color:#fff;transform:translateX(3px)}
+.eng-tabs button.on{border-color:rgba(245,183,59,.55);color:#fff;background:linear-gradient(90deg,rgba(245,183,59,.14),#0e121a 70%)}
+.eng-tabs button.on i{background:#f5b73b;color:#1a1203;box-shadow:0 0 22px rgba(245,183,59,.55)}
+.eng-card{flex:1;padding:20px;border-radius:18px;border:1px solid #1e2531;background:linear-gradient(180deg,#10141c,#0c1017);animation:engIn .4s ease-out}
+.eng-card h3{display:flex;align-items:center;gap:10px;font-size:19px;margin-bottom:8px}.eng-card h3 i{font-style:normal}
+.eng-card p{color:#aab3c3;font-size:14px;line-height:1.6}
+.eng-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.eng-stats div{padding:10px;border-radius:12px;background:#151a24;border:1px solid #1e2531;min-width:0}
+.eng-stats small{display:block;font-size:10.5px;color:#8a94a8;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.eng-stats b{display:block;font-size:15px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eng-prog{height:3px;border-radius:2px;background:#1c2230;margin-top:16px;overflow:hidden}.eng-prog i{display:block;height:100%;background:linear-gradient(90deg,#16c784,#f5b73b);transform-origin:0 50%;transform:scaleX(0)}
+@keyframes engIn{from{opacity:0;transform:translateY(6px)}}
+@media (max-width:980px){.eng{grid-template-columns:1fr}.eng-stage{height:520px}.eng-tabs{grid-template-columns:1fr 1fr}.eng-card{flex:none}}
+@media (max-width:640px){.eng-stage{height:440px;border-radius:20px}.eng-tabs button{padding:10px 12px;font-size:13px;gap:8px}.eng-tabs button i{width:28px;height:28px;font-size:14px}
+  .eng-hud{top:16px;font-size:9.5px;height:24px;padding:0 8px;letter-spacing:.08em}.eng-hud.hl{left:16px}.eng-hud.hr{right:16px}.eng-br{width:18px;height:18px}.eng-br.c1,.eng-br.c2{top:8px}.eng-br.c3,.eng-br.c4{bottom:8px}.eng-br.c1,.eng-br.c3{left:8px}.eng-br.c2,.eng-br.c4{right:8px}
+  .eng-read{left:18px;bottom:18px}.eng-read small{min-width:74px;font-size:9.5px}.eng-read b{font-size:12.5px}.eng-hint{display:none}}
+@media (prefers-reduced-motion:reduce){.eng-scan{animation:none;display:none}}
+/* ================= click race ================= */
+.race-jobs{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:-6px auto 22px;max-width:980px}
+.race-jobs button{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;border:1px solid #1e2531;background:#0e121a;color:#aab3c3;font-weight:800;font-size:13.5px;transition:all .25s}
+.race-jobs button i{width:7px;height:7px;border-radius:50%;background:#2b3445;transition:all .25s}
+.race-jobs button:hover{color:#fff;border-color:#2b3445}
+.race-jobs button.on{color:#1a1203;background:linear-gradient(135deg,#f9c95a,#e0960c);border-color:transparent;box-shadow:0 10px 30px -10px rgba(245,183,59,.7)}
+.race-jobs button.on i{background:#1a1203}
+.race{display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);gap:0;align-items:stretch}
+.race-side{position:relative;border-radius:22px;border:1px solid #1e2531;background:#0b0e14;overflow:hidden;display:flex;flex-direction:column}
+.race-side.gm{border-color:rgba(245,183,59,.35);background:radial-gradient(500px 260px at 50% 40%,rgba(245,183,59,.09),transparent 70%),#0d1017;box-shadow:0 40px 100px -50px rgba(245,183,59,.5)}
+.race-top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #161c27}
+.race-top b{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#8a94a8}.gm .race-top b{color:#f5b73b}
+.race-cnt{font:800 22px ui-monospace,'SF Mono',Consolas,monospace;color:#f0454f;font-variant-numeric:tabular-nums;min-width:60px;text-align:right}.race-cnt.gold{color:#16c784}
+.race-desk{position:relative;height:300px;overflow:hidden;background:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 1px,transparent 1px 24px),repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0 1px,transparent 1px 24px)}
+.race-win{position:absolute;width:62%;border-radius:10px;background:#d9dde3;color:#1b1f26;box-shadow:0 18px 40px -10px rgba(0,0,0,.8);transform:rotate(var(--r));animation:raceIn .28s cubic-bezier(.2,1.4,.4,1) both;font-size:12px;transition:opacity .4s,transform .4s}
+.race-win.gone{opacity:.25;transform:rotate(var(--r)) scale(.96)}
+.race-win .wt{display:flex;align-items:center;gap:5px;padding:6px 9px;border-radius:10px 10px 0 0;background:linear-gradient(#2f5fa7,#244b86);color:#fff;font-weight:700;font-size:11.5px}
+.race-win .wt i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4)}.race-win .wt span{margin-left:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.race-win .wb{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 10px;font-weight:600}
+.race-win em{font-style:normal;font-size:10.5px;font-weight:800;color:#b03a40;background:#f6d7d9;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.race-win.bad .wt{background:linear-gradient(#a8323a,#7e232a)}
+@keyframes raceIn{from{opacity:0;transform:rotate(var(--r)) translateY(14px) scale(.9)}}
+.race-bar{height:4px;background:#161c27}.race-bar i{display:block;height:100%;width:0;background:#f0454f;transition:width .35s ease}.gm .race-bar i{background:linear-gradient(90deg,#16c784,#f5b73b);transition:width .4s cubic-bezier(.2,.9,.3,1)}
+.race-foot{display:flex;align-items:baseline;gap:10px;padding:16px 20px}
+.race-foot b{font-size:38px;font-weight:900;letter-spacing:-.04em;color:#f0454f;line-height:1}.gm .race-foot b{color:#16c784}
+.race-foot b small{font-size:14px;letter-spacing:0;color:#8a94a8;font-weight:700;margin-left:2px}
+.race-foot span{color:#566074;font-size:13px;font-weight:600}
+.race-vs{display:grid;place-items:center}.race-vs span{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:13px;color:#1a1203;background:linear-gradient(135deg,#f9c95a,#e0960c);box-shadow:0 0 0 6px #07090e,0 0 30px rgba(245,183,59,.5)}
+.race.won .race-vs span{animation:vsPop .5s ease}
+@keyframes vsPop{50%{transform:scale(1.18)}}
+.gm-desk{display:grid;place-items:center}
+.race-btn{position:relative;padding:18px 26px;border-radius:16px;font-weight:900;font-size:16px;color:#1a1203;background:linear-gradient(135deg,#f9c95a,#e0960c);box-shadow:0 20px 50px -14px rgba(245,183,59,.7);transition:transform .15s,opacity .4s,filter .4s;text-align:center;max-width:86%}
+.race-btn.hit{transform:scale(.94);filter:brightness(1.15)}
+.race-btn.hit::after{content:'';position:absolute;inset:-4px;border-radius:20px;border:2px solid #ffd982;animation:raceRing .7s ease-out forwards}
+@keyframes raceRing{to{inset:-40px;opacity:0;border-radius:40px}}
+.race-done{position:absolute;bottom:26px;left:50%;transform:translate(-50%,20px);opacity:0;padding:8px 16px;border-radius:999px;background:rgba(22,199,132,.14);border:1px solid rgba(22,199,132,.5);color:#16c784;font-weight:900;font-size:14px;transition:all .45s cubic-bezier(.2,1.4,.4,1)}
+.race-done.on{opacity:1;transform:translate(-50%,0)}
+.race-cur{position:absolute;left:78%;top:82%;width:22px;height:28px;opacity:0;transition:left .45s cubic-bezier(.4,0,.2,1),top .45s cubic-bezier(.4,0,.2,1),opacity .2s;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 23 28'%3E%3Cpath d='M2 2 L2 22 L7.5 17 L11 25 L14.5 23.5 L11 15.8 L18.5 15.8 Z' fill='white' stroke='%230a0d13' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E");filter:drop-shadow(0 4px 6px rgba(0,0,0,.6));pointer-events:none}
+.race-cur.go{left:52%;top:52%;opacity:1}
+.race-fine{text-align:center;color:#566074;font-size:12px;margin-top:14px}
+/* micro details */
+.lp-cursor{position:fixed;left:-300px;top:-300px;width:600px;height:600px;border-radius:50%;pointer-events:none;z-index:1;opacity:0;transition:opacity .4s;background:radial-gradient(circle,rgba(245,183,59,.06),transparent 60%);mix-blend-mode:screen}
+.lp-btn{transition:transform .25s cubic-bezier(.2,.9,.3,1),filter .15s,background .15s}
+.lp-btn.mag{transition:transform .08s linear}
+.lp-ripple{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:rgba(255,255,255,.55);pointer-events:none;animation:lpRip .7s ease-out forwards;z-index:3}
+@keyframes lpRip{to{transform:scale(28);opacity:0}}
+.lp-btn,.eng-tabs button,.race-jobs button{position:relative;overflow:hidden}
+.lp-head h2 span{position:relative;display:inline-block}
+.lp-head h2 span::after{content:'';position:absolute;left:0;right:0;bottom:-.06em;height:.08em;border-radius:4px;background:linear-gradient(90deg,#ffd982,#e0960c);transform:scaleX(0);transform-origin:0 50%;transition:transform .9s cubic-bezier(.2,.9,.3,1) .35s}
+.lp-head.in h2 span::after,.lp-head:not(.rv) h2 span::after{transform:scaleX(1)}
+.lp-faq details[open]{border-color:rgba(245,183,59,.35);background:linear-gradient(180deg,rgba(245,183,59,.05),#0e121a 60%)}
+.lp-faq summary::after{transition:transform .3s}.lp-faq details[open] summary::after{transform:rotate(180deg)}
+@media (max-width:860px){.race{grid-template-columns:1fr;gap:10px}.race-vs{height:20px}.race-vs span{width:38px;height:38px;font-size:12px}.race-desk{height:240px}.race-win{width:76%}.race-jobs{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:2px 2px 8px;scrollbar-width:none}.race-jobs::-webkit-scrollbar{display:none}.race-jobs button{flex:none}}
+@media (prefers-reduced-motion:reduce){.race-win{animation:none}.race-btn.hit::after{display:none}}
 </style>
 </head>
 <body>
@@ -476,7 +872,7 @@ const PUBLIC = ['home', 'pricing', 'features', 'faq', 'login', 'signup'];
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; // a refresh starts at the top, not where the phone last was
 function route() {
   const [r0, qs] = (location.hash.slice(1) || 'home').split('?'); const r = r0 || 'home';
-  closeMenus(); renderTester();
+  closeMenus(); renderTester(); document.body.classList.toggle('lp2', PUBLIC.includes(r));
   if (r !== 'terminal') { $('#termWrap').classList.remove('on'); document.body.style.overflow = '' }
   if (['dashboard', 'setup', 'billing', 'terminal'].includes(r) && !A.me) { location.hash = 'login'; return }
   renderNav(r);
@@ -548,131 +944,749 @@ function priceCard(k) {
 const ivlSeg = () => `<div class="ivl"><div class="seg"><button data-ivl="month" class="${A.interval === 'month' ? 'on' : ''}">Monthly</button><button data-ivl="year" class="${A.interval === 'year' ? 'on' : ''}">Yearly<em>2 months free</em></button></div></div>`;
 const minPrice = () => { const ps = Object.values(A.plans?.plans || {}).map(p => p.month); return ps.length ? money2(Math.min(...ps)) : '€4.99' };
 
+/* ---------------------------------------------------------------- landing v2: "the risk manager MT5 never gave you"
+   Buyer: every MT5 trader who stacks positions and cares about risk: live accounts first, funded accounts too. The old landing is kept in terminal_test_v1.html.
+   Analytics: every CTA has data-cta="<where>"; hook your pixel into track(). */
+const LPC = { bal: 10000, mkt: 'xau', n: 3 };
+const lpMoney = v => '$' + Math.round(v).toLocaleString('en-US');
+function lpPlan(k) {
+  const p = P(k), yr = A.interval === 'year', cur = A.me && SUB().plan === k && SUB().status === 'active' && SUB().interval === A.interval;
+  const price = yr ? Math.round(p.year / 12 * 100) / 100 : p.month;
+  let btn;
+  if (!A.me) btn = `<a class="lp-btn ${k === 'pro' ? 'gold' : 'ghost'} full" href="#signup" data-cta="price-${k}">Start ${A.plans.trial_days} days free</a>`;
+  else if (cur) btn = `<button class="lp-btn ghost full" disabled>Your current plan</button>`;
+  else btn = `<button class="lp-btn ${k === 'pro' ? 'gold' : 'ghost'} full" data-buy="${k}" data-cta="buy-${k}">${SUB().status === 'active' ? 'Switch to ' + p.name : 'Get ' + p.name}</button>`;
+  const who = { starter: 'One account, the terminal and the journal.', pro: 'Everything to size, manage and protect your trades.', elite: 'Many accounts, teams and small funds.' }[k] || p.blurb;
+  const items = [`${p.accounts === 1 ? '1 MT5 account' : p.accounts + ' MT5 accounts'} · ${p.machines} PC${p.machines > 1 ? 's' : ''}`]
+    .map(t => `<li>${t}</li>`).join('') + ALLF.map(f => `<li class="${p.features.includes(f) ? '' : 'no'}">${FEAT[f]}</li>`).join('');
+  return `<div class="lp-plan ${k === 'pro' ? 'best' : ''}">${k === 'pro' ? '<div class="lp-tag">Most popular</div>' : ''}
+    <h4>${p.name}</h4><p class="lp-who">${who}</p>
+    <div class="lp-pr"><b>${money2(price)}</b><span>/ month</span></div>
+    <div class="lp-eq">${yr ? `${money2(p.year)} billed yearly · 2 months free` : 'billed monthly · cancel anytime'}</div>
+    ${btn}<ul>${items}</ul></div>`;
+}
+const lpPlans = () => ['starter', 'pro', 'elite'].map(lpPlan).join('');
+
+const LP_DAY = [
+  ['Chart', 'Drag your stop and target out of the entry', 'Hover any entry and pull a stop loss or take profit straight out of it. The label shows the money at risk while you drag. Works on limit orders before they fill.', 'lp-drag.jpg'],
+  ['Basket', 'A whole basket to break-even, or to your profit', 'Scaled into a move? Pick break-even, +$50 or any amount. Goldmine finds the one exit price for every position and sets it in one click.', 'lp-basket.jpg'],
+  ['Tools', 'Drawings and price alerts, built in', 'Trend lines, Fibonacci, long and short tools, levels and alerts that ping you. On the same chart you trade from, saved per symbol, with a watchlist next to it.', 'lp-tools.jpg', 'center'],
+  ['Rules', 'Your rules, set once', 'A default risk per trade, a maximum daily loss and a cap on open positions. Goldmine applies them to every order, on every device.', 'lp-rules.jpg', 'center'],
+  ['Practice', 'Paper accounts on live prices', 'Open a practice account in one second, on your broker\'s real prices. Test a new idea without risking a cent, then switch to your live account.', 'lp-paper.jpg', 'center'],
+  ['Review', 'A journal that writes itself', 'Every trade from MT5: equity curve, R-multiples, best sessions and setups, a P/L calendar. Do more of what works.', 'lp-journal.jpg'],
+];
+const LP_FAQ = [
+  ['Does it work on live (real-money) accounts?', 'Yes. Goldmine works the same on live, demo and funded accounts. Real-money trading is switched on once, with a confirmation, and every order still needs your click.'],
+  ['Is it allowed by prop firms?', 'Goldmine is a manual trade-management tool: it never opens a trade by itself, you click every order. Most firms allow tools like this, but rules differ (some limit copy trading between accounts). Check your firm\'s rules to be sure.'],
+  ['Which brokers and platforms work?', 'Any broker that offers MetaTrader 5: forex, gold, indices and crypto CFDs. MetaTrader 4 is not supported.'],
+  ['Is my account safe?', 'Your MT5 password stays on your own computer and is never sent to us. Every request to the app on your PC needs your private key. Real-money trading stays off until you switch it on with a confirmation.'],
+  ['Do I need to keep my PC on?', 'The small Goldmine app runs next to MT5, so yes, while you trade. Partial take profits keep working with the web page closed, as long as the app runs. For 24/7, use a small Windows VPS (from about €10/month).'],
+  ['I have a Mac.', 'The app that talks to MT5 needs Windows. Mac users run it on a Windows VPS and use the web terminal from their Mac or phone.'],
+  ['What happens after the free trial?', 'No card is asked, so nothing is charged. Pick a plan to keep going. If you don\'t, Goldmine stops and your MT5 account and trades are not affected.'],
+  ['Is this a signal service or advice?', 'No. Goldmine Pro is software. You make every trading decision. Trading leveraged products carries a high risk of losing money.'],
+];
+
 function renderLanding() {
-  if ($('#view').dataset.v === 'landing') { $('#plans').innerHTML = A.plans ? ['starter', 'pro', 'elite'].map(k => priceCard(k)).join('') : ''; return }
+  document.body.classList.add('lp2');
+  if ($('#view').dataset.v === 'landing') { const pl = $('#plans'); if (pl) pl.innerHTML = A.plans ? lpPlans() : ''; return }
   $('#view').dataset.v = 'landing';
-  const td = A.plans?.trial_days || 7, pro0 = P('pro') || OFFLINE_PLANS.plans.pro, pro = { month: pro0.month, regular: pro0.regular ?? OFFLINE_PLANS.plans.pro.regular };
-  const ck = '<i class="y">✓</i>', no = '<i class="n">✕</i>', half = '<i class="h">~</i>';
-  $('#view').innerHTML = `
-  <a class="announce" href="#pricing" data-cta="announce">🚀 <b>Founding-member launch:</b> ${pro.regular > pro.month ? `Pro for ${money2(pro.month)}/month instead of <s>${money2(pro.regular)}</s>, ` : `Pro from ${money2(pro.month)}/month, `}locked in for as long as you stay subscribed. <u>See prices</u></a>
+  const td = A.plans?.trial_days || 7, pro = P('pro') || OFFLINE_PLANS.plans.pro;
+  const ck = '<i class="y">✓</i>';
+  $('#view').innerHTML = `<div class="lp">
+  <a class="lp-ann" href="#pricing" data-cta="announce"><span class="lp-dot"></span><b>Founding members</b> keep their launch price for as long as they stay subscribed <u>See pricing</u></a>
+  <div class="lp-tape" aria-hidden="true"><div class="lp-tape-in" id="lpTape"></div></div><div class="lp-prog" id="lpProg"></div>
 
-  <section class="hero"><div class="wrap">
-    <span class="pill"><b>FOR MT5 TRADERS</b> who scale in, stack positions and manage risk</span>
-    <h1>Scale in. Protect. Exit. <br><em>All in one click.</em></h1>
-    <p class="sub">Goldmine Pro is a web terminal for MetaTrader 5. Layer entries sized by your risk, move a whole basket to break-even, close your worst entries, and see in a real journal what actually makes you money. Works with any MT5 broker, on any device.</p>
-    <div class="cta"><a class="btn acc lg" href="#signup" data-cta="hero-trial">Start my free ${td}-day trial</a><button class="btn lg" data-act="demo" data-cta="hero-demo">▶ Try the live demo · no sign-up</button></div>
-    <div class="trust"><span>No card needed</span><span>Cancel in 2 clicks</span><span>Then from ${minPrice()}/month</span></div>
-    <div class="shot"><div class="bar"><i></i><i></i><i></i><span>Goldmine Pro · live demo</span></div><div class="vp" id="vp"><iframe id="heroFrame" src="terminal_pro.html?demo=1&theme=light" tabindex="-1" loading="lazy" title="Live demo of the Goldmine Pro terminal"></iframe></div>
-      <div class="live">Live demo · simulated prices</div><div class="try" data-act="demo" data-cta="hero-shot"><b>Open the live demo →</b></div></div>
-    <div class="floaters" aria-hidden="true">
-      <div class="fl f1"><i>🪜</i><div><small>5 buy limits placed</small><b>Risk −$110 · 1.00%</b></div></div>
-      <div class="fl f2"><i>🎯</i><div><small>Basket exit · 4 positions</small><b class="up">+$120.50</b></div></div>
-      <div class="fl f3"><i>🛡</i><div><small>Moved to break-even</small><b>3 positions · 1 click</b></div></div>
+  <section class="lp-hero"><canvas class="lp-hcv" id="lpHcv" aria-hidden="true"></canvas><div class="wrap lp-hgrid">
+    <div class="lp-htxt">
+      <div class="lp-eye">For every MetaTrader 5 trader · live, funded or demo</div>
+      <h1>The risk manager <span>MT5 never gave you.</span></h1>
+      <p class="lp-sub">Every lot sized from your risk. Ten positions managed like one. A daily loss limit that locks the buttons before you break a rule. Goldmine Pro runs next to your own MT5, and your password never leaves your PC.</p>
+      <div class="lp-cta"><a class="lp-btn gold lg" href="#signup" data-cta="hero-trial">Start ${td} days free</a><button class="lp-btn ghost lg" data-act="demo" data-cta="hero-demo">▶ Try the live demo</button></div>
+      <ul class="lp-checks"><li>No card for the trial</li><li>Any MT5 broker</li><li>Set up in ~5 minutes</li></ul>
+    </div>
+    <div class="lp-hvis">
+      <div class="lp-frame"><div class="bar"><i></i><i></i><i></i><span>Live demo · simulated prices</span></div><div class="vp" id="vp"><iframe id="heroFrame" src="terminal_pro.html?demo=1&theme=midnight" tabindex="-1" loading="lazy" title="Live demo of the Goldmine Pro terminal"></iframe></div>
+        <button class="lp-open" data-act="demo" data-cta="hero-shot">Open the full demo, no sign-up →</button></div>
+      <div class="lp-chip c1"><i>🛡</i><div><small>Daily loss limit</small><b>−5% reached · trading locked</b></div></div>
+      <div class="lp-chip c2"><i>★</i><div><small>Close &amp; keep · sells</small><b>9 closed · 0.01 runner left</b></div></div>
     </div>
   </div></section>
 
-  <div class="facts"><div class="wrap">
-    ${[['🏦', 'Any MT5 broker', 'Forex, gold, indices, crypto CFDs'], ['🔒', 'Your password stays home', 'never leaves your PC'], ['⚡', 'Set up in ~5 minutes', 'one download, one double-click'], ['📱', 'Desktop · tablet · phone', 'the same terminal everywhere'], ['🏷️', 'Founding price for life', 'while you stay subscribed']]
-      .map(([i, t, d]) => `<div><span>${i}</span><b>${t}</b><small>${d}</small></div>`).join('')}
-  </div></div>
-
-  <section class="blk prob"><div class="wrap">
-    <div class="eyebrow">The problem</div>
-    <h2 class="tt">MetaTrader 5 wasn't built for the way you trade</h2>
-    <p class="lead">You scale in, you manage several positions at once, you care about risk. MT5 makes all of that slow, manual and error-prone, usually right when price is moving.</p>
-    <div class="pains">
-      ${[['🧮', 'Lots by calculator', 'Five limit orders means five lot calculations, a stop loss each and hoping the total risk is right.'],
-         ['🐢', 'Closing 8 positions one by one', 'While you click through tiny windows, price runs and a winning basket turns into a loss.'],
-         ['🎯', 'SL / TP in dialog boxes', 'Typing prices into forms instead of setting them where you can see the chart.'],
-         ['📉', 'No idea what works', 'MT5 history is a list of numbers. Which setup, session or habit is costing you money?']]
-        .map(([i, t, d]) => `<div class="pain"><span>${i}</span><h4>${t}</h4><p>${d}</p></div>`).join('')}
+  ${engHTML()}
+  <section class="lp-sec lp-pain"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">Sound familiar?</div><h2>Accounts rarely die on a bad setup.<br><span>They die on a bad click.</span></h2></div>
+    <div class="lp-pains">
+      ${[['0.50', 'instead of 0.05', 'One extra zero in a lot field. Ten times the risk you planned, and the daily limit is gone in one candle.'],
+         ['8 ×', 'close, confirm, close…', 'Price runs while you click through eight positions one by one. A winning basket turns into a loss.'],
+         ['−4% → −7%', 'the revenge trade', 'A bad morning, one trade to "win it back", and the whole week\'s profit is gone by lunch.']]
+        .map(([n, s, d]) => `<div class="lp-painc"><b>${n}</b><small>${s}</small><p>${d}</p></div>`).join('')}
     </div>
-    <p class="punch">So you hesitate, over-risk, or give back winners. <b>Goldmine Pro fixes the workflow, not your strategy.</b></p>
+    <p class="lp-punch">None of these is a strategy problem. <b>Goldmine Pro fixes the execution, so your edge gets a chance.</b></p>
   </div></section>
 
-  <section class="tour" id="features"><div class="wrap">
-    <div class="eyebrow">Product tour</div>
-    <h2 class="tt">The tools your MT5 terminal never had</h2>
-    <p class="lead">Real screenshots of the terminal. Every number is calculated for you: lots, risk in money, R-multiples, exit levels.</p>
-    <nav class="tourtabs">${SHOWCASE.map(([, ic, t], i) => `<a href="#" data-tour="${i}"><i>${ic}</i>${t.split(/[,&]/)[0].trim()}</a>`).join('')}</nav>
-    ${SHOWCASE.map(([img, ic, t, d, pts], i) => `<article class="show ${i % 2 ? 'rev' : ''}" id="tour${i}">
-        <div class="shotf" data-zoom="${img}" data-ic="${ic}"><div class="bar"><i></i><i></i><i></i><span>${esc(t)}</span></div><img src="${img}" alt="${esc(t)}: screenshot of the Goldmine Pro terminal" loading="lazy" width="880" height="660" onerror="this.parentNode.classList.add('noimg')"><span class="zoom">⤢ Enlarge</span></div>
-        <div class="txt"><div class="num">0${i + 1}<span> / 0${SHOWCASE.length}</span></div><h3>${t}</h3><p>${d}</p><ul>${pts.map(p => `<li>${p}</li>`).join('')}</ul></div></article>`).join('')}
-    <div class="cta"><a class="btn acc lg" href="#signup" data-cta="features-trial">Try every feature free for ${td} days</a></div>
-  </div></section>
-
-  <section class="blk outs"><div class="wrap">
-    <div class="eyebrow">What changes</div>
-    <h2 class="tt">Trade with a plan, not with a calculator</h2>
-    <p class="lead">Three things you will notice in your first week.</p>
-    <div class="outgrid">
-      <div class="out o1"><div class="wd"><div class="wdh"><span>Layer entries · XAUUSD</span><em>5 orders</em></div><div class="wdrow"><span>Max risk</span><b class="dn">−$110.00</b></div><div class="wdrow"><span>of balance</span><b>1.00 %</b></div><div class="wdbar"><i style="width:34%"></i></div></div>
-        <h4>Know your risk before you click</h4><p>Every order shows its risk in money and as % of your balance. Layers are sized so the total is exactly what you chose. No more accidental 5 % losses.</p></div>
-      <div class="out o2"><div class="wd"><div class="wdh"><span>Basket exit · 4 positions</span><em>1 click</em></div><div class="wdrow"><span>Exit level</span><b>2,650.54</b></div><div class="wdrow"><span>When it closes</span><b class="up">+$120.50</b></div><div class="wdbtn">Apply to 4 positions</div></div>
-        <h4>Exit the whole basket at your price</h4><p>One target for all positions. Break-even, +$50 or +$500: Goldmine finds the exit price and sets it everywhere. Winners stop turning into losers.</p></div>
-      <div class="out o3"><div class="wd"><div class="wdh"><span>Journal · by session</span><em>90 days</em></div><div class="bars">${[['Asia', 22, 'dn'], ['London', 92, 'up'], ['New York', 48, 'up'], ['Late', 14, 'dn']].map(([n, h, c]) => `<div><i class="${c}" style="height:${h}%"></i><small>${n}</small></div>`).join('')}</div></div>
-        <h4>See what actually makes you money</h4><p>Your journal builds itself from MT5: best sessions, setups, average R and mistakes. Do more of what works, cut what doesn't.</p></div>
+  <section class="lp-sec lp-under"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">Under the hood</div><h2>Your bridge does the work.<br><span>Even when you look away.</span></h2><p>A small app runs next to MT5 on your PC or VPS. It sizes every order, watches your targets and enforces your limits, as long as it runs.</p></div>
+    <div class="lp-hood">
+      <div class="lp-console"><div class="bar"><i></i><i></i><i></i><span>goldmine-bridge</span><em>demo log · simulated</em></div><div class="lp-log" id="lpLog"></div></div>
+      <div class="lp-stats">${[[5, 'min', 'to set up: one download, one double-click'], [1, 'click', 'to close nine positions and keep a runner'], [10, 'layers', 'sized from one risk number'], [0, '', 'broker passwords ever sent to us']]
+        .map(([n, u, t]) => `<div class="lp-stat"><b><i data-cnt="${n}" data-fmt="i">${n}</i>${u ? `<small>${u}</small>` : ''}</b><em>${t}</em></div>`).join('')}</div>
     </div>
   </div></section>
 
-  <section class="blk" style="padding-top:0"><div class="wrap">
-    <div class="eyebrow">Up and running in ~5 minutes</div>
-    <h2 class="tt">How it works</h2>
-    <p class="lead">A small app runs next to MetaTrader 5 on your own PC or VPS. The website talks to that app, so your broker login never leaves your computer.</p>
-    <div class="timeline">
-      ${[['✍️', 'Start your free trial', `Email and password. No card. Every Pro feature for ${td} days.`, '30 seconds'],
-         ['⬇️', 'Download and double-click', 'One zip with everything filled in. Open MT5, double-click START GOLDMINE. It finds your account by itself.', '3 minutes'],
-         ['📈', 'Trade', 'The website connects on its own. Want your phone too? Add the optional secure tunnel.', 'from then on']]
-        .map(([ic, t, d, tm], i) => `<div class="tl"><div class="dot">${ic}</div><small>Step ${i + 1} · ${tm}</small><h4>${t}</h4><p>${d}</p></div>`).join('')}
+  <section class="lp-sec" id="calc"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">Free tool · try it now</div><h2>How close is one typo to breaking your rules?</h2><p>Put in your account and your rules. See the exact lots, how many losses you can take, and what one wrong digit would cost.</p></div>
+    <div class="lp-calc">
+      <div class="lp-cin">
+        <div class="lp-f"><label>Account size</label><div class="lp-seg">${[1000, 5000, 10000, 25000, 50000, 100000].map(v => `<button data-lpc="bal" data-v="${v}" class="${v === LPC.bal ? 'on' : ''}">${v / 1000}k</button>`).join('')}</div></div>
+        <div class="lp-g2"><div class="lp-f"><label>Daily loss limit</label><div class="lp-inp"><input id="cDL" inputmode="decimal" value="5"><span>%</span></div></div>
+          <div class="lp-f"><label>Risk per trade</label><div class="lp-inp"><input id="cRisk" inputmode="decimal" value="1"><span>%</span></div></div></div>
+        <div class="lp-f"><label>Market</label><div class="lp-seg two">${[['xau', 'Gold · XAUUSD'], ['eur', 'EURUSD']].map(([v, t]) => `<button data-lpc="mkt" data-v="${v}" class="${v === LPC.mkt ? 'on' : ''}">${t}</button>`).join('')}</div></div>
+        <div class="lp-g2"><div class="lp-f"><label>Stop distance</label><div class="lp-inp"><input id="cStop" inputmode="decimal" value="4"><span id="cStopU">$ move</span></div></div>
+          <div class="lp-f"><label>Entries (layers)</label><div class="lp-step"><button data-lpc="n" data-v="-1">−</button><b id="cN">${LPC.n}</b><button data-lpc="n" data-v="1">+</button></div></div></div>
+        <p class="lp-fine">Standard contracts: gold 100 oz, EURUSD 100,000. Goldmine reads your broker's exact values from MT5.</p>
+      </div>
+      <div class="lp-cout" id="cOut"></div>
     </div>
   </div></section>
 
-  <section class="blk" style="padding-top:0"><div class="wrap">
-    <div class="eyebrow">Compare</div>
-    <h2 class="tt">Why not just use MT5, or an EA?</h2>
-    <div class="cmpw"><table class="cmp">
-      <thead><tr><th></th><th class="us">Goldmine Pro</th><th>MT5 on its own</th><th>Trade-manager EA + spreadsheet</th></tr></thead>
-      <tbody>
-        ${[['Drag SL / TP out of an entry, live P/L on the label', ck, half, half],
-           ['Layered limit orders, lots sized by total risk', ck, no, half],
-           ['Basket break-even / exit at a target, one click', ck, no, half],
-           ['Close the 1–5 worst positions, keep a runner', ck, no, half],
-           ['Journal: R-multiples, MAE/MFE, sessions, calendar', ck, no, no],
-           ['Same terminal on desktop, tablet and phone', ck, half, no],
-           ['Set-up', '~5 min', '—', 'hours'],
-           ['Price', `from ${minPrice()}/mo`, 'free', '€50–300 + your time']]
-          .map(r => `<tr><td>${r[0]}</td><td class="us">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}
-      </tbody></table></div>
+  ${raceHTML()}
+
+  <section class="lp-sec" id="features"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">Inside the terminal</div><h2>And everything <span>around it</span></h2><p>Real screenshots of the terminal. The four tools above are just the start.</p></div>
+    <div class="lp-day"><div class="lp-rail" aria-hidden="true"><i id="lpRail"></i></div>
+      ${LP_DAY.map(([tag, h, d, img, pos], i) => `<article class="lp-moment ${i % 2 ? 'rev' : ''}">
+        <div class="lp-mtxt"><div class="lp-time"><b>${String(i + 1).padStart(2, '0')}</b><span>${tag}</span></div><h3>${h}</h3><p>${d}</p></div>
+        <div class="lp-mvis">${pos === 'phone' ? `<div class="lp-phonebox" data-zoom="${img}"><div class="lp-phone"><img src="${img}" alt="${esc(h)}: the Goldmine Pro terminal on a phone" loading="lazy" width="390" height="844"></div></div>`
+          : `<div class="lp-shot" data-zoom="${img}"><img src="${img}" alt="${esc(h)}: screenshot of the Goldmine Pro terminal" loading="lazy" width="880" height="660" style="object-position:${pos || 'left top'}" onerror="this.parentNode.classList.add('noimg')"></div>`}</div>
+      </article>`).join('')}
+    </div>
+    <div class="lp-cta c"><a class="lp-btn gold lg" href="#signup" data-cta="features-trial">Try all of it free for ${td} days</a></div>
   </div></section>
 
-  <section class="blk" id="pricing" style="padding-top:0"><div class="wrap">
-    <div class="eyebrow">Founding-member pricing</div>
-    <h2 class="tt">Less than one spread a day</h2>
-    <p class="lead">Launch prices for our first members, <b>locked in for as long as you stay subscribed</b>. Every plan starts with ${td} days of Pro, free.</p>
-    ${ivlSeg()}<div class="plans" id="plans">${A.plans ? ['starter', 'pro', 'elite'].map(k => priceCard(k)).join('') : ''}</div>${A.plans ? lifetimeCard() : ''}
-    <div class="rr">${['🎁 ' + td + '-day free trial, no card', '↩ Cancel anytime in 2 clicks', '🔒 Your MT5 account is never touched by us', '🏷️ Founding price stays yours'].map(x => `<span>${x}</span>`).join('')}</div>
+  <section class="lp-sec"><div class="wrap lp-fit">
+    <div class="lp-fitc yes"><h3>Built for you if…</h3><ul>${['You trade MT5 with your own money, a funded account, or both', 'You scale in, layer entries or hold several positions at once', 'You trade gold, forex or indices and want risk in money, not lots', 'You want rules you can\'t break on a bad day'].map(x => `<li>${x}</li>`).join('')}</ul></div>
+    <div class="lp-fitc no"><h3>Not for you if…</h3><ul>${['You want signals or a bot that trades for you', 'You only trade on MetaTrader 4', 'You place one trade a week and never manage it'].map(x => `<li>${x}</li>`).join('')}</ul></div>
   </div></section>
 
-  <section class="blk" id="faq" style="padding-top:0"><div class="wrap">
-    <h2 class="tt">Questions, answered</h2><p class="lead"></p>
-    <div class="faq">${FAQS.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>
+  <section class="lp-sec"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">Your account, your PC</div><h2>Nothing between you and your broker</h2></div>
+    <div class="lp-trust">
+      ${[['🔒', 'Your password stays home', 'A small app runs next to MT5 on your own PC or VPS. Your broker login is never sent to us.'],
+         ['✋', 'It never trades by itself', 'You click every order. Goldmine sizes, protects and closes; it doesn\'t decide.'],
+         ['🧪', 'Demo first', 'Real-money trading stays off until you switch it on, with a confirmation.'],
+         ['🏦', 'Any MT5 broker', 'Forex, gold, indices and crypto CFDs: whatever your MT5 can trade.'],
+         ['📱', 'Desktop, tablet and phone', 'The same terminal everywhere, with an optional secure tunnel.'],
+         ['↩', 'Cancel in 2 clicks', 'No contract. Your MT5 account and trades are never affected.']]
+        .map(([i, t, d]) => `<div class="lp-tc"><span>${i}</span><h4>${t}</h4><p>${d}</p></div>`).join('')}
+    </div>
   </div></section>
 
-  <section class="blk" style="padding-top:0"><div class="wrap"><div class="final">
-    <h2>Stop managing positions one by one.</h2>
-    <p>Layers sized by risk · basket break-even · close the worst · a journal that writes itself.<br>${td} days free, no card. Then from ${minPrice()}/month, founding price for life.</p>
-    <div class="cta"><a class="btn acc lg" href="#signup" data-cta="final-trial">Start my free trial</a><button class="btn lg" data-act="demo" data-cta="final-demo" style="background:transparent;color:#fff;border-color:#3d4a44">Try the demo first</button></div>
+  <section class="lp-sec" id="pricing"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">Founding-member pricing</div><h2>Cheaper than one oversized trade</h2>
+      <p>One wrong lot size or one revenge trade can cost more than a full year of Goldmine Pro (${money2(pro.year)}). Every plan starts with ${td} days of Pro, free, no card.</p></div>
+    ${ivlSeg()}<div class="lp-plans" id="plans">${A.plans ? lpPlans() : ''}</div>
+    ${pro.lifetime ? `<div class="lp-life"><div><span class="lp-badge">Founding launch only</span><h4>Pro Lifetime: pay once, keep it forever</h4><p>Every Pro feature and every future Pro update. Nothing to renew.</p></div><div class="lp-lifep"><b>${money2(pro.lifetime)}</b><small>one-time</small></div>
+      ${A.me ? (SUB().interval === 'lifetime' ? '<button class="lp-btn ghost" disabled>You own Lifetime ✓</button>' : `<button class="lp-btn gold" data-buy="pro" data-bivl="lifetime" data-cta="buy-lifetime">Get Lifetime</button>`) : `<a class="lp-btn ghost" href="#signup" data-cta="lifetime-trial">Try free first</a>`}</div>` : ''}
+    <div class="lp-rr">${[`🎁 ${td} days of Pro, no card`, '↩ Cancel anytime in 2 clicks', '🏷️ Your founding price stays yours', '🔒 We never touch your MT5 account'].map(x => `<span>${x}</span>`).join('')}</div>
+  </div></section>
+
+  <section class="lp-sec" id="faq"><div class="wrap">
+    <div class="lp-head"><h2>Questions traders ask first</h2></div>
+    <div class="lp-faq">${LP_FAQ.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>
+  </div></section>
+
+  <section class="lp-sec"><div class="wrap"><div class="lp-final">
+    <h2>Your next trade can be the first one with a risk manager.</h2>
+    <p>Lots from your risk · ten positions like one · a daily limit you can't break.<br>${td} days free, no card. Then from ${minPrice()}/month, founding price for as long as you stay.</p>
+    <div class="lp-cta c"><a class="lp-btn gold lg" href="#signup" data-cta="final-trial">Start my free trial</a><button class="lp-btn ghost lg" data-act="demo" data-cta="final-demo">Try the demo first</button></div>
   </div></div></section>
 
-  <footer><div class="wrap">
+  <footer class="lp-foot"><div class="wrap">
     <div class="row"><a class="brand" href="#home" style="font-size:14px">${LOGO}Goldmine<span>PRO</span></a><span class="grow"></span>
       <a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="#" data-act="legal" data-k="terms">Terms</a><a href="#" data-act="legal" data-k="privacy">Privacy</a><a href="#" data-act="legal" data-k="risk">Risk disclosure</a><a href="mailto:support@yourdomain.com">Support</a></div>
-    <p><b>Risk warning:</b> CFDs and forex are complex instruments and come with a high risk of losing money rapidly due to leverage. Goldmine Pro is software only and does not provide investment advice, signals or brokerage services. MetaTrader is a trademark of MetaQuotes Ltd; Goldmine Pro is not affiliated with MetaQuotes.</p>
+    <p><b>Risk warning:</b> CFDs and forex are complex instruments and come with a high risk of losing money rapidly due to leverage. Goldmine Pro is software only and does not provide investment advice, signals or brokerage services. It does not guarantee passing any prop-firm challenge. MetaTrader is a trademark of MetaQuotes Ltd; Goldmine Pro is not affiliated with MetaQuotes or any prop firm.</p>
     <p>© ${new Date().getFullYear()} Goldmine Pro</p>
   </div></footer>
-  <div class="stickycta" id="stickyCta"><div><b>${td} days free</b><small>then from ${minPrice()}/mo · no card</small></div><a class="btn acc md" href="#signup" data-cta="sticky-trial">Start free trial</a></div>`;
-  fitHero();
+  <div class="stickycta" id="stickyCta"><div><b>${td} days free</b><small>then from ${minPrice()}/mo · no card</small></div><a class="btn acc md" href="#signup" data-cta="sticky-trial">Start free trial</a></div>
+  </div>`;
+  fitHero(); lpCalc(); lpReveal();
+  $$('.lp-painc, .lp-tc, .lp-fitc, .lp-stat, .lp-calc, .lp-console').forEach(el => el.classList.add('lp-spot'));
+  $$('.lp-vs, .lp-trust, .lp-pains, .lp-stats, .lp-plans').forEach(p => [...p.children].forEach((ch, i) => ch.style.setProperty('--i', i)));
+  lpFx(); ENG.auto = !ENG_ORDER.includes(ENG_Q); engBoot();
 }
+
+/* the challenge calculator */
+function lpCalc() {
+  const out = $('#cOut'); if (!out) return;
+  const num_ = id => { const v = parseFloat(String($('#' + id).value).replace(',', '.')); return isFinite(v) && v > 0 ? v : 0 };
+  const xau = LPC.mkt === 'xau', dl = num_('cDL'), r = num_('cRisk'), stop = num_('cStop'), n = LPC.n, bal = LPC.bal;
+  $('#cStopU').textContent = xau ? '$ move' : 'pips';
+  if (!dl || !r || !stop) { out.innerHTML = `<div class="lp-cempty">Fill in the daily loss limit, the risk per trade and the stop distance.</div>`; return }
+  const unit = xau ? 100 : 10, risk = bal * r / 100, dlUsd = bal * dl / 100;
+  const per = Math.max(0.01, Math.floor(risk / (stop * unit) / n * 100) / 100), real = per * n * stop * unit;
+  const streak = Math.floor(dl / r + 1e-9);
+  const typo = (per * 10 + per * (n - 1)) * stop * unit, times = typo / dlUsd;
+  const f2 = v => v.toFixed(2);
+  out.innerHTML = `
+    <div class="lp-kpis">
+      <div><small>Risk per trade</small><b data-cnt="${risk}" data-fmt="m" data-key="risk">${lpMoney(risk)}</b><em>${r}% of ${lpMoney(bal)}</em></div>
+      <div><small>Lots per entry</small><b>${f2(per)}<i> × ${n}</i></b><em>${f2(per * n)} lots in total</em></div>
+      <div><small>Losses in a row before the limit</small><b class="${streak <= 2 ? 'dn' : ''}" data-cnt="${streak}" data-fmt="i" data-key="streak">${streak || '0'}</b><em>daily limit ${lpMoney(dlUsd)}</em></div>
+    </div>
+    <div class="lp-alert"><b>One wrong digit</b><p>Type <span class="bad">${f2(per * 10)}</span> instead of ${f2(per)} on one entry and this trade risks <strong>${lpMoney(typo)}</strong> (${(typo / bal * 100).toFixed(1)}% of the account).
+      ${times >= 1 ? `That is <strong>${times.toFixed(1)}×</strong> your whole daily limit, in one click.` : `That is <strong>${Math.round(times * 100)}%</strong> of your daily limit, in one click.`}</p></div>
+    <div class="lp-fix"><b>With Goldmine</b><p>You type the risk, never the lot. The lots and the money at risk show before you click (${lpMoney(real)} here), and new trades lock at −${dl}%.</p></div>
+    <a class="lp-btn gold full" href="#signup" data-cta="calc-trial">Let Goldmine do this on every order</a>`;
+  out.querySelectorAll('[data-key]').forEach(lpCount);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-lpc]'); if (!b) return;
+  const k = b.dataset.lpc, v = b.dataset.v;
+  if (k === 'n') { LPC.n = Math.min(10, Math.max(1, LPC.n + +v)); $('#cN').textContent = LPC.n }
+  else {
+    LPC[k] = k === 'bal' ? +v : v; $$(`[data-lpc="${k}"]`).forEach(x => x.classList.toggle('on', x === b));
+    if (k === 'mkt') { $('#cStop').value = v === 'xau' ? 4 : 15 }
+  }
+  track('calc', { k, v }); lpCalc();
+});
+document.addEventListener('input', e => { if (['cDL', 'cRisk', 'cStop'].includes(e.target.id)) lpCalc() });
+
+/* sections fade in once */
+function lpReveal() {
+  // only below the fold: nothing you can already see starts hidden
+  $$('.lp-sec .lp-head, .lp-moment, .lp-calc, .lp-vs, .lp-plans, .lp-trust, .lp-pains, .lp-hood').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) el.classList.add('rv') });
+  lpRevealCheck();
+}
+function lpRevealCheck() { for (const el of $$('.rv:not(.in)')) if (el.getBoundingClientRect().top < innerHeight * .92) el.classList.add('in') }
+addEventListener('scroll', lpRevealCheck, { passive: true });
+addEventListener('resize', lpRevealCheck);
+setInterval(() => { if ($('.rv:not(.in)')) lpRevealCheck() }, 800); // backup for browsers that skip scroll events
+
+/* ---------------------------------------------------------------- landing motion: live tape, hero chart, scramble, console, counters, spotlight, tilt, rail
+   All decorative prices are simulated and labelled as such. Everything respects prefers-reduced-motion. */
+const LPFX = { still: matchMedia('(prefers-reduced-motion: reduce)').matches, timers: [], prev: {} };
+function lpFx() {
+  LPFX.timers.forEach(clearInterval); LPFX.timers = [];
+  lpTape(); lpHeroChart(); lpScramble($('.lp-hero h1 span')); lpConsole(); lpTilt();
+  lpCountAll(document); lpRail();
+}
+const lpEvery = (ms, fn) => LPFX.timers.push(setInterval(fn, ms));
+
+/* 1 · ticker tape (simulated quotes) */
+const LP_SYMS = [['XAUUSD', 2418.4, 2], ['EURUSD', 1.0842, 5], ['GBPUSD', 1.2714, 5], ['US100', 18452, 1], ['USDJPY', 151.38, 3], ['BTCUSD', 67210, 1], ['US30', 39120, 1], ['XAGUSD', 28.41, 3], ['GER40', 18210, 1], ['AUDUSD', 0.6612, 5]];
+function lpTape() {
+  const el = $('#lpTape'); if (!el) return;
+  const st = LP_SYMS.map(([s, p, d]) => ({ s, p, d, o: p }));
+  const one = () => st.map((q, i) => { const ch = (q.p - q.o) / q.o * 100; return `<span class="tk" data-i="${i}"><b>${q.s}</b><em>${q.p.toFixed(q.d)}</em><i class="${ch >= 0 ? 'up' : 'dn'}">${ch >= 0 ? '▲' : '▼'} ${Math.abs(ch).toFixed(2)}%</i></span>` }).join('') + '<span class="tk sim">simulated prices</span>';
+  el.innerHTML = one() + one();
+  if (LPFX.still) return;
+  lpEvery(1100, () => {
+    if (document.hidden || !el.isConnected) return;
+    for (let k = 0; k < 3; k++) {
+      const i = Math.floor(Math.random() * st.length), q = st[i], up = Math.random() > 0.48;
+      q.p *= 1 + (up ? 1 : -1) * Math.random() * 0.0007;
+      const ch = (q.p - q.o) / q.o * 100;
+      el.querySelectorAll(`.tk[data-i="${i}"]`).forEach(t => {
+        t.querySelector('em').textContent = q.p.toFixed(q.d);
+        const c = t.querySelector('i'); c.className = ch >= 0 ? 'up' : 'dn'; c.textContent = `${ch >= 0 ? '▲' : '▼'} ${Math.abs(ch).toFixed(2)}%`;
+        t.classList.remove('fu', 'fd'); void t.offsetWidth; t.classList.add(up ? 'fu' : 'fd');
+      });
+    }
+  });
+}
+
+/* 2 · hero background: a slow live candle chart drawn on a canvas */
+function lpHeroChart() {
+  const cv = $('#lpHcv'); if (!cv) return;
+  const ctx = cv.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1);
+  let W = 0, H = 0, candles = [], p = 100, t = 0, last = 0, cw = 14;
+  const add = () => { const o = p, c = o + (Math.random() - 0.48) * 1.6, h = Math.max(o, c) + Math.random() * 0.8, l = Math.min(o, c) - Math.random() * 0.8; p = c; candles.push({ o, h, l, c }) };
+  const size = () => { W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); cw = W < 700 ? 10 : 14; while (candles.length < W / cw + 4) add() };
+  size(); addEventListener('resize', size);
+  const draw = () => {
+    ctx.clearRect(0, 0, W, H);
+    const vis = candles.slice(-Math.ceil(W / cw) - 2), lo = Math.min(...vis.map(k => k.l)), hi = Math.max(...vis.map(k => k.h));
+    const y = v => H * 0.18 + (hi - v) / (hi - lo || 1) * H * 0.62, off = (t % 1) * cw;
+    vis.forEach((k, i) => {
+      const x = i * cw - off, up = k.c >= k.o;
+      ctx.strokeStyle = ctx.fillStyle = up ? 'rgba(22,199,132,.22)' : 'rgba(240,69,79,.20)';
+      ctx.beginPath(); ctx.moveTo(x + cw / 2, y(k.h)); ctx.lineTo(x + cw / 2, y(k.l)); ctx.stroke();
+      ctx.fillRect(x + cw * 0.2, y(Math.max(k.o, k.c)), cw * 0.6, Math.max(1, Math.abs(y(k.o) - y(k.c))));
+    });
+    ctx.beginPath(); // gold moving average with a glow
+    vis.forEach((k, i) => { const s = vis.slice(Math.max(0, i - 8), i + 1), m = s.reduce((a, b) => a + b.c, 0) / s.length, x = i * cw - off + cw / 2; i ? ctx.lineTo(x, y(m)) : ctx.moveTo(x, y(m)) });
+    ctx.strokeStyle = 'rgba(245,183,59,.55)'; ctx.lineWidth = 2; ctx.shadowColor = 'rgba(245,183,59,.8)'; ctx.shadowBlur = 12; ctx.stroke(); ctx.shadowBlur = 0; ctx.lineWidth = 1;
+    const lp = y(vis[vis.length - 1].c); // live price line
+    ctx.setLineDash([4, 6]); ctx.strokeStyle = 'rgba(245,183,59,.35)'; ctx.beginPath(); ctx.moveTo(0, lp); ctx.lineTo(W, lp); ctx.stroke(); ctx.setLineDash([]);
+  };
+  if (LPFX.still) return draw();
+  const loop = now => {
+    if (!cv.isConnected) return;
+    requestAnimationFrame(loop);
+    if (document.hidden || now - last < 33 || cv.getBoundingClientRect().bottom < 0) return;
+    last = now; t += 0.02; if (t >= 1) { t -= 1; add(); if (candles.length > 400) candles.splice(0, 100) }
+    else { const k = candles[candles.length - 1]; k.c += (Math.random() - 0.5) * 0.12; k.h = Math.max(k.h, k.c); k.l = Math.min(k.l, k.c) }
+    draw();
+  };
+  requestAnimationFrame(loop);
+}
+
+/* 3 · headline: characters decode into place */
+function lpScramble(el) {
+  if (!el || LPFX.still) return;
+  const final = el.textContent, glyph = '█▓▒░<>/\\|=+*#$%01';
+  let fr = 0; const len = final.length;
+  const id = setInterval(() => {
+    fr++;
+    el.textContent = [...final].map((ch, i) => ch === ' ' || i < fr / 1.6 - 4 ? ch : glyph[Math.floor(Math.random() * glyph.length)]).join('');
+    if (fr / 1.6 - 4 > len) { el.textContent = final; clearInterval(id) }
+  }, 30);
+}
+
+/* 4 · bridge console: lines type out, then the log loops */
+const LP_LOG = [
+  ['dim', '$ goldmine bridge · connected to MT5 · XAUUSD · demo'],
+  ['', 'risk 1.00% of $100,000 · stop $6.00 → 5 layers × 0.33 lot'],
+  ['ok', '✓ 5 buy limits placed · total risk −$1,000.00'],
+  ['gold', '🎯 partial TP armed · 0.05 lot @ 2,423.00'],
+  ['dim', '… page closed · bridge keeps watching the price'],
+  ['ok', '⚡ partial TP filled · 0.05 lot closed at 2,423.00'],
+  ['gold', '★ close & keep · 9 closed · runner 0.01 · SL → break-even'],
+  ['bad', '🔒 daily loss −5.00% reached · new trades locked until tomorrow'],
+];
+function lpConsole() {
+  const el = $('#lpLog'); if (!el) return;
+  const stamp = i => { const s = 8 * 3600 + 13 * 60 + i * 437; return [s / 3600, s / 60 % 60, s % 60].map(v => String(Math.floor(v)).padStart(2, '0')).join(':') };
+  const lineHTML = (i, txt) => `<div class="ln ${LP_LOG[i][0]}"><span>${stamp(i)}</span>${esc(txt)}</div>`;
+  if (LPFX.still) { el.innerHTML = LP_LOG.map(([, t], i) => lineHTML(i, t)).join(''); return }
+  let i = 0, c = 0, started = false;
+  lpEvery(26, () => {
+    if (document.hidden || !el.isConnected) return;
+    if (!started) { if (el.getBoundingClientRect().top > innerHeight) return; started = true }
+    if (c < 0) { c++; return } // short pause between lines
+    if (i >= LP_LOG.length) { if (++c > 110) { i = 0; c = 0; el.innerHTML = '' } return }
+    const txt = LP_LOG[i][1];
+    let cur = el.lastElementChild;
+    if (!cur || cur.dataset.done) { el.insertAdjacentHTML('beforeend', lineHTML(i, '')); cur = el.lastElementChild; cur.dataset.n = 0 }
+    const n = +cur.dataset.n + 2; cur.dataset.n = n;
+    cur.innerHTML = `<span>${stamp(i)}</span>${esc(txt.slice(0, n))}<b class="caret"></b>`;
+    if (n >= txt.length) { cur.innerHTML = `<span>${stamp(i)}</span>${esc(txt)}`; cur.dataset.done = 1; i++; c = -14 }
+  });
+}
+
+/* 5 · numbers count up when they come into view (and on every calculator change) */
+function lpFmt(v, f) { return f === 'm' ? lpMoney(v) : f === 'i' ? String(Math.round(v)) : f === '2' ? v.toFixed(2) : String(Math.round(v)) }
+function lpCount(el) {
+  const to = +el.dataset.cnt, f = el.dataset.fmt, key = el.dataset.key, from = key && LPFX.prev[key] != null ? LPFX.prev[key] : 0;
+  if (key) LPFX.prev[key] = to;
+  if (LPFX.still || from === to) { el.textContent = lpFmt(to, f); return }
+  const t0 = performance.now(), d = 700;
+  const step = now => { const k = Math.min(1, (now - t0) / d), e = 1 - Math.pow(1 - k, 3); el.textContent = lpFmt(from + (to - from) * e, f); if (k < 1 && el.isConnected) requestAnimationFrame(step); else el.textContent = lpFmt(to, f) };
+  requestAnimationFrame(step); setTimeout(() => { if (el.isConnected) el.textContent = lpFmt(to, f) }, d + 100); // lands on the value even if frames are paused
+}
+function lpCountAll(root) {
+  for (const el of root.querySelectorAll('[data-cnt]:not([data-key])')) {
+    if (el.dataset.seen) continue;
+    if (el.getBoundingClientRect().top < innerHeight * 0.95) { el.dataset.seen = 1; lpCount(el) }
+  }
+}
+
+/* 6 · cards light up under the pointer · 7 · hero frame tilts · 8 · progress bar and timeline rail */
+function lpTilt() {
+  const box = $('.lp-hvis'), fr = $('.lp-frame'); if (!box || !fr || LPFX.still || !matchMedia('(pointer:fine)').matches) return;
+  box.addEventListener('pointermove', e => { const r = box.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5; fr.style.transform = `perspective(1400px) rotateY(${x * 7}deg) rotateX(${-y * 6}deg)` });
+  box.addEventListener('pointerleave', () => { fr.style.transform = '' });
+}
+function lpRail() {
+  const d = $('.lp-day'), fill = $('#lpRail'), bar = $('#lpProg');
+  if (bar) bar.style.transform = `scaleX(${Math.min(1, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight))})`;
+  if (!d || !fill) return;
+  const r = d.getBoundingClientRect(), k = Math.min(1, Math.max(0, (innerHeight * 0.6 - r.top) / r.height));
+  fill.style.height = (k * 100) + '%';
+  for (const m of d.querySelectorAll('.lp-moment')) m.classList.toggle('lit', m.getBoundingClientRect().top < innerHeight * 0.6);
+}
+if (!window.lpFxBound) {
+  window.lpFxBound = 1;
+  const onScroll = () => { if (!$('.lp')) return; lpRail(); lpCountAll(document) };
+  addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll);
+  setInterval(onScroll, 700);
+  document.addEventListener('pointermove', e => {
+    const c = e.target.closest && e.target.closest('.lp-spot'); if (!c) return;
+    const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }, { passive: true });
+}
+
+/* ---------------------------------------------------------------- risk engine: a live, cinematic 2D chart (canvas, no libraries)
+   The chart keeps trading while you watch. Each tool plays its own scene on it: layers fill, nine positions burst into banked profit,
+   a partial take profit triggers, the daily limit locks the buttons. Hover for a crosshair, click to set your own target. */
+const ENG_MODES = {
+  layers: { t: 'Layer in', ic: '🪜', code: 'LYR', col: '#4c8dff', d: 'Five buy limits spread over the zone, each lot sized so the total risk is exactly 1%. Watch them fill as price dips in.' },
+  close: { t: 'Close & keep', ic: '★', code: 'C&K', col: '#f5b73b', d: 'Ten positions in profit. One click banks nine of them and keeps the best entry as a small runner, its stop at break-even.' },
+  partial: { t: 'Partial take profit', ic: '🎯', code: 'PTP', col: '#16c784', d: 'Click anywhere on the chart to set your target. When price gets there, half the position is closed and the rest runs at break-even.' },
+  lock: { t: 'Daily loss limit', ic: '🔒', code: 'LCK', col: '#f0454f', d: 'A bad day. At −5% the buttons lock until tomorrow, before a revenge trade makes it worse. Closing still works.' },
+};
+const ENG_ORDER = ['layers', 'close', 'partial', 'lock'];
+const ENG_Q = new URLSearchParams(location.search).get('eng'); // ?eng=close opens that mode (handy for links)
+const ENG = { mode: ENG_ORDER.includes(ENG_Q) ? ENG_Q : 'layers', t0: 0, auto: !ENG_ORDER.includes(ENG_Q), ready: false, tp: null };
+
+function engHTML() {
+  return `<section class="lp-sec lp-engine" id="engine"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">Interactive · hover the chart, click to set a target</div><h2>Watch it <span>manage a trade.</span></h2><p>A live chart, four tools, no sign-up. This is what runs next to your MT5 while you trade.</p></div>
+    <div class="eng">
+      <div class="eng-stage" id="engStage" data-mode="${ENG.mode}"><canvas id="engCv"></canvas>
+        <i class="eng-br c1"></i><i class="eng-br c2"></i><i class="eng-br c3"></i><i class="eng-br c4"></i>
+        <div class="eng-hud hl"><span class="lp-dot"></span>XAUUSD · M1 <b>LIVE SIM</b></div>
+        <div class="eng-hud hr" id="engCode">MODE · ${ENG_MODES[ENG.mode].code}</div>
+        <div class="eng-read" id="engRead"></div>
+        <div class="eng-hint" id="engHint"><span>hover for crosshair</span><span>click to set target</span></div>
+        <div class="eng-fallback">Starting the chart…</div></div>
+      <div class="eng-side">
+        <div class="eng-tabs">${ENG_ORDER.map(k => `<button data-eng="${k}" class="${k === ENG.mode ? 'on' : ''}"><i>${ENG_MODES[k].ic}</i><span>${ENG_MODES[k].t}</span></button>`).join('')}</div>
+        <div class="eng-card" id="engCard"></div>
+        <a class="lp-btn gold full" href="#signup" data-cta="engine-trial">Use it on your own MT5</a>
+      </div>
+    </div>
+  </div></section>`;
+}
+function engCard() {
+  const m = ENG_MODES[ENG.mode], el = $('#engCard'); if (!el) return;
+  el.innerHTML = `<h3><i>${m.ic}</i>${m.t}</h3><p>${m.d}</p><div class="eng-stats" id="engStats"></div><div class="eng-prog"><i></i></div>`;
+  $$('[data-eng]').forEach(b => b.classList.toggle('on', b.dataset.eng === ENG.mode));
+  const st = $('#engStage'); if (st) st.dataset.mode = ENG.mode;
+  const c = $('#engCode'); if (c) c.textContent = 'MODE · ' + m.code;
+}
+function engSet(mode, byUser) { ENG.mode = mode; ENG.t0 = performance.now(); if (byUser) ENG.auto = false; if (mode !== 'partial') ENG.tp = null; engCard(); ENG.scene && ENG.scene(); track('engine', { mode }) }
+document.addEventListener('click', e => { const b = e.target.closest('[data-eng]'); if (b) engSet(b.dataset.eng, true) });
+function engBoot() {
+  const st = $('#engStage'); if (ENG.cv && ENG.cv !== $('#engCv')) { ENG.ready = false; ENG.cv = null }
+  if (!st || ENG.ready || st.getBoundingClientRect().top > innerHeight * 1.5) return;
+  engInit();
+}
+
+function engInit() {
+  const st = $('#engStage'), cv = $('#engCv'); if (!st || !cv) return;
+  const ctx = cv.getContext('2d'); if (!ctx) return;
+  ENG.ready = true; ENG.cv = cv; ENG.t0 = performance.now() - (+new URLSearchParams(location.search).get('engt') || 0) * 8500; st.classList.add('ready'); engCard();
+  const COL = { up: '#16c784', dn: '#f0454f', gold: '#f5b73b', goldHi: '#ffd982', blue: '#4c8dff', red: '#f0454f', green: '#16c784', grid: 'rgba(255,255,255,.045)', mut: '#8a94a8', dim: '#566074', txt: '#eef1f6' };
+  let W = 0, H = 0, DPR = 1, phone = false;
+  const size = () => { DPR = Math.min(2, devicePixelRatio || 1); W = st.clientWidth; H = st.clientHeight; phone = W < 640; cv.width = W * DPR; cv.height = H * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0) };
+  size(); addEventListener('resize', size);
+
+  // ---- market: candles that keep forming; price chases a scripted target with noise
+  const CD = 900; // ms per candle
+  let candles = [], p = 2400, vel = 0, cStart = performance.now();
+  const newCandle = () => candles.push({ o: p, h: p, l: p, c: p });
+  for (let i = 0; i < 90; i++) { const o = p, dir = Math.sin(i / 9) * 0.5 + (Math.random() - 0.5) * 1.4; p += Math.sign(dir || 1) * (0.5 + Math.random() * 1.6); candles.push({ o, c: p, h: Math.max(o, p) + 0.15 + Math.random() * 0.8, l: Math.min(o, p) - 0.15 - Math.random() * 0.8 }) }
+  newCandle();
+  let yMin = p - 12, yMax = p + 12;
+
+  // ---- effects
+  const sparks = [], rings = [], pills = [];
+  const spark = (x, y, col, n = 18, sp = 3) => { for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, v = (0.3 + Math.random()) * sp; sparks.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 0.6, life: 1, col, s: 1 + Math.random() * 2 }) } };
+  const ring = (x, y, col, max = 70) => rings.push({ x, y, r: 4, max, life: 1, col });
+  const pill = (text, x, y, col, opt = {}) => pills.push({ text, x, y, col, life: 1, vy: opt.vy ?? -0.5, tx: opt.tx, ty: opt.ty, big: opt.big, wait: opt.wait || 0 });
+
+  // ---- scenes: levels + a scripted target path per mode
+  let S = {};
+  const lotsFor = (risk, entries, sl) => Math.max(0.01, Math.floor(risk / (100 * entries.reduce((a, e) => a + Math.abs(e - sl), 0)) * 100) / 100);
+  ENG.scene = () => {
+    const p0 = p, M = ENG.mode; sparks.length = rings.length = pills.length = 0;
+    if (M === 'layers') {
+      const e = [0, 1, 2, 3, 4].map(i => p0 - 2.5 - i * 2.1), sl = e[4] - 4.2;
+      S = { M, p0, e, sl, lot: lotsFor(1000, e, sl), filled: e.map(() => 0), path: k => k < 0.12 ? p0 : k < 0.62 ? p0 - (p0 - (e[4] - 1.2)) * ease((k - 0.12) / 0.5) : e[4] - 1.2 + 6 * ease((k - 0.62) / 0.38) };
+    } else if (M === 'close') {
+      const e = Array.from({ length: 10 }, (_, i) => p0 - 0.8 - i * 0.85);
+      S = { M, p0, e, best: 9, closed: false, banked: 0, shown: 0, sl: e[9] - 3, path: k => p0 + 6.5 * ease(Math.min(1, k / 0.38)) + (k > 0.38 ? Math.sin(k * 40) * 0.5 : 0) };
+    } else if (M === 'partial') {
+      const tp = ENG.tp ?? p0 + 7.5, en = p0 - 1.2;
+      S = { M, p0, tp, en, hit: false, path: k => k < 0.58 ? p0 + (tp + 0.6 - p0) * ease(k / 0.58) : tp + 0.6 - (k - 0.58) * 3 };
+    } else {
+      S = { M, p0, locked: false, drop: 8.4, path: k => p0 - 9.6 * ease(Math.min(1, k / 0.55)) + Math.sin(k * 30) * 0.4 * (1 - k) };
+    }
+  };
+  const ease = k => { k = Math.max(0, Math.min(1, k)); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2 };
+  ENG.scene();
+
+  // ---- input: crosshair + click to set a target
+  let mx = -1, my = -1;
+  const Y = v => 52 + (yMax - v) / (yMax - yMin) * (H - 52 - 64), V = y => yMax - (y - 52) / (H - 52 - 64) * (yMax - yMin);
+  cv.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top });
+  cv.addEventListener('pointerleave', () => { mx = my = -1 });
+  cv.addEventListener('click', e => {
+    const r = cv.getBoundingClientRect(), v = V(e.clientY - r.top);
+    ENG.tp = Math.max(p + 2, Math.min(p + 16, v)); ENG.auto = false; engSet('partial'); track('engine_tp', {});
+  });
+
+  // ---- draw helpers
+  const fmt = v => v.toFixed(2), money = v => (v < 0 ? '−$' : '+$') + Math.abs(v).toFixed(0);
+  const font = (w, s) => `${w} ${s}px Inter, -apple-system, 'Segoe UI', sans-serif`, mono = s => `700 ${s}px ui-monospace, 'SF Mono', Consolas, monospace`;
+  const tag = (x, y, text, bg, fg = '#fff', align = 'right') => {
+    ctx.font = mono(phone ? 10 : 11); const w = ctx.measureText(text).width + 14, h = phone ? 18 : 20, x0 = align === 'right' ? x - w : x;
+    ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x0, y - h / 2, w, h, 5) : ctx.rect(x0, y - h / 2, w, h); ctx.fill();
+    ctx.fillStyle = fg; ctx.textBaseline = 'middle'; ctx.fillText(text, x0 + 7, y + 0.5); return w;
+  };
+  const level = (y, col, alpha, dash, label, now, labelBg) => {
+    if (alpha <= 0.01) return; ctx.save(); ctx.globalAlpha = alpha;
+    ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.setLineDash(dash); ctx.lineDashOffset = -now / 40;
+    ctx.shadowColor = col; ctx.shadowBlur = 10; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W - 64, y); ctx.stroke(); ctx.restore();
+    if (label) { ctx.save(); ctx.globalAlpha = alpha; tag(W - 70, y, label, labelBg || col); ctx.restore() }
+  };
+
+  let last = performance.now(), statT = 0;
+  const frame = now => {
+    if (!cv.isConnected) return;
+    requestAnimationFrame(frame);
+    const r = st.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight || document.hidden) { last = now; cStart = now; return }
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const k = (now - ENG.t0) / 8500, M = ENG.mode, mc = ENG_MODES[M].col;
+    if (ENG.auto && !LPFX.still && k > 1) engSet(ENG_ORDER[(ENG_ORDER.indexOf(M) + 1) % ENG_ORDER.length]);
+    const pg = $('#engCard .eng-prog i'); if (pg) pg.style.transform = `scaleX(${Math.min(1, k)})`;
+
+    // market step: spring toward the script + noise
+    const tgt = S.path(Math.min(1, k)); vel += ((tgt - p) * 9 - vel * 4.5) * dt + (Math.random() - 0.5) * 30 * dt + Math.sin(now / 260) * 5 * dt; p += vel * dt;
+    const cur = candles[candles.length - 1]; cur.c = p; cur.h = Math.max(cur.h, p); cur.l = Math.min(cur.l, p);
+    if (now - cStart > CD) { cStart = now; newCandle(); if (candles.length > 200) candles.splice(0, 60) }
+    const frac = (now - cStart) / CD;
+
+    // scale: visible candles + active levels, eased
+    const cw = phone ? 8 : 11, rightX = (W - 64) * 0.8, nVis = Math.ceil(rightX / cw) + 2, vis = candles.slice(-nVis);
+    let lo = Math.min(...vis.map(c => c.l)), hi = Math.max(...vis.map(c => c.h));
+    const lv = [];
+    if (S.M === 'layers') lv.push(...S.e, S.sl); if (S.M === 'close') lv.push(S.e[0], S.e[9], S.sl); if (S.M === 'partial') lv.push(S.tp, S.en);
+    lv.forEach(v => { lo = Math.min(lo, v); hi = Math.max(hi, v) });
+    const pad = (hi - lo) * 0.12 + 1; yMin += (lo - pad - yMin) * 0.06; yMax += (hi + pad - yMax) * 0.06;
+
+    // ---- background
+    ctx.clearRect(0, 0, W, H);
+    const bg = ctx.createRadialGradient(W * 0.62, H * 0.45, 10, W * 0.62, H * 0.45, W * 0.75);
+    bg.addColorStop(0, mc + '22'); bg.addColorStop(1, 'rgba(5,7,11,0)'); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = COL.grid; ctx.lineWidth = 1; ctx.beginPath();
+    const gstep = (yMax - yMin) / 6; for (let i = 1; i < 6; i++) { const y = Math.round(Y(yMin + gstep * i)) + 0.5; ctx.moveTo(0, y); ctx.lineTo(W - 64, y) }
+    for (let x = rightX - ((candles.length + frac) % 10) * cw; x > 0; x -= cw * 10) { ctx.moveTo(Math.round(x) + 0.5, 40); ctx.lineTo(Math.round(x) + 0.5, H - 56) }
+    ctx.stroke();
+    ctx.font = mono(10); ctx.fillStyle = COL.dim; ctx.textBaseline = 'middle';
+    for (let i = 1; i < 6; i++) { const v = yMin + gstep * i; ctx.fillText(fmt(v), W - 58, Y(v)) }
+
+    // ---- candles, drawn like the terminal's dark theme: crisp bodies, 1px wicks, blue up / light grey down
+    const xs = i => rightX - (vis.length - 1 - i + frac) * cw;
+    const dimAll = S.M === 'lock' && S.locked ? 0.45 : 1, bw = Math.max(3, Math.round(cw * 0.72)) | 1;
+    vis.forEach((c, i) => {
+      const x = Math.round(xs(i)), up = c.c >= c.o, a = Math.min(1, Math.max(0, (x - 4) / 60));
+      if (a <= 0) return;
+      ctx.globalAlpha = a * dimAll;
+      ctx.fillStyle = '#cbd1d8'; ctx.fillRect(x, Math.round(Y(c.h)), 1, Math.max(1, Math.round(Y(c.l) - Y(c.h))));
+      const top = Math.round(Y(Math.max(c.o, c.c))), hgt = Math.max(1, Math.round(Math.abs(Y(c.o) - Y(c.c))));
+      ctx.fillStyle = up ? '#57b2ea' : '#c7ced5'; ctx.fillRect(x - (bw >> 1), top, bw, hgt);
+    });
+    ctx.globalAlpha = 1;
+    // EMA 9 (yellow) and EMA 21 (blue), like the terminal
+    const src = candles.slice(-(nVis + 60)), off = src.length - vis.length;
+    for (const [n, colr] of [[21, '#2f9cf0'], [9, '#f0b90b']]) {
+      const kf = 2 / (n + 1); let e = src[0].c; const ema = src.map(cd => (e = cd.c * kf + e * (1 - kf)));
+      ctx.save(); ctx.strokeStyle = colr; ctx.lineWidth = 1.6; ctx.shadowColor = colr; ctx.shadowBlur = 6; ctx.globalAlpha = dimAll; ctx.beginPath();
+      vis.forEach((cd, i) => { const x = xs(i), y = Y(ema[i + off]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y) }); ctx.stroke(); ctx.restore();
+    }
+
+    // ---- scene layers
+    const hx = xs(vis.length - 1), hy = Y(p);
+    const stats = [];
+    if (S.M === 'layers') {
+      const zt = Y(S.e[0] + 1), zb = Y(S.e[4] - 1), zk = ease(k / 0.12);
+      ctx.fillStyle = 'rgba(76,141,255,.07)'; ctx.fillRect(0, zt, (W - 64) * zk, zb - zt);
+      S.e.forEach((e, i) => {
+        const a = ease((k - 0.04 - i * 0.025) / 0.08), y = Y(e) - (1 - a) * 40;
+        if (!S.filled[i] && p <= e && a > 0.9) { S.filled[i] = 1; ring(hx, Y(e), COL.blue); spark(hx, Y(e), COL.blue, 16, 2.4); if (!phone) pill(`L${i + 1} filled · ${S.lot.toFixed(2)} lot`, hx - 60, Y(e) - 16, COL.blue) }
+        level(y, COL.blue, a, S.filled[i] ? [] : [6, 5], `${S.filled[i] ? '✓ ' : ''}BUY LMT ${S.lot.toFixed(2)}  ${fmt(e)}`, now);
+      });
+      const sa = ease((k - 0.18) / 0.08); level(Y(S.sl) + (1 - sa) * 30, COL.red, sa, [2, 4], `SL ${fmt(S.sl)} · −$1,000`, now);
+      const nf = S.filled.reduce((a, b) => a + b, 0);
+      stats.push(['Orders', '5'], ['Filled', `${nf} / 5`], ['Total risk', '1.00%']);
+    }
+    if (S.M === 'close') {
+      const act = 0.45, ka = k >= act;
+      if (ka && !S.closed) {
+        S.closed = true;
+        S.e.forEach((e, i) => { if (i === S.best) return; const y = Y(e), pl = (p - e) * 10; S.banked += pl; spark(W * 0.25 + Math.random() * W * 0.4, y, COL.gold, 14, 3); for (let j = 0; j < 6; j++) spark((W - 64) * (j + 0.5) / 6, y, '#ffd982', 3, 1.5); pill(money(pl), W - 130, y, COL.green, { tx: 175, ty: H - 72, wait: i * 0.09 }) });
+        ring(hx, hy, COL.gold, 120); pill('★ 9 closed · runner kept', W * 0.42, H * 0.42, COL.gold, { vy: -0.25, big: true });
+      }
+      S.shown += ((S.closed ? S.banked : 0) - S.shown) * 0.05;
+      S.e.forEach((e, i) => {
+        const best = i === S.best, a = ease((k - i * 0.02) / 0.1), gone = S.closed && !best ? Math.min(1, (k - act) / 0.05) : 0;
+        const pl = (p - e) * 10 * (best && S.closed ? 0.1 : 1);
+        level(Y(e), best ? COL.gold : COL.green, a * (1 - gone), best ? [] : [5, 4], best ? `${S.closed ? 'RUNNER 0.01' : 'BUY 0.10'} ${money(pl)}` : `BUY 0.10 ${money(pl)}`, now, best ? '#a8781c' : '#0f6b47');
+      });
+      const slY = S.closed ? Y(S.e[S.best]) : Y(S.sl), sk = S.closed ? ease((k - act - 0.08) / 0.12) : 0;
+      level(slY * sk + Y(S.sl) * (1 - sk), sk > 0.95 ? COL.green : COL.red, ease((k - 0.1) / 0.1), [2, 4], sk > 0.95 ? 'SL → BREAK-EVEN' : `SL ${fmt(S.sl)}`, now);
+      stats.push(['Open', S.closed ? '1' : '10'], ['Banked', S.closed ? money(S.shown) : '—'], ['Runner', S.closed ? '0.01 · BE' : '—']);
+    }
+    if (S.M === 'partial') {
+      const a = ease(k / 0.08);
+      if (!S.hit && p >= S.tp) { S.hit = true; const pl = (S.tp - S.en) * 100 * 0.05; ring(hx, Y(S.tp), COL.green, 140); ring(hx, Y(S.tp), '#ffffff', 60); spark(hx, Y(S.tp), COL.green, 40, 4.5); pill(`⚡ 0.05 lot closed ${money(pl)}`, hx - 20, Y(S.tp) - 22, COL.green, { big: true, vy: -0.35 }) }
+      level(Y(S.tp), COL.green, a * (S.hit ? 0.55 : 1), S.hit ? [] : [3, 4], S.hit ? `✓ TP HIT ${fmt(S.tp)}` : `🎯 TP 0.05 lot  ${fmt(S.tp)}`, now);
+      level(Y(S.en), S.hit ? COL.green : COL.gold, a, S.hit ? [2, 4] : [], S.hit ? 'REST 0.05 · SL → BE' : `BUY 0.10 ${money((p - S.en) * 10)}`, now, S.hit ? '#0f6b47' : '#a8781c');
+      if (!S.hit) { ctx.save(); ctx.strokeStyle = 'rgba(22,199,132,.35)'; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx, Y(S.tp)); ctx.stroke(); ctx.restore(); tag(hx + 8, (hy + Y(S.tp)) / 2, `${fmt(S.tp - p)} to go`, 'rgba(22,199,132,.18)', COL.green, 'left') }
+      stats.push(['Target', fmt(S.tp)], ['Status', S.hit ? 'filled ⚡' : 'armed'], ['Rest', S.hit ? 'at BE' : '0.10']);
+    }
+    if (S.M === 'lock') {
+      const today = -Math.min(5, Math.max(0, (S.p0 - p) / S.drop * 5));
+      if (!S.locked && today <= -4.99) { S.locked = true; S.lk = now; ring(W / 2, H / 2, COL.red, 260); spark(W / 2, H / 2, COL.red, 50, 5) }
+      // gauge
+      const gx = 24, gy = H - 132, gw = Math.min(260, W * 0.4), used = -today / 5;
+      ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(gx, gy, gw, 8);
+      const gg = ctx.createLinearGradient(gx, 0, gx + gw, 0); gg.addColorStop(0, COL.green); gg.addColorStop(0.6, COL.gold); gg.addColorStop(1, COL.red);
+      ctx.fillStyle = gg; ctx.fillRect(gx, gy, gw * used, 8); ctx.font = mono(10); ctx.fillStyle = COL.mut; ctx.fillText(`DAILY LOSS LIMIT · ${Math.round(used * 100)}%`, gx, gy - 10);
+      if (S.locked) {
+        const lt = (now - S.lk) / 1000, wash = Math.max(0, 0.22 - lt * 0.1) + 0.06 + Math.sin(now / 300) * 0.02;
+        ctx.fillStyle = `rgba(240,69,79,${wash})`; ctx.fillRect(0, 0, W, H);
+        ctx.save(); const sc = 1 + Math.max(0, 0.4 - lt) * 0.6, jit = lt < 0.6 ? (Math.random() - 0.5) * 8 : 0;
+        ctx.translate(W / 2 + jit, H * 0.4); ctx.scale(sc, sc); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.font = font(900, phone ? 22 : 34); ctx.shadowColor = COL.red; ctx.shadowBlur = 30; ctx.fillStyle = '#fff'; ctx.fillText('🔒 TRADING LOCKED', 0, 0);
+        ctx.shadowBlur = 0; ctx.font = mono(phone ? 10 : 12); ctx.fillStyle = '#ffc9cc'; ctx.fillText('NEW TRADES BACK TOMORROW · CLOSING STILL WORKS', 0, phone ? 24 : 34); ctx.restore();
+        // locked buttons
+        const bw = phone ? 84 : 120, by = H * 0.4 + (phone ? 52 : 70);
+        [['SELL', -1], ['BUY', 1]].forEach(([t, s]) => {
+          const bx = W / 2 + s * (bw / 2 + 6) - bw / 2, shake = lt > 1.2 && lt < 1.6 ? Math.sin(lt * 80) * 4 : 0;
+          ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.setLineDash([4, 4]); ctx.strokeRect(bx + shake, by, bw, 34); ctx.setLineDash([]);
+          ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(bx + shake, by, bw, 34); ctx.font = font(800, 13); ctx.fillStyle = '#7d8799'; ctx.textAlign = 'center'; ctx.fillText(t + ' 🔒', bx + bw / 2 + shake, by + 18); ctx.textAlign = 'left';
+        });
+      }
+      stats.push(['Today', `${today.toFixed(2)}%`], ['New trades', S.locked ? 'locked 🔒' : 'allowed'], ['Closing', 'allowed']);
+    }
+
+    // ---- live price: head, glow, tag
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const hg = ctx.createRadialGradient(hx, hy, 0, hx, hy, 26); hg.addColorStop(0, mc + 'cc'); hg.addColorStop(1, mc + '00'); ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(hx, hy, 26, 0, 7); ctx.fill();
+    ctx.restore(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(hx, hy, 3 + Math.sin(now / 150) * 0.8, 0, 7); ctx.fill();
+    ctx.save(); ctx.strokeStyle = mc + '66'; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(W - 64, hy); ctx.stroke(); ctx.restore();
+    tag(W - 4, hy, fmt(p), cur.c >= cur.o ? COL.up : COL.dn);
+
+    // ---- effects
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (let i = sparks.length - 1; i >= 0; i--) { const s = sparks[i]; s.x += s.vx; s.y += s.vy; s.vy += 0.06; s.vx *= 0.98; s.life -= dt * 1.1; if (s.life <= 0) { sparks.splice(i, 1); continue } ctx.globalAlpha = s.life; ctx.fillStyle = s.col; ctx.beginPath(); ctx.arc(s.x, s.y, s.s * s.life + 0.4, 0, 7); ctx.fill() }
+    for (let i = rings.length - 1; i >= 0; i--) { const g = rings[i]; g.r += (g.max - g.r) * 0.08; g.life -= dt * 1.2; if (g.life <= 0) { rings.splice(i, 1); continue } ctx.globalAlpha = g.life; ctx.strokeStyle = g.col; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, 7); ctx.stroke() }
+    ctx.restore();
+    for (let i = pills.length - 1; i >= 0; i--) {
+      const q = pills[i]; if (q.wait > 0) { q.wait -= dt; continue } q.life -= dt * (q.tx != null ? 0.75 : 0.45); if (q.life <= 0) { pills.splice(i, 1); continue }
+      if (q.tx != null) { q.x += (q.tx - q.x) * 0.06; q.y += (q.ty - q.y) * 0.06 } else q.y += q.vy;
+      ctx.save(); ctx.globalAlpha = Math.min(1, q.life * 2); ctx.font = q.big ? font(800, phone ? 13 : 15) : mono(phone ? 10 : 11);
+      const w = ctx.measureText(q.text).width + 18, h = q.big ? 30 : 22;
+      ctx.shadowColor = q.col; ctx.shadowBlur = 18; ctx.fillStyle = 'rgba(10,13,19,.88)'; ctx.strokeStyle = q.col; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(q.x - w / 2, q.y - h / 2, w, h, 8) : ctx.rect(q.x - w / 2, q.y - h / 2, w, h); ctx.fill(); ctx.stroke();
+      ctx.shadowBlur = 0; ctx.fillStyle = q.col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(q.text, q.x, q.y + 0.5); ctx.restore();
+    }
+
+    // ---- crosshair
+    if (mx >= 0 && mx < W - 64 && my > 40 && my < H - 56) {
+      ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.28)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(mx + 0.5, 40); ctx.lineTo(mx + 0.5, H - 56); ctx.moveTo(0, my + 0.5); ctx.lineTo(W - 64, my + 0.5); ctx.stroke(); ctx.restore();
+      tag(W - 4, my, fmt(V(my)), '#2b3445');
+      if (V(my) > p + 2) tag(mx + 10, my - 14, `click: target ${fmt(V(my))}`, 'rgba(22,199,132,.9)', '#03130b', 'left');
+    }
+
+    // ---- readouts (HTML), a few times a second
+    if (now - statT > 120) {
+      statT = now;
+      const rd = $('#engRead'); if (rd) rd.innerHTML = stats.map(([a, b]) => `<div><small>${a}</small><b>${b}</b></div>`).join('');
+      const sc = $('#engStats'); if (sc) sc.innerHTML = stats.map(([a, b]) => `<div><small>${a}</small><b>${b}</b></div>`).join('');
+    }
+  };
+  requestAnimationFrame(frame);
+}
+if (!window.engBound) { window.engBound = 1; addEventListener('scroll', engBoot, { passive: true }); setInterval(engBoot, 900) }
+
+/* ---------------------------------------------------------------- the click race: the same job in MT5 alone vs with Goldmine, played live
+   Click counts are typical, illustrative counts for doing the job by hand in MT5. */
+const RACE = [
+  { k: 'close', t: 'Close 9 of 10, keep a runner', mt: [...Array.from({ length: 9 }, (_, i) => [`Close position #${48201 + i}`, 'Yes, close', 2]), ['Modify #48210', 'Close 0.09 of 0.10', 3], ['Modify #48210', 'Stop loss → entry', 3]],
+    a: '24', au: 'clicks', g: 'Close 9 + trim 1 · keep 0.01 lot', b: '1', bu: 'click', note: 'while price keeps moving' },
+  { k: 'layers', t: 'Five limits risking exactly 1%', mt: [...[1, 2, 3, 4, 5].flatMap(i => [[`Lot calculator · order ${i}`, '1% ÷ distance = ?', 2], [`New order · Buy limit ${i}`, 'Price, lots, stop loss', 3]])],
+    a: '25', au: 'clicks', g: 'Place 5 orders · risk 1.00%', b: '1', bu: 'click', note: 'and a calculator open' },
+  { k: 'partial', t: 'Take half at your target', mt: [['Watching the chart…', 'still not there', 0], ['Watching the chart…', 'getting close', 0], ['You stepped away', 'price hits the target', 0], ['Back at the desk', 'price came back down', 0], ['Close 50%', 'too late', 2]],
+    a: '2h', au: 'of watching', g: 'Click the chart · TP armed', b: '1', bu: 'click', note: 'or you miss it' },
+  { k: 'lock', t: 'Stop after a −5% day', mt: [['Down 4.2% today', 'one more trade…', 1], ['Down 5.1%', 'win it back', 1], ['Down 6.8%', 'bigger lot this time', 1], ['Down 9.3%', 'revenge trade', 1], ['Account blown', '', 1]],
+    a: '∞', au: 'willpower', g: 'Daily limit −5% · locked', b: '0', bu: 'temptation', note: 'on the worst day' },
+  { k: 'journal', t: 'Find your best session', mt: [['History → Report', 'Export to .xlsx', 3], ['Open in Excel', 'Clean the columns', 6], ['Add a session column', '=IF(HOUR(…', 8], ['Pivot table', 'Rows: session', 7], ['Chart it', 'Which one was it?', 6]],
+    a: '30+', au: 'clicks', g: 'Open journal · by session', b: '1', bu: 'click', note: 'every single week' },
+];
+const RC = { i: 0, t0: 0, auto: true, shown: false };
+function raceHTML() {
+  return `<section class="lp-sec lp-race-sec"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">The click race</div><h2>Same job. <span>One click.</span></h2><p>Pick a job and watch it done twice: by hand in MT5, and with Goldmine.</p></div>
+    <div class="race-jobs">${RACE.map((r, i) => `<button data-race="${i}" class="${i === RC.i ? 'on' : ''}"><i></i>${r.t}</button>`).join('')}</div>
+    <div class="race" id="race">
+      <div class="race-side mt"><div class="race-top"><b>MT5 on its own</b><span class="race-cnt" id="rcA">0</span></div><div class="race-desk" id="rcDesk"></div>
+        <div class="race-bar"><i id="rcBarA"></i></div><div class="race-foot"><b id="rcScoreA">—</b><span id="rcNote"></span></div></div>
+      <div class="race-vs"><span>VS</span></div>
+      <div class="race-side gm"><div class="race-top"><b>With Goldmine</b><span class="race-cnt gold" id="rcB">0</span></div>
+        <div class="race-desk gm-desk"><div class="race-btn" id="rcBtn"></div><div class="race-done" id="rcDone">✓ Done</div><div class="race-cur" id="rcCur"></div></div>
+        <div class="race-bar"><i id="rcBarB"></i></div><div class="race-foot"><b id="rcScoreB">—</b><span>then back to trading</span></div></div>
+    </div>
+    <p class="race-fine">Click counts are typical for doing the job by hand in MT5. Your setup may differ.</p>
+  </div></section>`;
+}
+function raceStart(i, byUser) {
+  RC.i = i; RC.t0 = performance.now(); RC.step = -1; RC.clicks = 0; if (byUser) RC.auto = false;
+  $$('[data-race]').forEach(b => b.classList.toggle('on', +b.dataset.race === i));
+  const r = RACE[i], d = $('#rcDesk'); if (!d) return;
+  d.innerHTML = ''; $('#rcBtn').textContent = r.g; $('#rcBtn').className = 'race-btn'; $('#rcDone').className = 'race-done'; $('#rcCur').className = 'race-cur';
+  $('#rcScoreA').textContent = '…'; $('#rcScoreB').textContent = '…'; $('#rcNote').textContent = r.note; $('#rcA').textContent = '0'; $('#rcB').textContent = '0';
+  $('#rcBarA').style.width = '0%'; $('#rcBarB').style.width = '0%'; $('#race').classList.remove('won');
+}
+function raceTick() {
+  const d = $('#rcDesk'); if (!d) return;
+  const box = $('#race').getBoundingClientRect(); if (box.bottom < 0 || box.top > innerHeight) return;
+  if (!RC.shown) { RC.shown = true; raceStart(RC.i) }
+  const r = RACE[RC.i], el = performance.now() - RC.t0, per = LPFX.still ? 120 : 420, n = r.mt.length;
+  // Goldmine side: one click at 0.7 s, done at 1.1 s
+  if (el > 300) $('#rcCur').classList.add('go');
+  if (el > 750 && !$('#rcBtn').classList.contains('hit')) { $('#rcBtn').classList.add('hit'); $('#rcB').textContent = r.b === '0' ? '0' : '1'; $('#rcBarB').style.width = '100%' }
+  if (el > 1100 && !$('#rcDone').classList.contains('on')) { $('#rcDone').classList.add('on'); $('#rcScoreB').innerHTML = `${r.b} <small>${r.bu}</small>` }
+  // MT5 side: dialogs pile up one by one
+  const want = Math.min(n, Math.floor(el / per));
+  while (RC.step < want - 1) {
+    RC.step++; const [h, s, c] = r.mt[RC.step]; RC.clicks += c;
+    const w = document.createElement('div'); w.className = 'race-win' + (r.k === 'lock' && RC.step >= 2 ? ' bad' : '');
+    const wp = d.clientWidth < 500 ? 76 : 62, rot = (Math.random() - 0.5) * 6, x = 3 + ((RC.step % 4) / 3) * (100 - wp - 6) * (0.7 + Math.random() * 0.3), y = 8 + RC.step * (86 / n);
+    w.style.cssText = `left:${x}%;top:${Math.min(y, 70)}%;--r:${rot}deg`;
+    w.innerHTML = `<div class="wt"><i></i><i></i><i></i><span>${h}</span></div><div class="wb">${s}${c ? `<em>${c} click${c > 1 ? 's' : ''}</em>` : ''}</div>`;
+    d.appendChild(w); $('#rcA').textContent = r.k === 'lock' ? '—' : r.k === 'partial' ? `${RC.step + 1}h` : RC.clicks;
+    $('#rcBarA').style.width = ((RC.step + 1) / n * 100) + '%';
+    if (d.children.length > 7) d.firstElementChild.classList.add('gone');
+    if (d.children.length > 9) d.firstElementChild.remove();
+  }
+  if (RC.step === n - 1 && !$('#race').classList.contains('won')) { $('#race').classList.add('won'); $('#rcScoreA').innerHTML = `${r.a} <small>${r.au}</small>` }
+  if (RC.auto && !LPFX.still && el > n * per + 2600) raceStart((RC.i + 1) % RACE.length);
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-race]'); if (b) { raceStart(+b.dataset.race, true); track('race', { job: RACE[+b.dataset.race].k }) } });
+if (!window.raceBound) { window.raceBound = 1; setInterval(raceTick, 60) }
+
+/* ---------------------------------------------------------------- micro details: magnetic buttons, click ripples, cursor glow, smooth FAQ */
+if (!window.lpMicro) {
+  window.lpMicro = 1;
+  const fine = matchMedia('(pointer:fine)').matches && !LPFX.still;
+  if (fine) {
+    const glow = document.createElement('div'); glow.className = 'lp-cursor'; document.body.appendChild(glow);
+    let gx = -500, gy = -500, tx = gx, ty = gy;
+    addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; glow.style.opacity = document.querySelector('.lp') ? 1 : 0 }, { passive: true });
+    (function loop() { gx += (tx - gx) * 0.14; gy += (ty - gy) * 0.14; glow.style.transform = `translate(${gx}px, ${gy}px)`; requestAnimationFrame(loop) })();
+    document.addEventListener('pointermove', e => {
+      const b = e.target.closest && e.target.closest('.lp .lp-btn.gold, .lp .lp-btn.ghost'); $$('.lp-btn.mag').forEach(x => { if (x !== b) { x.classList.remove('mag'); x.style.transform = '' } });
+      if (!b) return; const r = b.getBoundingClientRect(); b.classList.add('mag');
+      b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.12}px, ${(e.clientY - r.top - r.height / 2) * 0.22}px)`;
+    }, { passive: true });
+  }
+  document.addEventListener('pointerdown', e => {
+    const b = e.target.closest && e.target.closest('.lp .lp-btn, .eng-tabs button, .race-jobs button'); if (!b) return;
+    const r = b.getBoundingClientRect(), s = document.createElement('span'); s.className = 'lp-ripple';
+    s.style.left = (e.clientX - r.left) + 'px'; s.style.top = (e.clientY - r.top) + 'px'; b.appendChild(s); setTimeout(() => s.remove(), 700);
+  });
+  document.addEventListener('click', e => { // FAQ: smooth open / close
+    const sm = e.target.closest && e.target.closest('.lp-faq summary'); if (!sm || LPFX.still) return;
+    const d = sm.parentElement, p = d.querySelector('p'); if (!p) return; e.preventDefault();
+    if (d.open) { p.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-6px)' }], { duration: 180 }).onfinish = () => d.open = false }
+    else { d.open = true; p.animate([{ opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' }) }
+  });
+}
+
 const SHOWCASE = [
   ['lp-layers.jpg', '🪜', 'Layered entries, sized by your risk', 'Pick a zone, a stop and how much you want to risk. Goldmine spreads 2–10 limit orders over the zone and calculates every lot size, so the total risk is exactly what you chose.',
     ['Risk in % of balance or a fixed amount', 'Equal lots, or more lots deeper in the zone', 'Average entry, max risk and R:R before you send', 'Every layer on the chart, drag to adjust']],
@@ -699,7 +1713,7 @@ const FAQS = [
 function fitHero() { const vp = $('#vp'), f = $('#heroFrame'); if (!vp || !f) return; const s = vp.clientWidth / 1440; f.style.transform = `scale(${s})`; vp.style.height = Math.round(880 * s) + 'px' }
 addEventListener('resize', fitHero);
 addEventListener('scroll', () => { // sticky trial button on phones: after the hero, hidden near the final call to action
-  const s = $('#stickyCta'), h = $('.hero'), f = $('.final'); if (!s || !h) return;
+  const s = $('#stickyCta'), h = $('.hero, .lp-hero'), f = $('.final, .lp-final'); if (!s || !h) return;
   const past = h.getBoundingClientRect().bottom < 0, nearEnd = f && f.getBoundingClientRect().top < innerHeight;
   s.classList.toggle('on', past && !nearEnd && !A.me);
 }, { passive: true });
@@ -1230,7 +2244,7 @@ document.addEventListener('click', async e => {
   if (t.dataset.buy) return buy(t.dataset.buy, t.dataset.bivl);
   if (t.dataset.acctrm) { if (!(await confirmBox('Remove this account?', '<p>It disappears from the terminal. You can add it again any time.</p>', 'Remove', 'danger'))) return; try { await bridge('/api/accounts/remove', { login: +t.dataset.acctrm }); toast('Account removed', 'ok'); loadAccts() } catch (err) { toast(err.message, 'err') } return }
   if (t.dataset.tstate) { try { setMe(await srv('/api/test/state', { state: t.dataset.tstate })); toast('Account is now: ' + t.textContent, 'ok'); $('#view').dataset.v = ''; route() } catch (err) { toast(err.message, 'err') } return }
-  if (t.dataset.ivl) { A.interval = t.dataset.ivl; store.set('saasIvl', A.interval); $$('[data-ivl]').forEach(b => b.classList.toggle('on', b.dataset.ivl === A.interval)); $('#plans').innerHTML = ['starter', 'pro', 'elite'].map(k => priceCard(k)).join(''); return }
+  if (t.dataset.ivl) { A.interval = t.dataset.ivl; store.set('saasIvl', A.interval); $$('[data-ivl]').forEach(b => b.classList.toggle('on', b.dataset.ivl === A.interval)); $('#plans').innerHTML = $('.lp') ? lpPlans() : ['starter', 'pro', 'elite'].map(k => priceCard(k)).join(''); return }
   if (t.dataset.sw) { resolveModal(null); location.hash = t.dataset.sw; return }
   if (t.dataset.themeSet) { CFG.theme = t.dataset.themeSet; saveCfg(); applyTheme(); $('#view').dataset.v = ''; return route() }
   if (t.dataset.copy) { navigator.clipboard?.writeText($('#cfgEx').textContent); return toast('Copied', 'ok') }
