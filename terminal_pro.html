@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Goldmine Pro Terminal</title>
-<link rel="stylesheet" href="gp-theme.css?v=20261109b">
+<link rel="stylesheet" href="gp-theme.css?v=20261109e">
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.0.8/dist/lightweight-charts.standalone.production.js"></script>
-<script src="gp-shared.js?v=20261109b"></script>
+<script src="gp-shared.js?v=20261109e"></script>
 <style>
 html,body{overflow:hidden}
 #app{height:100%;display:grid;grid-template-rows:auto auto 1fr}
@@ -34,15 +34,31 @@ html,body{overflow:hidden}
 .conn.wait i{animation:pulse 1s infinite}
 .conn.off i{background:#e0555a}
 @keyframes pulse{50%{opacity:.3}}
+/* header fits itself (fitHeader): it hides the least important parts first, one level at a time, instead of squashing the symbol */
+.top{overflow:hidden}
+.top>*{flex:none}.top>.grow{flex:1 1 0;min-width:0}
+.top.f1 .sessions{display:none}
+.top.f2 :is(#indBtn,#ccBtn) span,.top.f2 .sym small,.top.f2 .sym kbd{display:none}
+.top.f3 .acct .hide-md{display:none}
+.top.f4 .acct .hfm{display:none}
+.top.f5 #tfBar button[data-tf]:not(.on){display:none}
+.top.f6 .brand b,.top.f6 .brand span{display:none}
+.top.f7 .acct div:not(.eq),.top.f7 .acct .badge,.top.f7 .conn em{display:none}
+.top.f8 #indBtn,.top.f8 #ccBtn{display:none}
+.top.f9 .brand{display:none}
+.top.f10{gap:4px;padding:0 6px}.top.f10 .sym{padding:0 8px}.top.f10 .sym b{font-size:13.5px}.top.f10 .acct{padding:0 8px}.top.f10 .acct b{font-size:12px}.top.f10 #tfBar button{padding:0 7px}.top.f10 .ibtn.sq{width:30px}
+.top.f11 .conn{display:none}.top.f11 #wBtn{width:28px}
 #banner:empty{display:none}
-#banner{display:flex;gap:10px;align-items:center;justify-content:center;padding:6px 12px;font-size:12px;font-weight:700}
+#banner{display:flex;gap:10px;align-items:center;justify-content:center;padding:6px 12px;font-size:12px;font-weight:700;min-width:0}
+#banner>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#banner>button{flex:none;white-space:nowrap}
 #banner.live,#banner.lock{background:var(--dnbg);color:var(--dn)}
 #banner.sim{background:rgba(33,150,243,.12);color:var(--blue)}
 #banner button{text-decoration:underline;font-weight:800}
 
 /* layout */
 .main{display:grid;grid-template-columns:var(--watchW) minmax(0,1fr) var(--ticketW);min-height:0;grid-row:3} /* row 3 even when the banner (row 2) is hidden */
-.center{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) var(--dockH);min-width:0;min-height:0;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.center{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) min(var(--dockH),calc(100% - 150px));min-width:0;min-height:0;border-left:1px solid var(--line);border-right:1px solid var(--line)}
 .phead{display:flex;align-items:center;gap:6px;height:40px;padding:0 8px 0 14px;border-bottom:1px solid var(--line);font-weight:800;font-size:12px;letter-spacing:.03em;flex:none}
 .phead .ibtn{height:28px}
 
@@ -106,8 +122,14 @@ html,body{overflow:hidden}
 .ctools button{height:28px;padding:0 9px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-size:11.5px;font-weight:700;opacity:.92}
 .ctools button:hover{color:var(--text);border-color:var(--line2)}
 .ctools button.on{background:#e5f7ee;border-color:#9fdcbd;color:#2a9565}
+/* chart tools follow the chart's own width (side panels open or closed), so they never run into the legend */
+#chartwrap{container-type:inline-size}
+@container (max-width:760px){.ctools .lbt{display:none}}
+@container (max-width:640px){#emaBtn,#lblBtn{display:none}}
+@container (max-width:420px){#lgSym{display:none}.ctools [data-act=fit]{display:none}}
 :root[data-theme=dark] .ctools button.on,:root[data-theme=midnight] .ctools button.on{background:#294b3a;border-color:#3c5d4c;color:#61c799}
-#pickHint{position:absolute;left:50%;top:44px;transform:translateX(-50%);z-index:9;background:var(--acc);color:var(--acctx);font-weight:800;font-size:12px;padding:7px 14px;border-radius:30px;box-shadow:var(--shadow);display:none;white-space:nowrap}
+#pickHint{position:absolute;left:50%;top:44px;transform:translateX(-50%);z-index:9;background:var(--acc);color:var(--acctx);font-weight:800;font-size:12px;padding:7px 14px;border-radius:30px;box-shadow:var(--shadow);display:none;white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+@media (max-width:860px){#pickHint{white-space:normal;text-align:center;width:max-content}}
 #pickHint.on{display:block}
 #zones{position:absolute;top:0;bottom:0;z-index:2;pointer-events:none}
 .zone{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center}
@@ -156,7 +178,24 @@ html,body{overflow:hidden}
 
 /* dock */
 .dock{display:flex;flex-direction:column;min-height:0;background:var(--panel);border-top:1px solid var(--line);position:relative}
-#dockGrip{position:absolute;left:0;right:0;top:-4px;height:8px;cursor:row-resize;z-index:5}
+#dockGrip{position:absolute;left:0;right:0;top:-5px;height:10px;cursor:row-resize;z-index:5;touch-action:none;display:flex;justify-content:center;align-items:center}
+#dockGrip::after{content:"";width:40px;height:4px;border-radius:3px;background:var(--line2);opacity:0;transition:opacity .15s}
+#dockGrip:hover::after,.dock.drag #dockGrip::after{opacity:1}
+.tabs{padding-right:44px!important;position:relative}
+.dend{position:absolute;right:4px;top:0;height:40px;display:flex;align-items:center;gap:8px;z-index:3;background:var(--panel);padding-left:6px}
+.dfold{flex:none;width:30px;height:30px;border-radius:7px;color:var(--mut);font-size:15px;line-height:1}
+.dfold:hover{background:var(--hover);color:var(--text)}
+.dpl{display:none;font-weight:800;font-size:12.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dock.min .dpl{display:block}
+.dock.min .tabs{border-bottom:0}
+.dock.min:has(.dpl:not(:empty)) .tabs{padding-right:120px!important}
+.dock.min #tabTools,.dock.min #tabBody{display:none}
+@media (max-width:860px){
+  .dock{padding-top:16px}
+  #dockGrip{top:-8px;height:24px;align-items:flex-start;padding-top:13px}
+  #dockGrip::after{opacity:1;width:44px;height:5px}
+  .dend{top:16px}
+}
 .tabs{display:flex;align-items:center;gap:8px;padding:0 8px;min-height:40px;border-bottom:1px solid var(--line);flex:none}
 .tabsl{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
 .tabsl::-webkit-scrollbar{display:none}
@@ -177,6 +216,101 @@ html,body{overflow:hidden}
 .acts button.x:hover{background:var(--sell);color:#fff;border-color:transparent}
 .lvl{cursor:pointer;border-bottom:1px dashed var(--line2)}
 .lvl:hover{color:var(--acc)}
+/* dock: summary strip + position / order cards + history */
+.dsum{display:flex;gap:0;position:sticky;top:0;z-index:2;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.dsum>div{padding:7px 14px;border-right:1px solid var(--line);white-space:nowrap;flex:none}
+.dsum small{display:block;font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.dsum b{font-size:13.5px;font-variant-numeric:tabular-nums}
+.dsum em,.prow em,.hrow em{font-style:normal;font-weight:600;font-size:11px;color:var(--mut)}
+.warn{color:var(--orange)!important}
+.plist{padding:6px 8px 10px;display:flex;flex-direction:column;gap:5px}
+.dock{container-type:inline-size}
+.trk.none .dot,.trk.none .ent,.trk.none .fill{display:none}
+.prow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(110px,1.6fr) minmax(0,.8fr) auto;align-items:center;gap:14px;padding:7px 10px 7px 12px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);position:relative;cursor:pointer;font-variant-numeric:tabular-nums}
+.prow::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--up)}
+.prow.SELL::before{background:var(--dn)}
+.prow:hover{border-color:var(--line2)}
+.prow.cur{border-color:color-mix(in srgb,var(--acc) 45%,var(--line))}
+.prow small{display:block;font-size:10.5px;color:var(--mut);margin-top:2px}
+.prow .nm{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.prow .nm b{font-size:13px}
+.tgb{display:inline-flex;align-items:center;gap:4px;height:19px;padding:0 7px;border-radius:10px;border:1px dashed color-mix(in srgb,var(--up) 60%,transparent);background:color-mix(in srgb,var(--up) 10%,transparent);color:var(--up);font:700 10.5px/1 inherit;cursor:pointer;white-space:nowrap}
+.tgb i{font-style:normal;opacity:.6}.tgb:hover i{opacity:1;color:var(--dn)}
+.tglist{display:flex;flex-direction:column;gap:5px}
+.tglist>div{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);font-size:12px;font-variant-numeric:tabular-nums}
+.tglist>div>span:first-child{flex:1;min-width:0}
+.tglist .btn.sm{height:22px;padding:0 8px;font-size:11px}
+.cklist{display:flex;flex-direction:column;gap:4px;max-height:260px;overflow:auto}
+.cklist button{display:grid;grid-template-columns:16px 1fr auto 38px;white-space:nowrap;align-items:center;gap:8px;width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);font:inherit;font-size:12px;text-align:left;cursor:pointer;font-variant-numeric:tabular-nums}
+.cklist button i{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--mut);display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:900;color:#fff}
+.cklist button.on{border-color:var(--acc);background:var(--accbg)}
+.cklist button.on i{background:var(--acc);border-color:var(--acc)}
+.cklist button:not(.on){opacity:.75}
+.cklist em{font-style:normal;font-size:10px;font-weight:800;color:var(--acc);margin-left:4px}
+.cklist small{font-size:10px;font-weight:800;text-transform:uppercase;text-align:right;color:var(--mut)}
+.cklist button.on small{color:var(--acc)}
+.ckq{display:flex;gap:4px;align-items:center;font-size:11px;color:var(--mut)}.ckq button{flex:1;height:24px;padding:0 4px;white-space:nowrap;font-size:10.5px;font-weight:700;border:1px solid var(--line);border-radius:6px;background:var(--panel2);color:var(--text);cursor:pointer}
+.cksum{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:12px;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.cksum b{text-align:right}
+.ckstep{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--text);margin-top:2px}
+.ckstep i{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--accbg);color:var(--acc);font-style:normal;font-size:11px;font-weight:900}
+.ckrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:5px;align-items:center}
+.ckmini{height:34px;padding:0 10px;border-radius:9px;background:var(--panel2);border:1px solid var(--line);font-size:12px;font-weight:700;white-space:nowrap;color:var(--text)}
+.ckmini:hover{border-color:var(--line2)}
+.cklist span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ckq{flex-wrap:wrap}.ckstep .ckq{margin-left:auto}.ckstep .ckq button{flex:none}
+#vPanel .hint{line-height:1.4}
+#vPanel label.tg{line-height:1.35}
+.lt{font-size:11.5px;font-weight:700;color:var(--text)}
+.prow .px{font-size:12.5px;white-space:nowrap}
+.prow .c4{text-align:right}.prow .c4 .pl{font-size:14.5px}
+.prow .c4 small{font-weight:700}
+.sep{color:var(--mut);font-weight:400}
+.trk{--e:50%;--c:50%;--l:50%;--w:0%;min-width:0}
+.trk .bar{position:relative;height:6px;border-radius:4px;background:linear-gradient(90deg,var(--dnbg),var(--line) 50%,var(--upbg));margin:4px 0 5px}
+.trk.none .bar{background:var(--line);opacity:.5}
+.trk .fill{position:absolute;top:0;bottom:0;left:var(--l);width:var(--w);border-radius:4px;background:var(--up)}
+.trk.bad .fill{background:var(--dn)}
+.trk .ent{position:absolute;top:-3px;bottom:-3px;left:var(--e);width:2px;margin-left:-1px;background:var(--text);opacity:.55;border-radius:1px}
+.trk .dot{position:absolute;top:50%;left:var(--c);width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--panel);border:2px solid var(--up);box-shadow:0 0 0 3px var(--panel2)}
+.trk.bad .dot{border-color:var(--dn)}
+.ord .trk .dot,.ord .trk .fill{display:none}
+.trk .ghost{position:absolute;top:0;bottom:0;width:30%;border:1px dashed var(--line2);border-radius:4px}.trk .ghost.l{left:0}.trk .ghost.r{right:0}
+.trk .ends{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.trk .lvl{border-bottom:1px dashed transparent}
+.trk .lvl.s{color:var(--dn)}.trk .lvl.t{color:var(--up)}.trk .lvl.add{color:var(--mut)}
+.trk .lvl:hover{border-bottom-color:currentColor}
+.pgrp{display:flex;align-items:center;gap:8px;padding:6px 10px 2px;font-size:12px;cursor:pointer;white-space:nowrap;overflow:hidden}
+.pgrp .mut{overflow:hidden;text-overflow:ellipsis}
+.pgrp .gt{width:20px;height:20px;border-radius:5px;color:var(--mut)}.pgrp .gt:hover{background:var(--hover);color:var(--text)}
+.pgrp.off{padding-bottom:6px;border:1px solid var(--line);border-radius:9px;background:var(--panel2)}
+.seg.mini{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex:none}
+.seg.mini button{height:26px;padding:0 9px;font-size:11.5px;font-weight:700;color:var(--mut);white-space:nowrap}
+.seg.mini button+button{border-left:1px solid var(--line)}
+.seg.mini button.on{background:var(--acc);color:var(--acctx)}
+.hstats{display:flex;gap:6px;padding:8px;overflow-x:auto;scrollbar-width:thin}
+.hstats>.hc{flex:1 0 138px}.hstats>.hc:nth-child(4),.hstats>.hc:nth-child(5){flex-basis:170px}.hstats>.hc.big{flex:1.4 0 180px}
+.hc{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 10px;min-width:0;position:relative;overflow:hidden}
+.hc small{display:block;font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.hc b{display:block;font-size:14px;margin-top:1px;white-space:nowrap;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis}
+.hc>span{display:block;font-size:11px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hc.big b{font-size:19px;position:relative;z-index:1}
+.hc .spark{position:absolute;left:0;right:0;bottom:0;width:100%;height:34px;opacity:.9}
+.wbar{display:block;height:4px;border-radius:3px;background:var(--dnbg);margin-top:5px;overflow:hidden}.wbar i{display:block;height:100%;background:var(--up)}
+.hlist{padding:0 8px 10px}
+.hday{display:flex;align-items:center;gap:10px;padding:10px 4px 5px;font-size:12px;position:sticky;top:0;background:var(--panel);z-index:1}
+.hrow{display:grid;grid-template-columns:44px minmax(0,1.2fr) minmax(0,1.5fr) 80px minmax(0,.8fr);align-items:center;gap:12px;padding:6px 10px;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer;font-variant-numeric:tabular-nums}
+.hrow:hover{background:var(--hover)}
+.hrow .tm,.hrow .hd{color:var(--mut);font-size:11.5px;white-space:nowrap}
+.hrow .nm{display:flex;align-items:center;gap:6px}
+.hrow .px{white-space:nowrap}.hrow .px small{font-weight:700;margin-left:4px}
+.hrow .nt{text-align:right}.hrow .nt small{display:block;font-size:10px;color:var(--mut)}
+@container (max-width:640px){
+  .prow{grid-template-columns:1fr auto;gap:6px 10px}
+  .prow .c2{grid-column:1;grid-row:2}.prow .c3{grid-column:1 / -1;grid-row:3}.prow .c4{grid-column:2;grid-row:1}.prow .acts{grid-column:2;grid-row:2}
+  .hrow{grid-template-columns:40px 1fr auto;gap:2px 10px}.hrow .px{grid-column:2;grid-row:2;font-size:11px;color:var(--mut)}.hrow .hd{grid-column:3;grid-row:2;text-align:right}.hrow .nt{grid-column:3;grid-row:1}.hrow .tm{grid-row:1 / 3}
+  .hstats>.hc{flex-basis:118px}.hstats>.hc.big{flex-basis:150px}
+}
 .copy{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:12px;padding:12px;min-height:100%}
 .log{font-size:11.5px;display:flex;flex-direction:column}
 .log div{display:grid;grid-template-columns:62px 1fr;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)}
@@ -235,8 +369,8 @@ html,body{overflow:hidden}
 .pnhead{display:flex;flex-direction:column;gap:2px}
 .pnhead b{font-size:14px}.pnhead span{font-size:12px;color:var(--mut)}
 .sec{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--mut);text-transform:uppercase;margin-top:6px;padding-top:8px;border-top:1px solid var(--line)}
-.btn.wide{width:100%;height:36px}
-.btn.wide small{font-weight:600;opacity:.75;margin-left:4px}
+.btn.wide{width:100%;height:auto;min-height:36px;padding:7px 12px;white-space:normal;line-height:1.25;text-align:center}
+.btn.wide{flex-wrap:wrap;column-gap:6px;row-gap:0}.btn.wide small{font-weight:600;opacity:.75;white-space:nowrap}
 .sizes{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
 .sizes.five{grid-template-columns:repeat(5,1fr)}.sizes.five button{font-size:11px;white-space:nowrap}.sizes.five small{font-size:9.5px}.sizes.two{grid-template-columns:1fr 1fr}
 .sizes button{min-height:32px;border-radius:9px;background:var(--panel2);border:1px solid var(--line);font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:3px}
@@ -305,15 +439,14 @@ input[type=range]{width:100%;accent-color:var(--acc)}
 #palList h6{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;padding:8px 12px 4px}
 #fab{display:none}
 
-@media (max-width:1280px){.sessions,.acct .hide-md{display:none}}
-@media (max-width:1100px){:root{--watchW:0px}.watch{visibility:hidden}.brand b{display:none}#wBtn{display:flex!important}
+@media (max-width:1100px){.sessions{display:none!important}}
+@media (max-width:1100px){:root{--watchW:0px}.watch{visibility:hidden}#wBtn{display:flex!important}
   .watch.drawer{visibility:visible;position:fixed;left:0;top:54px;bottom:0;width:280px;z-index:35;box-shadow:var(--shadow);border-right:1px solid var(--line)}}
 @media (max-width:860px){
   :root{--ticketW:0px;--dockH:34vh;--railW:34px}
   .top{gap:6px;padding:0 8px}
-  .brand,.acct div:not(.eq),.acct .badge,.conn em,#indBtn,#ccBtn span,.sym small,.sym kbd,#lgOhlc,#lgInd{display:none}
-  .sym{padding:0 9px;flex:none}
-  #tfBar{flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
+  #indBtn,#ccBtn span,.sym small,.sym kbd,#lgOhlc,#lgInd{display:none}
+  .sym{padding:0 9px}
   .seg button{padding:0 8px}
   .acct{padding:0 9px;gap:8px}
   .ibtn.sq{width:32px}
@@ -328,13 +461,13 @@ input[type=range]{width:100%;accent-color:var(--acc)}
 }
 /* phones: the header shows only the active timeframe + ▾ (all of them in the menu); chart tools never cover the candle timer */
 @media (max-width:560px){
-  #tfBar{overflow:visible}#tfBar button[data-tf]:not(.on){display:none}
   #lgTf{display:none}
   .ctools{right:58px}.ctools button{height:26px;padding:0 8px}
-  #cacts{top:40px}#cacts button{padding:5px 9px;font-size:11px}
+  #cacts{top:40px;right:58px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}#cacts::-webkit-scrollbar{display:none}#cacts button{padding:5px 9px;font-size:11px;flex:none}
   .kbd-hint{display:none}
   .tbl th,.tbl td{padding-left:6px;padding-right:6px}
-  .tpos :is(th,td):is(:nth-child(5),:nth-child(6),:nth-child(7)),.tord :is(th,td):is(:nth-child(5),:nth-child(6)),.this :is(th,td):nth-child(5),.tpos .acts [data-pa=pct]{display:none}
+  .prow .acts [data-pa=pct]{display:none}
+  .hc{padding:6px 8px}.hc b{font-size:13.5px}
 }
 </style>
 </head>
@@ -356,6 +489,7 @@ input[type=range]{width:100%;accent-color:var(--acc)}
       <div class="hide-md"><small>Balance</small><b id="hBal">—</b></div>
       <div class="eq"><small>Equity</small><b id="hEq">—</b></div>
       <div><small>Floating</small><b id="hPl">—</b></div>
+      <div class="hfm" title="Free margin · margin level"><small>Free margin</small><b id="hFm">—</b></div>
       <div class="hide-md"><small>Today</small><b id="hDay">—</b></div>
       <span class="badge" id="hBadge">—</span>
     </button>
@@ -386,7 +520,8 @@ input[type=range]{width:100%;accent-color:var(--acc)}
         <div class="ctools"><button class="mobile-only trade" data-act="openTicket" title="Open the order panel">⇅ Trade</button><button data-act="emaToggle" id="emaBtn" title="Show / hide the moving averages">EMA</button><button data-act="lblMode" id="lblBtn" title="Labels: small → lines only → hidden">Labels: small</button><button data-act="alertHere" title="Alert at current price (A = at crosshair)">🔔<span class="lbt"> Alert</span></button><button data-act="fit" title="Reset view (0)">⤢<span class="lbt"> Fit</span></button></div>
       </div>
       <section class="dock">
-        <div id="dockGrip" title="Drag to resize"></div>
+        <div id="dockGrip" title="Drag to resize · tap to hide / show"></div>
+        <div class="dend"><span class="dpl" id="dockPl"></span><button class="dfold" id="dockFold" data-act="dockFold" title="Hide the panel">▾</button></div>
         <nav class="tabs" id="tabs"><div class="tabsl">
           <button data-tab="positions" class="on">Positions<i id="nPos">0</i></button>
           <button data-tab="orders">Orders<i id="nOrd">0</i></button>
@@ -777,6 +912,15 @@ function buildLines() {
     if (sl) out.push({ id: 'sl-' + t, price: sl, color: P_['--sell'], style: D_.Dashed, drag: 'sl', ref: t, pnl: pnlAt(p.type, p.price_open, p.volume, sl), chip: { text: 'SL ' + mny(pnlAt(p.type, p.price_open, p.volume, sl)), close: 'Remove stop loss' } });
     if (tp) out.push({ id: 'tp-' + t, price: tp, color: P_['--buy'], style: D_.Dashed, drag: 'tp', ref: t, pnl: pnlAt(p.type, p.price_open, p.volume, tp), chip: { text: 'TP ' + mny(pnlAt(p.type, p.price_open, p.volume, tp)), close: 'Remove take profit' } });
   }
+  for (const g of S.targets || []) {
+    if (g.symbol !== S.symbol) continue;
+    const price = P('tg-' + g.id, g.price);
+    if (g.kind === 'partial') {
+      const p = S.positions.find(x => x.ticket === g.ticket); if (!p) continue;
+      const pl = pnlAt(p.type, p.price_open, partVol(p.volume, g.percent), price);
+      out.push({ id: 'tg-' + g.id, price, color: P_['--up'], style: D_.SparseDotted, drag: 'tgt', ref: g.id, chip: { text: `🎯 ${tgLot(g)} ${mny(pl)}`, close: 'Remove partial TP' } });
+    } else out.push({ id: 'tg-' + g.id, price, color: P_['--orange'], style: D_.SparseDotted, drag: 'tgt', ref: g.id, chip: { text: `★ Keep best ${g.side}${g.percent ? ' −' + g.percent + '%' : ''}`, close: 'Remove keep-best target' } });
+  }
   const dc = Drag.cur;
   if (dc && dc.moved && dc.spec.drag === 'pos') {
     const p = S.positions.find(x => x.ticket === dc.spec.ref);
@@ -884,6 +1028,7 @@ async function chipClose(sp) {
     case 'tk-sl': T.sl = 0; break;
     case 'tk-tp': T.tp = 0; break;
     case 'alert': alerts = alerts.filter(a => a.id !== t); saveAlerts(); return;
+    case 'tgt': return tgRemove(t);
     case 'in': { const i = document.getElementById(sp.input); if (i) i.value = ''; renderPanel(); break }
   }
   Ticket.render(); syncLines();
@@ -892,9 +1037,10 @@ function chipClick(sp, el) {
   if (sp.drag === 'pos') {
     const p = S.allPositions.find(x => x.ticket === sp.ref); if (!p) return;
     popover(el, `<h6>${p.type} ${p.volume} ${esc(p.symbol)} · <span class="${cls(p.profit)}">${money(p.profit)}</span></h6>
-      <button class="it" data-pa="be" data-t="${p.ticket}">🛡 Stop to breakeven</button><button class="it" data-pa="edit" data-t="${p.ticket}">✎ Edit SL / TP</button><hr>
+      <button class="it" data-pa="be" data-t="${p.ticket}">🛡 Stop to breakeven</button><button class="it" data-pa="edit" data-t="${p.ticket}">✎ Edit SL / TP</button><button class="it" data-pa="ptp" data-t="${p.ticket}">🎯 Partial TP at a price…</button><hr>
       ${[25, 50, 75].map(x => `<button class="it" data-pa="pct" data-p="${x}" data-t="${p.ticket}">Close ${x}%</button>`).join('')}<button class="it dn" data-pa="close" data-t="${p.ticket}">✕ Close all (100%)</button>`);
   } else if (sp.drag === 'pprice') editOrd(sp.ref);
+  else if (sp.drag === 'tgt') { const g = (S.targets || []).find(x => x.id === sp.ref); if (g) toast(`${tgLabel(g)}${g.be ? ', then stop to break-even' : ''}. Drag the label to move it, × to remove. Your bridge keeps it, even with this page closed.`, 'info', 6000) }
 }
 
 /* =====================================================================
@@ -950,6 +1096,16 @@ async function commitDrag(d) {
   if (s.drag.startsWith('tk-')) { Ticket.render(); syncLines(); return }
   if (s.drag === 'in' || s.drag === 'bk') { if (s.drag === 'in') { const i = document.getElementById(s.input); if (i) i.value = fx(price) } renderPanel(); syncLines(); return }
   if (s.drag === 'alert') { const a = alerts.find(x => x.id === s.ref); if (a) { a.price = price; a.dir = price >= S.bid ? 'above' : 'below'; saveAlerts() } return }
+  if (s.drag === 'tgt') { // move a target = replace it at the new price
+    const g = (S.targets || []).find(x => x.id === s.ref); if (!g) return syncLines();
+    Optim.set(s.id, ttl); syncLines();
+    try {
+      const r = await api('/api/targets/add', { login: S.login, kind: g.kind, ticket: g.ticket, symbol: g.symbol, side: g.side, price: +price.toFixed(S.digits), percent: g.percent, be: g.be });
+      Optim.set('tg-' + r.target.id, ttl); await api('/api/targets/remove', { login: S.login, id: g.id }).catch(() => {});
+      toast(`${g.kind === 'partial' ? '🎯 Partial TP' : '★ Keep best'} → ${fx(price)}`, 'ok'); poll();
+    } catch (e) { Optim.delete(s.id); toast(e.message, 'err') }
+    return syncLines();
+  }
   if (s.drag === 'sl' || s.drag === 'tp' || s.drag === 'pos') {
     const p = S.allPositions.find(x => x.ticket === s.ref); if (!p) return syncLines();
     const kind = s.drag !== 'pos' ? s.drag : (p.type === 'BUY') === (price < p.price_open) ? 'sl' : 'tp';
@@ -1365,6 +1521,7 @@ function onChartClick(p) {
   const price = Chart.s.coordinateToPrice(p.point.y); if (price == null) return;
   const v = +(+price).toFixed(S.digits);
   if (T.pick) {
+    if (T.pickFn) { const f = T.pickFn; pickEnd(); return f(+(+v).toFixed(S.digits)) }
     const inp = document.getElementById(T.pick); // a panel field (Manage / Layers) or a ticket field
     if (inp && !['entry', 'sl', 'tp'].includes(T.pick)) { inp.value = fx(v); inp.dataset.dirty = 1; inp.dispatchEvent(new Event('input', { bubbles: true })); pickEnd(); return }
     T[T.pick] = v; if (T.pick === 'sl' || T.pick === 'tp') T.atrSide = null; pickEnd(); Ticket.render(); syncLines(); return;
@@ -1379,11 +1536,16 @@ function moveEntry(v) { // new entry price for the order being prepared; SL / TP
 }
 function pickStart(field) {
   T.pick = field; Chart.el.classList.add('picking');
-  $('#pickHint').textContent = `Click the chart to set the ${{ entry: 'entry price', sl: 'stop loss', tp: 'take profit', mgTp: 'take profit for all', mgSl: 'stop loss for all', lyA: 'zone start', lyB: 'zone end', lySL: 'layers stop loss', lyTP: 'layers take profit' }[field] || 'price'} · Esc to cancel`;
+  $('#pickHint').textContent = `Click the chart to set the ${{ entry: 'entry price', sl: 'stop loss', tp: 'take profit', mgTp: 'take profit for all', mgSl: 'stop loss for all', mgKbPx: 'keep-best price', lyA: 'zone start', lyB: 'zone end', lySL: 'layers stop loss', lyTP: 'layers take profit' }[field] || 'price'} · Esc to cancel`;
   $('#pickHint').classList.add('on'); $$('[data-pick]').forEach(b => b.classList.toggle('on', b.dataset.pick === field));
   if (innerWidth <= 860) $('#ticket').classList.remove('open');
 }
-function pickEnd() { T.pick = null; Chart.el.classList.remove('picking'); $('#pickHint').classList.toggle('on', D.tool !== 'cursor'); $$('[data-pick]').forEach(b => b.classList.remove('on')) }
+function pickPrice(hint, fn) { // one chart click gives a price to fn
+  if (T.pick) pickEnd(); T.pick = '_fn'; T.pickFn = fn; Chart.el.classList.add('picking');
+  $('#pickHint').textContent = hint + ' · Esc to cancel'; $('#pickHint').classList.add('on');
+  if (innerWidth <= 860) $('#ticket').classList.remove('open');
+}
+function pickEnd() { T.pick = null; T.pickFn = null;Chart.el.classList.remove('picking'); $('#pickHint').classList.toggle('on', D.tool !== 'cursor'); $$('[data-pick]').forEach(b => b.classList.remove('on')) }
 
 /* =====================================================================
    7. ORDER TICKET  (market / limit / stop, layers, lots or risk-% sizing)
@@ -1493,10 +1655,24 @@ async function placeOrder(side) {
    8. RISK GUARD + AUTOMATION (trailing stop, breakeven at R, partial close at R)
    ===================================================================== */
 const Guard = {
+  key: login => login + '|' + new Date().toISOString().slice(0, 10),
+  // move today's starting balance by a deposit (+) / withdrawal (−), or forget it ('reset': new, reset or deleted account),
+  // so cash moves never count as profit or loss and never trigger the daily loss lock
+  rebase(login, delta) {
+    const all = store.get('days', {}), k = this.key(login);
+    if (delta === 'reset') delete all[k]; else if (all[k] != null) all[k] += delta;
+    if (this.demoStart) delete this.demoStart[login];
+    store.set('days', all);
+  },
   day() {
-    if (!S.account) return null;
+    // only numbers that belong to THIS account: right after switching, S.account still holds the previous account until the first answer
+    if (!S.account || S.accLogin !== S.login) return null;
+    if (!store.get('daysFix1') && S.accounts.length) { // one-time repair of starting balances that were saved from the wrong account
+      const all = store.get('days', {}), paper = new Set(S.accounts.filter(a => a.paper).map(a => String(a.login)));
+      Object.keys(all).forEach(k => { if (paper.has(k.split('|')[0])) delete all[k] }); store.set('days', all); store.set('daysFix1', 1);
+    }
     if (CFG.demo) { const st = (this.demoStart ||= {})[S.login] ||= S.account.balance; return { start: st, pnl: S.account.equity - st, pct: (S.account.equity - st) / st * 100 } } // the demo resets every page load
-    const key = S.login + '|' + new Date().toISOString().slice(0, 10), all = store.get('days', {});
+    const key = this.key(S.login), all = store.get('days', {});
     if (!all[key]) { all[key] = S.account.balance; store.set('days', Object.fromEntries(Object.entries(all).slice(-60))) }
     const start = all[key]; return { start, pnl: S.account.equity - start, pct: (S.account.equity - start) / start * 100 };
   },
@@ -1593,18 +1769,19 @@ async function loadCandles() {
   Chart.setData(); renderHeader();
 }
 async function loadHistory() {
-  try { const r = await api(`/api/history?${L()}&limit=200`); S.history = (r.deals || []).filter(d => d.profit); Markers.update(); if (tab === 'history') renderTab(true) } catch {}
+  try { const r = await api(`/api/history?${L()}&limit=200`); S.history = (r.deals || []).filter(d => d.profit); Markers.update(); if (HJ.trades || tab === 'history') loadJournal(true) } catch {}
 }
 let pollT = 0, polling = false, fails = 0, prevTickets = null;
 function startPoll() { stopPoll(); (async function loop() { await poll(); pollT = setTimeout(loop, document.hidden ? 3000 : 600) })() }
 function stopPoll() { clearTimeout(pollT) }
 async function poll() {
   if (polling || !S.connected) return; polling = true;
-  const sym = S.symbol, tf = S.tf, t0 = performance.now();
+  const sym = S.symbol, tf = S.tf, lg = S.login, t0 = performance.now();
   try {
     const r = await api(`/api/live?${L()}&symbol=${enc(sym)}&timeframe=${tf}`);
     S.latency = Math.round(performance.now() - t0);
-    if (sym !== S.symbol || tf !== S.tf) return;
+    if (sym !== S.symbol || tf !== S.tf || lg !== S.login) return; // an answer for the previous account is thrown away
+    S.accLogin = lg;
     // auto-follow (like the old terminal): if trades are open but none on this chart, jump to the oldest one once
     if (!S.followed) { S.followed = true; if (r.positions.length && !r.positions.some(p => p.symbol === sym)) { setSymbol(r.positions.reduce((a, b) => b.ticket < a.ticket ? b : a).symbol); return } }
     Object.assign(S, { bid: r.bid, ask: r.ask, digits: r.digits, point: r.point, contract: r.contract || S.contract, srvTime: r.time, srvAt: Date.now(), account: r.account });
@@ -1615,7 +1792,7 @@ async function poll() {
     const now = new Set(r.positions.map(p => p.ticket));
     if (prevTickets && [...prevTickets].some(t => !now.has(t))) { beep(660, .15); setTimeout(loadHistory, 400) }
     prevTickets = now;
-    S.allPositions = r.positions; S.allPending = r.pending;
+    S.allPositions = r.positions; S.allPending = r.pending; S.targets = r.targets || []; tgEvents(r, lg);
     S.positions = r.positions.filter(p => p.symbol === sym); S.pending = r.pending.filter(o => o.symbol === sym);
     Chart.merge(r.bars);
     const q = S.quotes[sym] ||= {}; q.last = r.bid; q.d = r.digits; if (q.pc) q.chg = (r.bid - q.pc) / q.pc * 100;
@@ -1668,7 +1845,7 @@ function setTF(tf) {
 }
 async function switchAccount(login) {
   closePopover(); if (login === S.login) return;
-  S.login = login; store.set('login', login); prevTickets = null; S.history = []; S.allPositions = []; S.allPending = [];
+  S.login = login; store.set('login', login); prevTickets = null; S.account = null; S.accLogin = 0; S.history = []; HJ.trades = null; HJ.cash = []; S.allPositions = []; S.allPending = [];
   await connect();
 }
 async function closePos(t, pct = 100) {
@@ -1717,7 +1894,40 @@ async function editOrd(t) {
   if (v) await act(() => api('/api/pending/modify', { login: S.login, ticket: t, price: readNum(v.price), sl: readNum(v.sl), tp: readNum(v.tp) }), 'Order updated');
 }
 function closeMenu(el, t) {
-  popover(el, `<h6>Close position #${t}</h6>${[25, 50, 75].map(x => `<button class="it" data-pa="pct" data-p="${x}" data-t="${t}">Close ${x}%</button>`).join('')}<button class="it dn" data-pa="close" data-t="${t}">✕ Close 100%</button>`);
+  popover(el, `<h6>Close position #${t}</h6>${[25, 50, 75].map(x => `<button class="it" data-pa="pct" data-p="${x}" data-t="${t}">Close ${x}%</button>`).join('')}<button class="it" data-pa="ptp" data-t="${t}">🎯 Close part at a price…</button><button class="it dn" data-pa="close" data-t="${t}">✕ Close 100%</button>`);
+}
+
+/* price targets, kept by the bridge (they also fire with this page closed):
+   partial = close X % of a position at a price · keepbest = close all but the best entry (+ X % of it) */
+const tgOf = t => (S.targets || []).filter(g => g.kind === 'partial' && g.ticket === t);
+const partVol = (vol, pct) => { const st = S.volStep || .01; return +(Math.round(vol * pct / 100 / st) * st).toFixed(2) };
+async function partialTP(t, price) {
+  closePopover();
+  const p = S.allPositions.find(x => x.ticket === t); if (!p) return;
+  const buy = p.type === 'BUY', cur = curPx(p.symbol, buy) || p.price_current;
+  if (!price && p.symbol === S.symbol && Chart.el) return pickPrice(`🎯 Click the chart at your partial TP price`, v => partialTP(t, v)); // price from the chart; the dialog still lets you type it
+  const v = await formBox(`🎯 Partial take profit · ${p.type} ${p.volume} ${p.symbol}`, [
+    { id: 'price', label: 'Close part when the price reaches', value: price ? fxs(p.symbol, price) : '', ph: `${buy ? 'above' : 'below'} ${fxs(p.symbol, cur)} = in profit` },
+    { id: 'lots', label: `Lots to close (of ${p.volume})`, value: num(Math.min(+store.get('ptpLots', 0) || partVol(p.volume, 50), +(p.volume - (S.volMin || .01)).toFixed(2)), 2), ph: `e.g. ${num(partVol(p.volume, 50), 2)}` },
+    { id: 'be', label: 'Then move the stop of the rest to break-even', type: 'select', value: store.get('ptpBe', '1'), options: [['1', 'Yes'], ['0', 'No']] }],
+    'Set partial TP', 'Your bridge keeps it: it also works with this page closed or the PC locked, as long as the bridge runs.');
+  if (!v) return;
+  const px = readNum(v.price), min = S.volMin || .01, st = S.volStep || .01, vol = +(Math.round((readNum(v.lots) || 0) / st) * st).toFixed(2); if (!px) return toast('Enter a price.', 'warn');
+  if (vol < min) return toast(`Enter the lots to close (at least ${min}).`, 'warn');
+  if (vol > p.volume - min + 1e-9) return toast(`The position is ${p.volume} lot: close at most ${num(p.volume - min, 2)} so ${min} stays open.`, 'warn');
+  const pct = vol / p.volume * 100;
+  store.set('ptpLots', vol); store.set('ptpBe', v.be);
+  await act(() => api('/api/targets/add', { login: S.login, kind: 'partial', ticket: t, price: px, percent: pct, be: v.be === '1' }), `🎯 Partial TP set: close ${vol} lot at ${fxs(p.symbol, px)}`);
+}
+const tgRemove = id => act(() => api('/api/targets/remove', { login: S.login, id }), 'Target removed');
+const tgLot = g => { const p = S.allPositions.find(x => x.ticket === g.ticket); return p ? num(partVol(p.volume, g.percent), 2) + ' lot' : Math.round(g.percent) + '%' };
+const tgLabel = g => g.kind === 'partial' ? `🎯 ${tgLot(g)} @ ${fxs(g.symbol, g.price)}` : `★ Keep best ${g.side}${g.percent ? ' −' + g.percent + '%' : ''} @ ${fxs(g.symbol, g.price)}`;
+// messages from the bridge (a target fired, maybe while this page was closed): shown once
+function tgEvents(r, lg) {
+  const ev = r.events || [], k = 'tgSeen' + lg, seen = store.get(k, null), top = ev.length ? ev[ev.length - 1].id : 0;
+  if (seen == null) { store.set(k, top); return }
+  const fresh = ev.filter(e => e.id > seen); if (!fresh.length) return;
+  fresh.forEach(e => toast('⚡ ' + e.text, e.kind === 'warn' ? 'warn' : 'ok', 10000)); beep(990, .12); store.set(k, top);
 }
 
 /* alerts */
@@ -1751,6 +1961,7 @@ function renderHeader() {
   const a = S.account, acct = S.accounts.find(x => x.login === S.login);
   $('#hBal').textContent = a ? money(a.balance, false) : '—'; $('#hEq').textContent = a ? money(a.equity, false) : '—';
   const pl = $('#hPl'); pl.textContent = a ? money(a.profit) : '—'; pl.className = a ? cls(a.profit) : '';
+  { const fm = $('#hFm'), lvl = a?.margin ? a.equity / a.margin * 100 : 0; fm.textContent = a ? money(a.margin_free, false) : '—'; fm.className = lvl && lvl < 200 ? 'dn' : ''; fm.parentElement.title = a ? `Free margin ${money(a.margin_free, false)} · used ${money(a.margin, false)}${lvl ? ' · level ' + num(lvl, 0) + '%' : ''}` : '' }
   const d = Guard.day(), hd = $('#hDay'); hd.textContent = d ? `${d.pct >= 0 ? '+' : ''}${d.pct.toFixed(2)}%` : '—'; hd.className = d ? cls(d.pct) : '';
   const b = $('#hBadge'), [bt, bc] = acct ? acctBadge(acct) : ['—', '']; b.textContent = bt; b.className = 'badge ' + bc;
   if (S.connected && !CFG.demo) setConn('ok');
@@ -1764,13 +1975,27 @@ function renderSessions() {
   const h = new Date().getUTCHours() + new Date().getUTCMinutes() / 60;
   $('#sessions').innerHTML = [['Sydney', 21, 6], ['Tokyo', 0, 9], ['London', 7, 16], ['New York', 12, 21]].map(([n, a, b]) => `<span class="${(a < b ? h >= a && h < b : h >= a || h < b) ? 'on' : ''}" title="${n} ${a}:00–${b}:00 UTC">${n}</span>`).join('');
 }
+// chart buttons always sit just left of the price axis, whatever its width (more digits = wider axis)
+setInterval(() => { try { const w = Chart.c.priceScale('right').width(), el = $('.ctools'); if (w && el._w !== w) { el._w = w; el.style.right = (w + 10) + 'px' } } catch {} }, 1000);
+// header: start with everything visible, then hide one level more until nothing overflows (any width, any account / price length)
+function fitHeader() {
+  const t = $('.top'); if (!t) return;
+  for (let k = 1; k <= 11; k++) t.classList.remove('f' + k);
+  for (let k = 1; k <= 11 && t.scrollWidth > t.clientWidth + 1; k++) t.classList.add('f' + k);
+}
+{ let fw = 0, fs = ''; // refit when the width changes or when the numbers in the header change length
+  new ResizeObserver(() => { const w = $('.top').clientWidth; if (w !== fw) { fw = w; fitHeader(); requestAnimationFrame(fitHeader); renderBanner() } }).observe(document.querySelector('.top')); // after layout, never before
+  // safety net: refit when the header's numbers change length, or if anything still sticks out
+  setInterval(() => { const t = $('.top'), s = $('.acct')?.textContent.length + '|' + $('#tfBar')?.children.length + '|' + $('#symName')?.textContent + '|' + innerWidth; if (s !== fs || t.scrollWidth > t.clientWidth + 1) { fs = s; fitHeader(); renderBanner() } }, 500) }
 function renderBanner() {
   const b = $('#banner'), acct = S.accounts.find(x => x.login === S.login), g = S.connected && Guard.reason().startsWith('Daily');
-  if (CFG.demo) { b.className = 'sim'; b.innerHTML = `Demo mode: simulated prices and a simulated broker. Nothing here touches a real account. <button data-act="settings">Connect your MT5</button>` }
-  else if (acct?.paper) { b.className = 'sim'; b.innerHTML = `Paper account "${esc(acct.name)}": live MT5 prices, simulated orders. Nothing is sent to your broker. <button data-act="accounts">Manage</button>` }
-  else if (g) { b.className = 'lock'; b.innerHTML = '🔒 Daily loss limit reached. New trades are locked until tomorrow.' }
-  else if (acct && !acct.is_demo) { b.className = 'live'; b.innerHTML = '● LIVE ACCOUNT: orders use real money' }
-  else { b.className = ''; b.innerHTML = '' }
+  // one line at every width: the short text on phones, the long one where it fits; the button never gets pushed off screen
+  const ph = innerWidth <= 640, set = (c, h) => { if (b._h === c + h + ph) return; b._h = c + h + ph; b.className = c; b.innerHTML = h };
+  if (CFG.demo) set('sim', `<span>${ph ? 'Demo mode · simulated prices' : 'Demo mode: simulated prices and a simulated broker. Nothing here touches a real account.'}</span><button data-act="settings">Connect your MT5</button>`);
+  else if (acct?.paper) set('sim', `<span>${ph ? `Paper · ${esc(acct.name)} · simulated orders` : `Paper account "${esc(acct.name)}": live MT5 prices, simulated orders. Nothing is sent to your broker.`}</span><button data-act="accounts">Manage</button>`);
+  else if (g) set('lock', `<span>🔒 ${ph ? 'Daily loss limit hit · locked till tomorrow' : 'Daily loss limit reached. New trades are locked until tomorrow.'}</span>`);
+  else if (acct && !acct.is_demo) set('live', '<span>● LIVE ACCOUNT: orders use real money</span>');
+  else set('', '');
 }
 function renderWatch() {
   $('#wlist').innerHTML = (watch || []).map(s => `<div class="wrow ${s === S.symbol ? 'cur' : ''}" data-sym="${esc(s)}" id="w-${esc(s).replace(/[^\w-]/g, '_')}"></div>`).join('')
@@ -1794,7 +2019,10 @@ function renderAccountCard() {
     <span>Margin level</span><b>${lvl ? num(lvl, 0) + '%' : '—'}</b><span>Exposure</span><b>${num(sum(S.allPositions, p => p.volume), 2)} lots</b>
     ${CFG.maxDailyLoss ? `<div class="gauge"><small><span>Daily loss limit</span><span>${used.toFixed(0)}% used of −${CFG.maxDailyLoss}%</span></small><div class="bar"><i style="width:${used}%;background:${used > 75 ? 'var(--sell)' : used > 40 ? 'var(--orange)' : 'var(--buy)'}"></i></div></div>` : ''}`;
 }
-function renderCounts() { $('#nPos').textContent = S.allPositions.length; $('#nOrd').textContent = S.allPending.length; $('#nAl').textContent = alerts.length }
+function renderCounts() {
+  const fl = sum(S.allPositions, p => p.profit), dp = $('#dockPl'); // floating P/L stays visible on the folded bar
+  if (dp) { dp.textContent = S.allPositions.length ? money(fl) : ''; dp.className = 'dpl ' + cls(fl) }
+  $('#nPos').textContent = S.allPositions.length; $('#nOrd').textContent = S.allPending.length; $('#nAl').textContent = alerts.length }
 
 const empty = (t, p) => `<div class="empty"><b>${t}</b><p>${p}</p></div>`;
 let tabSig = '';
@@ -1810,36 +2038,183 @@ function fitTools() {
   if (tabsW + el.scrollWidth + 24 > d.clientWidth) d.classList.add('stack');
 }
 new ResizeObserver(() => fitTools()).observe(document.querySelector('.dock')); // also when a side panel folds
+/* ---- dock: positions · orders · history (cards with live price, SL→TP track, risk, stats) ---- */
+const MPU = {}; // money per 1.0 price move per lot, learned per symbol from live P/L
+const mpuOf = s => s === S.symbol ? (MPU[s] = perUnit()) : MPU[s] || 0;
+const curPx = (s, buy) => s === S.symbol ? (buy ? S.bid : S.ask) : S.quotes[s]?.last || 0; // the price a position closes at
+const hold = s => { s = Math.max(0, s | 0); return s < 60 ? s + 's' : s < 3600 ? Math.floor(s / 60) + 'm' : s < 86400 ? Math.floor(s / 3600) + 'h ' + Math.floor(s % 3600 / 60) + 'm' : Math.floor(s / 86400) + 'd ' + Math.floor(s % 86400 / 3600) + 'h' };
+const mv = (s, d, ref) => (d > 0 ? '+' : d < 0 ? '−' : '') + Math.abs(d).toFixed(digitsFor(s, ref));
+const nowS = () => S.srvTime ? S.srvTime + (Date.now() - S.srvAt) / 1000 : Date.now() / 1000;
+const GRP = new Set(store.get('grpOff', []));
+// where SL, entry, price and TP sit on a 0–100 bar (SL left, TP right, for buys and sells)
+function trackGeom(p, cur) {
+  const e = p.price_open, dir = p.type === 'BUY' ? 1 : -1;
+  let a = p.sl, b = p.tp;
+  if (!a && !b) return null;
+  if (!a) a = e - (b - e); if (!b) b = e + (e - a);
+  const f = x => clamp((x - a) / (b - a) * 100, 0, 100), E = f(e), C = cur ? f(cur) : E;
+  return { E, C, good: (cur - e) * dir >= 0 };
+}
+function trackHtml(p, ord) {
+  const tk = p.ticket, act = ord ? `data-oa="edit"` : `data-pa="edit"`;
+  const sl = p.sl ? `<span class="lvl s" ${act} data-t="${tk}">SL ${fxs(p.symbol, p.sl)}</span>` : `<span class="lvl add" ${act} data-t="${tk}">+ SL</span>`;
+  const tp = p.tp ? `<span class="lvl t" ${act} data-t="${tk}">TP ${fxs(p.symbol, p.tp)}</span>` : `<span class="lvl add" ${act} data-t="${tk}">+ TP</span>`;
+  return `<div class="trk${p.sl || p.tp ? '' : ' none'}" data-trk="${tk}"><div class="bar"><i class="fill"></i><i class="ent"></i><i class="dot"></i>${p.sl ? '' : '<i class="ghost l"></i>'}${p.tp ? '' : '<i class="ghost r"></i>'}</div><div class="ends">${sl}${tp}</div></div>`;
+}
+function paintTrack(el, g) {
+  if (!el || !g) return;
+  const l = Math.min(g.E, g.C), w = Math.abs(g.C - g.E);
+  el.style.setProperty('--e', g.E + '%'); el.style.setProperty('--c', g.C + '%'); el.style.setProperty('--l', l + '%'); el.style.setProperty('--w', w + '%');
+  el.classList.toggle('good', g.good); el.classList.toggle('bad', !g.good);
+}
+const sumBar = cells => `<div class="dsum">${cells.map(([k, v, x = '']) => `<div ${x}><small>${k}</small><b>${v}</b></div>`).join('')}</div>`;
+
 function tabPositions(force) {
-  const P = S.allPositions, sig = 'p' + P.map(p => [p.ticket, p.sl, p.tp, p.volume, p.symbol === S.symbol].join(':')).join('|') + JSON.stringify(AUTO[S.symbol] || '');
+  const P = S.allPositions, sig = 'p' + P.map(p => [p.ticket, p.sl, p.tp, p.volume, p.symbol === S.symbol].join(':')).join('|') + JSON.stringify(AUTO[S.symbol] || '') + [...GRP].join() + (S.targets || []).map(g => g.id + ':' + g.price).join();
   if (force || sig !== tabSig) {
     tabSig = sig;
     tools(`<button class="btn sm" data-act="editAuto" title="Trailing stop, breakeven at R, partial close at R for ${esc(S.symbol)}">⚙ Auto</button>` + (P.length ? `<button class="btn sm" data-act="beAll">🛡 BE winners</button><button class="btn sm" data-tkv="manage" title="Manage all ${esc(S.symbol)} positions: levels, partial close, worst N, runner">⚙ Manage</button><button class="btn sm" data-tkv="basket" title="One exit price for the whole ${esc(S.symbol)} basket">🎯 Basket BE</button><button class="btn sm" data-act="closeWin">Close winners</button><button class="btn sm" data-act="closeLose">Close losers</button><button class="btn sm danger" data-act="closeAll">Close all</button>` : ''));
-    $('#tabBody').innerHTML = P.length ? `<table class="tbl tpos"><thead><tr><th>Symbol</th><th>Side</th><th class="r">Lots</th><th class="r">Entry</th><th class="r">SL</th><th class="r">TP</th><th class="r">Opened</th><th class="r">P/L</th><th></th></tr></thead><tbody>
-      ${P.map(p => `<tr data-sym="${esc(p.symbol)}" class="${p.symbol === S.symbol ? 'cur' : ''}"><td><b>${esc(p.symbol)}</b>${AUTO[p.symbol] && (AUTO[p.symbol].trail || AUTO[p.symbol].beR || AUTO[p.symbol].partR) ? ' <span class="badge">AUTO</span>' : ''}</td><td><span class="side ${p.type}">${p.type}</span></td><td class="r">${p.volume}</td>
-      <td class="r">${fxs(p.symbol, p.price_open)}</td><td class="r"><span class="lvl" data-pa="edit" data-t="${p.ticket}">${p.sl ? fxs(p.symbol, p.sl) : '+ add'}</span></td><td class="r"><span class="lvl" data-pa="edit" data-t="${p.ticket}">${p.tp ? fxs(p.symbol, p.tp) : '+ add'}</span></td>
-      <td class="r mut">${fmtDT(p.time_epoch)}</td><td class="r"><span class="pl" data-pl="${p.ticket}"></span></td>
-      <td><div class="acts"><button data-pa="be" data-t="${p.ticket}" title="Stop to breakeven">BE</button><button data-pa="pct" data-p="50" data-t="${p.ticket}" title="Close 50%">½</button><button data-pa="edit" data-t="${p.ticket}" title="Edit SL/TP">✎</button><button class="x" data-pa="menu" data-t="${p.ticket}" title="Close…">✕</button></div></td></tr>`).join('')}</tbody></table>`
-      : empty('No open positions', 'Use the order panel<span class="kbd-hint">, or press <span class="kbd">⇧B</span> / <span class="kbd">⇧S</span></span>. Hover or tap an entry label on the chart and drag <b>＋ SL / ＋ TP</b> out of it (or click them).');
+    if (!P.length) { $('#tabBody').innerHTML = empty('No open positions', 'Use the order panel<span class="kbd-hint">, or press <span class="kbd">⇧B</span> / <span class="kbd">⇧S</span></span>. Hover or tap an entry label on the chart and drag <b>＋ SL / ＋ TP</b> out of it (or click them).'); return }
+    const nb = P.filter(p => p.type === 'BUY').length, by = {};
+    P.forEach(p => (by[p.symbol] ||= []).push(p));
+    const syms = Object.keys(by).sort((a, b) => (b === S.symbol) - (a === S.symbol) || a.localeCompare(b));
+    const row = p => `<div class="prow ${p.type}${p.symbol === S.symbol ? ' cur' : ''}" data-sym="${esc(p.symbol)}" data-row="${p.ticket}">
+      <div class="c1"><div class="nm"><b>${esc(p.symbol)}</b><span class="side ${p.type}">${p.type}</span><span class="lt">${p.volume} lot${p.volume === 1 ? '' : 's'}</span>${AUTO[p.symbol] && (AUTO[p.symbol].trail || AUTO[p.symbol].beR || AUTO[p.symbol].partR) ? '<span class="badge">AUTO</span>' : ''}${tgOf(p.ticket).map(g => `<button class="tgb" data-pa="tgx" data-id="${g.id}" data-t="${p.ticket}" title="Partial TP: close ${tgLot(g)} at ${fxs(p.symbol, g.price)}${g.be ? ', then stop to break-even' : ''}. Click to remove.">🎯 ${tgLot(g)} @ ${fxs(p.symbol, g.price)} <i>×</i></button>`).join('')}</div><small>#${p.ticket} · <span data-age="${p.time_epoch}"></span></small></div>
+      <div class="c2"><div class="px">${fxs(p.symbol, p.price_open)} <em>→</em> <b data-now></b></div><small data-mv></small></div>
+      <div class="c3">${trackHtml(p)}</div>
+      <div class="c4"><b class="pl" data-pl="${p.ticket}"></b><small data-r></small></div>
+      <div class="acts"><button data-pa="be" data-t="${p.ticket}" title="Stop to breakeven">BE</button><button data-pa="pct" data-p="50" data-t="${p.ticket}" title="Close 50%">½</button><button data-pa="ptp" data-t="${p.ticket}" title="Partial take profit: close part of this position at a price">🎯</button><button data-pa="edit" data-t="${p.ticket}" title="Edit SL/TP">✎</button><button class="x" data-pa="menu" data-t="${p.ticket}" title="Close…">✕</button></div></div>`;
+    const grp = s => {
+      const G = by[s]; if (G.length < 2) return row(G[0]);
+      const v = sum(G, p => p.volume), net = sum(G, p => p.volume * (p.type === 'BUY' ? 1 : -1)), avg = sum(G, p => p.price_open * p.volume) / v, off = GRP.has(s);
+      return `<div class="pgrp${off ? ' off' : ''}${s === S.symbol ? ' cur' : ''}" data-sym="${esc(s)}"><button class="gt" data-act="grpToggle" data-s="${esc(s)}" title="${off ? 'Show' : 'Hide'} the ${G.length} positions">${off ? '▸' : '▾'}</button><b>${esc(s)}</b><span class="mut">${G.length} positions · ${num(v, 2)} lots${net ? ` · net ${net > 0 ? 'long' : 'short'} ${num(Math.abs(net), 2)}` : ' · hedged'} · avg ${fxs(s, avg)}</span><span class="grow"></span><b class="pl" data-gpl="${esc(s)}"></b></div>${off ? '' : G.map(row).join('')}`;
+    };
+    $('#tabBody').innerHTML = sumBar([['Floating P/L', '<span data-sum="pl"></span>'], ['Open', `${P.length} <em>${nb} buy · ${P.length - nb} sell</em>`], ['Volume', num(sum(P, p => p.volume), 2) + ' lots'], ['Free margin', '<span data-sum="fm"></span>'], ['If all SL hit', '<span data-sum="risk"></span>', 'title="What you lose (or lock in) if every stop loss is hit"'], ['If all TP hit', '<span data-sum="rew"></span>']]) + `<div class="plist">${syms.map(grp).join('')}</div>`;
   }
-  P.forEach(p => { const e = document.querySelector(`[data-pl="${p.ticket}"]`); if (e) { e.textContent = money(p.profit); e.className = 'pl ' + cls(p.profit) } });
+  // live part: price, move, track, P/L, R, totals
+  let risk = 0, rew = 0, noSl = 0, noTp = 0, unk = 0; const gpl = {};
+  for (const p of P) {
+    const buy = p.type === 'BUY', dir = buy ? 1 : -1, cur = (p.symbol === S.symbol ? curPx(p.symbol, buy) : p.price_current) || curPx(p.symbol, buy);
+    const d = cur ? (cur - p.price_open) * dir : 0;
+    if (p.symbol !== S.symbol && Math.abs(d) > 0 && p.profit && p.volume) { const m = p.profit / (d * p.volume); if (m > 0 && isFinite(m)) MPU[p.symbol] = m }
+    const m = mpuOf(p.symbol); gpl[p.symbol] = (gpl[p.symbol] || 0) + p.profit;
+    if (p.sl) { m ? risk += (p.sl - p.price_open) * dir * p.volume * m : unk++ } else noSl++;
+    if (p.tp) { m ? rew += (p.tp - p.price_open) * dir * p.volume * m : unk++ } else noTp++;
+    const r = document.querySelector(`[data-row="${p.ticket}"]`); if (!r) continue;
+    const q = s => r.querySelector(s);
+    q('[data-pl]').textContent = money(p.profit); q('[data-pl]').className = 'pl ' + cls(p.profit);
+    q('[data-now]').textContent = cur ? fxs(p.symbol, cur) : '…';
+    q('[data-mv]').textContent = cur ? mv(p.symbol, d, cur) : ''; q('[data-mv]').className = cls(d);
+    q('[data-age]').textContent = hold(nowS() - p.time_epoch);
+    const R = p.sl && p.sl !== p.price_open ? d / Math.abs(p.price_open - p.sl) : null, rEl = q('[data-r]');
+    rEl.textContent = R == null ? (p.sl ? 'risk-free' : 'no stop') : (R >= 0 ? '+' : '−') + Math.abs(R).toFixed(2) + 'R'; rEl.className = R == null ? (p.sl ? 'up' : 'warn') : cls(R);
+    paintTrack(q('[data-trk]'), trackGeom(p, cur));
+  }
+  Object.entries(gpl).forEach(([s, v]) => { const e = document.querySelector(`[data-gpl="${CSS.escape(s)}"]`); if (e) { e.textContent = money(v); e.className = 'pl ' + cls(v) } });
+  const tot = sum(P, p => p.profit), set = (k, h) => { const e = document.querySelector(`[data-sum="${k}"]`); if (e) e.innerHTML = h };
+  set('pl', `<span class="${cls(tot)}">${money(tot)}</span>`);
+  { const a = S.account, lvl = a?.margin ? a.equity / a.margin * 100 : 0; set('fm', a ? `<span class="${lvl && lvl < 200 ? 'dn' : ''}">${money(a.margin_free, false)}</span>${lvl ? ` <em>${num(lvl, 0)}%</em>` : ''}` : '—') }
+  set('risk', noSl === P.length ? '<span class="warn">no stops set</span>' : `<span class="${cls(risk)}">${money(risk)}</span>${noSl ? ` <em class="warn">${noSl} without SL</em>` : ''}${unk ? ' <em>≈</em>' : ''}`);
+  set('rew', noTp === P.length ? '<span class="mut">no targets</span>' : `<span class="${cls(rew)}">${money(rew)}</span>${noTp ? ` <em>${noTp} without TP</em>` : ''}`);
 }
+
 function tabOrders(force) {
-  const O = S.allPending, sig = 'o' + O.map(o => [o.ticket, o.price, o.sl, o.tp].join(':')).join('|');
-  if (!force && sig === tabSig) return; tabSig = sig;
-  tools(O.length ? `<button class="btn sm danger" data-act="cancelAll">Cancel all</button>` : '');
-  $('#tabBody').innerHTML = O.length ? `<table class="tbl tord"><thead><tr><th>Symbol</th><th>Type</th><th class="r">Lots</th><th class="r">Price</th><th class="r">SL</th><th class="r">TP</th><th></th></tr></thead><tbody>
-    ${O.map(o => `<tr data-sym="${esc(o.symbol)}" class="${o.symbol === S.symbol ? 'cur' : ''}"><td><b>${esc(o.symbol)}</b></td><td><span class="side ${o.name.startsWith('BUY') ? 'BUY' : 'SELL'}">${esc(o.name)}</span></td><td class="r">${o.volume}</td><td class="r">${fxs(o.symbol, o.price)}</td><td class="r">${o.sl ? fxs(o.symbol, o.sl) : '—'}</td><td class="r">${o.tp ? fxs(o.symbol, o.tp) : '—'}</td>
-    <td><div class="acts"><button data-oa="edit" data-t="${o.ticket}">✎</button><button class="x" data-oa="cancel" data-t="${o.ticket}" title="Cancel">✕</button></div></td></tr>`).join('')}</tbody></table>`
-    : empty('No pending orders', 'Switch the order panel to Limit or Stop and click the chart. Then drag <b>＋SL / ＋TP</b> from the order label and press <b>✓</b>.');
+  const O = S.allPending, sig = 'o' + O.map(o => [o.ticket, o.price, o.sl, o.tp, o.volume].join(':')).join('|');
+  if (force || sig !== tabSig) {
+    tabSig = sig;
+    tools(O.length ? `<button class="btn sm danger" data-act="cancelAll">Cancel all</button>` : '');
+    if (!O.length) { $('#tabBody').innerHTML = empty('No pending orders', 'Switch the order panel to Limit or Stop and click the chart. Then drag <b>＋SL / ＋TP</b> from the order label and press <b>✓</b>.'); return }
+    const sorted = O.slice().sort((a, b) => (b.symbol === S.symbol) - (a.symbol === S.symbol) || a.symbol.localeCompare(b.symbol) || b.price - a.price);
+    $('#tabBody').innerHTML = sumBar([['Pending', `${O.length} <em>${O.filter(o => o.name.startsWith('BUY')).length} buy · ${O.filter(o => o.name.startsWith('SELL')).length} sell</em>`], ['Volume', num(sum(O, o => o.volume), 2) + ' lots'], ['Nearest', '<span data-sum="near"></span>'], ['Risk if all fill & stop out', '<span data-sum="orisk"></span>']]) +
+      `<div class="plist">${sorted.map(o => { const side = o.name.startsWith('BUY') ? 'BUY' : 'SELL', p = { ...o, type: side, price_open: o.price }; return `<div class="prow ord ${side}${o.symbol === S.symbol ? ' cur' : ''}" data-sym="${esc(o.symbol)}" data-orow="${o.ticket}">
+      <div class="c1"><div class="nm"><b>${esc(o.symbol)}</b><span class="side ${side}">${esc(o.name)}</span><span class="lt">${o.volume} lot${o.volume === 1 ? '' : 's'}</span></div><small>#${o.ticket}${o.time_epoch ? ` · placed <span data-age="${o.time_epoch}"></span> ago` : ''}</small></div>
+      <div class="c2"><div class="px"><em>@</em> <b>${fxs(o.symbol, o.price)}</b></div><small data-dist></small></div>
+      <div class="c3">${trackHtml(p, true)}</div>
+      <div class="c4"><b data-orisk class="mut"></b><small data-orr></small></div>
+      <div class="acts"><button data-oa="edit" data-t="${o.ticket}" title="Edit price, SL, TP">✎</button><button class="x" data-oa="cancel" data-t="${o.ticket}" title="Cancel">✕</button></div></div>` }).join('')}</div>`;
+  }
+  let near = null, risk = 0, noSl = 0;
+  for (const o of O) {
+    const r = document.querySelector(`[data-orow="${o.ticket}"]`), buy = o.name.startsWith('BUY'), dir = buy ? 1 : -1;
+    const cur = (o.symbol === S.symbol ? (buy ? S.ask : S.bid) : o.price_current) || S.quotes[o.symbol]?.last || 0, m = mpuOf(o.symbol);
+    const dist = cur ? Math.abs(o.price - cur) : null, pct = cur ? dist / cur * 100 : null;
+    if (pct != null && (!near || pct < near.pct)) near = { pct, o, dist };
+    const rk = o.sl && m ? (o.sl - o.price) * dir * o.volume * m : null, rw = o.tp && m ? (o.tp - o.price) * dir * o.volume * m : null;
+    if (rk != null) risk += rk; if (!o.sl) noSl++;
+    if (!r) continue;
+    const q = s => r.querySelector(s), age = q('[data-age]'); if (age) age.textContent = hold(nowS() - o.time_epoch);
+    q('[data-dist]').textContent = dist != null ? `${dist.toFixed(digitsFor(o.symbol, cur))} away · ${pct.toFixed(2)}%` : '';
+    q('[data-orisk]').innerHTML = rk != null ? `<span class="${cls(rk)}" title="Loss if it fills and the stop is hit">${money(rk)}</span>` : '<span class="warn">no stop</span>';
+    q('[data-orr]').innerHTML = rw != null ? `target <span class="up">${money(rw)}</span>${o.sl ? ` · 1:${(Math.abs(o.tp - o.price) / Math.abs(o.price - o.sl)).toFixed(1)}` : ''}` : o.sl ? 'no target' : '';
+    paintTrack(q('[data-trk]'), trackGeom({ ...o, type: buy ? 'BUY' : 'SELL', price_open: o.price }, 0));
+  }
+  const set = (k, h) => { const e = document.querySelector(`[data-sum="${k}"]`); if (e) e.innerHTML = h };
+  set('near', near ? `${esc(near.o.symbol)} <em>${near.pct.toFixed(2)}% away</em>` : '—');
+  set('orisk', `<span class="dn">${money(risk)}</span>${noSl ? ` <em class="warn">${noSl} without SL</em>` : ''}`);
+}
+
+/* History: closed trades of the last 90 days with entry → exit, hold time and the stats you check every day */
+const HJ = { trades: null, cash: [], at: 0, per: store.get('hper', 'week'), sym: store.get('hsym', 'all'), busy: false };
+const HPER = { today: 'Today', week: '7D', month: '30D', all: '90D' }, HPLONG = { today: 'today', week: '7 days', month: '30 days', all: '90 days' };
+async function loadJournal(force) {
+  if (HJ.busy || (!force && HJ.trades && Date.now() - HJ.at < 60000)) return;
+  HJ.busy = true; const login = S.login;
+  try {
+    const r = await api(`/api/journal?${L()}&days=90&excursion=0`);
+    if (login !== S.login) return;
+    HJ.trades = (r.trades || []).slice().sort((a, b) => b.close_time - a.close_time); HJ.cash = r.cash || [];
+  } catch {
+    // older bridge: fall back to the plain deal list
+    HJ.trades = S.history.map(d => ({ position: d.ticket, symbol: d.symbol, side: d.type === 'SELL' ? 'BUY' : 'SELL', closed_volume: d.volume, close_price: d.price, net: d.profit, close_time: d.time_epoch })); HJ.cash = [];
+  } finally { HJ.busy = false; HJ.at = Date.now() }
+  if (tab === 'history') renderTab(true);
+}
+function histFrom() {
+  const n = nowS(); if (HJ.per === 'all') return 0;
+  if (HJ.per === 'today') { const q = tzParts(n); return n - (q.h * 3600 + q.mi * 60) - 60 }
+  return n - (HJ.per === 'week' ? 7 : 30) * 86400;
+}
+function spark(vals) {
+  if (vals.length < 2) return '';
+  const W = 160, H = 34, lo = Math.min(0, ...vals), hi = Math.max(0, ...vals), y = v => H - 2 - (v - lo) / ((hi - lo) || 1) * (H - 4);
+  const pts = vals.map((v, i) => `${(i / (vals.length - 1) * W).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const c = vals[vals.length - 1] >= 0 ? 'var(--up)' : 'var(--dn)';
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line2)" stroke-dasharray="3 3"/><polyline points="0,${y(0)} ${pts} ${W},${y(0)}" fill="${c}" fill-opacity=".12" stroke="none"/><polyline points="${pts}" fill="none" stroke="${c}" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`;
 }
 function tabHistory(force) {
-  if (!force && tabSig === 'h' + S.history.length) return; tabSig = 'h' + S.history.length;
-  tools(`<button class="btn sm" data-act="refreshHist">↻ Refresh</button><a class="btn sm acc" href="journal.html" target="_blank">📒 Open full journal</a>`);
-  const H = S.history;
-  $('#tabBody').innerHTML = H.length ? `<table class="tbl this"><thead><tr><th>Closed</th><th>Symbol</th><th>Trade</th><th class="r">Lots</th><th class="r">Close price</th><th class="r">Net P/L</th></tr></thead><tbody>
-    ${H.map(d => `<tr data-sym="${esc(d.symbol)}"><td class="mut">${fmtDT(d.time_epoch)}</td><td><b>${esc(d.symbol)}</b></td><td><span class="side ${d.type === 'SELL' ? 'BUY' : 'SELL'}">${d.type === 'SELL' ? 'BUY' : 'SELL'}</span></td><td class="r">${d.volume}</td><td class="r">${fxs(d.symbol, d.price)}</td><td class="r pl ${cls(d.profit)}">${money(d.profit)}</td></tr>`).join('')}</tbody></table>`
-    : empty('No closed trades yet', 'Closed trades from the last 90 days appear here. The full journal has every statistic.');
+  if (!HJ.trades) { if (force) { tools(''); $('#tabBody').innerHTML = empty('Loading history…', '') } loadJournal(); return }
+  if (Date.now() - HJ.at > 60000) loadJournal();
+  const sig = 'h' + HJ.at + HJ.per + HJ.sym + S.symbol; if (!force && tabSig === sig) return; tabSig = sig;
+  tools(`<div class="seg mini">${Object.entries(HPER).map(([k, v]) => `<button data-act="histPer" data-v="${k}" class="${HJ.per === k ? 'on' : ''}">${v}</button>`).join('')}</div><div class="seg mini"><button data-act="histSym" data-v="all" class="${HJ.sym === 'all' ? 'on' : ''}">All</button><button data-act="histSym" data-v="cur" class="${HJ.sym === 'cur' ? 'on' : ''}">${esc(S.symbol)}</button></div><button class="btn sm" data-act="refreshHist" title="Reload">↻</button><button class="btn sm" data-act="csv" title="Download as CSV">⬇ CSV</button><a class="btn sm acc" href="journal.html" target="_blank">📒 Journal</a>`);
+  const from = histFrom(), T = HJ.trades.filter(t => t.close_time >= from && (HJ.sym === 'all' || t.symbol === S.symbol));
+  const cash = HJ.cash.filter(c => c.time >= from), dep = sum(cash.filter(c => c.amount > 0), c => c.amount), wd = sum(cash.filter(c => c.amount < 0), c => c.amount);
+  if (!T.length) {
+    $('#tabBody').innerHTML = empty(`No closed trades ${HJ.per === 'today' ? 'today' : 'in the last ' + HPLONG[HJ.per]}${HJ.sym === 'cur' ? ' on ' + esc(S.symbol) : ''}`, HJ.trades.length ? 'Pick a longer period or <b>All</b> symbols above.' : 'Closed trades from the last 90 days appear here, with your win rate, profit factor and best / worst trade.');
+    return;
+  }
+  const W = T.filter(t => t.net > 0), Lo = T.filter(t => t.net < 0), gw = sum(W, t => t.net), gl = -sum(Lo, t => t.net), net = gw - gl;
+  const fees = sum(T, t => (t.commission || 0) + (t.swap || 0) + (t.fee || 0)), wr = W.length / T.length * 100;
+  const best = T.reduce((a, b) => b.net > a.net ? b : a), worst = T.reduce((a, b) => b.net < a.net ? b : a);
+  const holds = T.filter(t => t.open_time).map(t => t.close_time - t.open_time);
+  let cum = 0; const curve = T.slice().reverse().map(t => cum += t.net);
+  const card = (k, v, sub = '', extra = '') => `<div class="hc"${extra}><small>${k}</small><b>${v}</b>${sub ? `<span>${sub}</span>` : ''}</div>`;
+  const stats = `<div class="hstats">
+    <div class="hc big"><small>Net P/L · ${HPLONG[HJ.per]}</small><b class="${cls(net)}">${money(net)}</b>${spark(curve)}</div>
+    ${card('Win rate', `${wr.toFixed(0)}%`, `<span class="up">${W.length}W</span> · <span class="dn">${Lo.length}L</span>${T.length - W.length - Lo.length ? ` · ${T.length - W.length - Lo.length} BE` : ''}<i class="wbar"><i style="width:${wr}%"></i></i>`)}
+    ${card('Profit factor', gl ? (gw / gl).toFixed(2) : gw ? '∞' : '—', `${T.length} trades · exp. ${money(net / T.length)}`)}
+    ${card('Avg win / loss', `<span class="up">${W.length ? money(gw / W.length) : '—'}</span> <span class="sep">/</span> <span class="dn">${Lo.length ? money(-gl / Lo.length) : '—'}</span>`, holds.length ? `avg hold ${hold(sum(holds) / holds.length)}` : '')}
+    ${card('Best / worst', `<span class="up">${money(best.net)}</span> <span class="sep">/</span> <span class="dn">${money(worst.net)}</span>`, `${esc(best.symbol)} · ${esc(worst.symbol)}`)}
+    ${card('Costs', money(fees), dep || wd ? `${dep ? 'deposits ' + money(dep) : ''}${dep && wd ? ' · ' : ''}${wd ? 'withdrawn ' + money(wd) : ''}` : 'commission + swap')}
+  </div>`;
+  const days = {}; T.slice(0, 400).forEach(t => (days[dayKey(t.close_time)] ||= []).push(t));
+  const list = Object.values(days).map(D => { const dn = sum(D, t => t.net), w = D.filter(t => t.net > 0).length; return `<div class="hday"><b>${fmtDate(D[0].close_time)}</b><span class="mut">${D.length} trade${D.length > 1 ? 's' : ''} · ${w}/${D.length} won</span><span class="grow"></span><b class="${cls(dn)}">${money(dn)}</b></div>` +
+    D.map(t => { const dir = t.side === 'BUY' ? 1 : -1, d = t.open_price ? (t.close_price - t.open_price) * dir : null, f = (t.commission || 0) + (t.swap || 0) + (t.fee || 0), q = tzParts(t.close_time);
+      return `<div class="hrow ${t.side}" data-sym="${esc(t.symbol)}"><span class="tm">${pad2(q.h)}:${pad2(q.mi)}</span>
+        <div class="nm"><b>${esc(t.symbol)}</b><span class="side ${t.side}">${t.side}</span><span class="lt">${num(t.closed_volume, 2)}</span></div>
+        <div class="px">${t.open_price ? `${fxs(t.symbol, t.open_price)} <em>→</em> ` : ''}${fxs(t.symbol, t.close_price)}${d != null ? ` <small class="${cls(d)}">${mv(t.symbol, d, t.close_price)}</small>` : ''}</div>
+        <span class="hd">${t.open_time ? '⏱ ' + hold(t.close_time - t.open_time) : ''}</span>
+        <div class="nt"><b class="pl ${cls(t.net)}">${money(t.net)}</b>${f ? `<small title="Commission + swap, already included">${money(f)} fees</small>` : ''}</div></div>` }).join('') }).join('');
+  $('#tabBody').innerHTML = stats + `<div class="hlist">${list}</div>`;
 }
 function tabAlerts(force) {
   const sig = 'a' + alerts.map(a => a.id + a.price).join(); if (!force && sig === tabSig) return; tabSig = sig;
@@ -1902,7 +2277,7 @@ function setView(v, boot) {
 }
 function renderPanel(force) {
   if (TV === 'order') return;
-  const sig = TV + '|' + S.symbol + '|' + S.positions.map(p => p.ticket + ':' + p.sl + ':' + p.tp + ':' + p.volume).join(',');
+  const sig = TV + '|' + S.symbol + '|' + S.positions.map(p => p.ticket + ':' + p.sl + ':' + p.tp + ':' + p.volume).join(',') + '|' + (S.targets || []).map(g => g.id).join();
   if (force || sig !== panelSig) {
     panelSig = sig;
     const el = $('#vPanel'), keep = Object.fromEntries($$('#vPanel input[data-dirty]').map(i => [i.id, i.type === 'checkbox' ? i.checked : i.value])); // only what you typed survives a refresh
@@ -1937,14 +2312,41 @@ function manageHTML() {
     <div class="sizes"><button data-mg="pct" data-p="25">25%</button><button data-mg="pct" data-p="50">50%</button><button data-mg="pct" data-p="75">75%</button><button class="bad" data-mg="pct" data-p="100">Close all</button></div>
     <div><div class="lbl"><span>Custom amount</span><b id="mgPctV" style="color:var(--text)"></b></div><input type="range" id="mgPct" min="1" max="100" value="${MGPCT}"><div class="hint" id="mgPctSub"></div></div>
     <button class="btn wide" data-mg="pctc" id="mgPctGo"></button>
-    <div class="sec">Close by result</div><div class="hint">Close the 1–5 worst positions (biggest losers first)</div>
-    <div class="sizes five">${[1, 2, 3, 4, 5].map(k => `<button data-mg="worst" data-k="${k}" id="mgW${k}" ${k > n ? 'disabled' : ''} title="Close the ${k} worst"><b>${k} worst</b><small></small></button>`).join('')}</div>
-    <div class="sizes two"><button class="bad" data-mg="losing" id="mgLos">Losing<small></small></button><button class="good" data-mg="winning" id="mgWin">Profitable<small></small></button></div>
-    <div class="sec">Runner</div>
-    ${n > 1 ? `<div class="hint">Keep your best position open as a runner and close the other ${n - 1}.</div>
-      <label class="tg"><input type="checkbox" id="mgRunBE" ${store.get('runBE', true) ? 'checked' : ''}><span></span>Move the runner's stop to break-even</label>
-      <button class="btn acc wide" data-mg="runner" id="mgRun"></button>` : `<div class="hint">When more than one position is open you can keep the best one as a runner and close the rest in one click.</div>`}`;
+    <div class="sec">Close &amp; keep</div><div id="ckBox">${ckHTML()}</div>
+    <div class="sec">Partial take profit at a price</div>
+    <div class="hint">Close part of one position when the price gets there. Your bridge keeps it, even with this page closed.</div>
+    <div class="tglist">${P.map(p => `<div><span><span class="side ${p.type}">${p.type}</span> ${p.volume} @ ${fx(p.price_open)}</span>${tgOf(p.ticket).map(g => `<button class="tgb" data-pa="tgx" data-id="${g.id}" data-t="${p.ticket}" title="Click to remove">🎯 ${tgLot(g)} @ ${fx(g.price)} <i>×</i></button>`).join('')}<button class="btn sm" data-pa="ptp" data-t="${p.ticket}">🎯 Add</button></div>`).join('')}</div>`;
 }
+/* Close & keep: pick buys or sells (the other side is never touched), tick the positions to keep, choose how big the runner is */
+const CK = { side: null, keep: {}, lots: Math.max(0, +store.get('ckLots', 0) || 0), be: store.get('runBE', true) };
+const ckBest = (ps, side) => ps.reduce((a, b) => (side === 'BUY' ? b.price_open < a.price_open : b.price_open > a.price_open) ? b : a);
+function ckState() {
+  const P = S.positions, sides = ['SELL', 'BUY'].filter(s => P.some(p => p.type === s)); if (!sides.length) return null;
+  if (!sides.includes(CK.side)) CK.side = sides.length === 1 ? sides[0] : (P.filter(p => p.type === 'SELL').length >= P.filter(p => p.type === 'BUY').length ? 'SELL' : 'BUY');
+  const side = CK.side, buy = side === 'BUY', ps = P.filter(p => p.type === side).sort((a, b) => buy ? a.price_open - b.price_open : b.price_open - a.price_open); // best entry first
+  const key = S.symbol + side, open = new Set(ps.map(p => p.ticket));
+  let keep = CK.keep[key]; if (!keep || !keep.mine) { keep = CK.keep[key] = new Set([ps[0].ticket]); keep.mine = false } // the best entry is ticked until you pick yourself
+  for (const t of [...keep]) if (!open.has(t)) keep.delete(t);
+  const kept = ps.filter(p => keep.has(p.ticket)), shut = ps.filter(p => !keep.has(p.ticket));
+  const min = S.volMin || .01, st = S.volStep || .01, cl = Math.round(CK.lots / st) * st, runOf = p => { const r = +(p.volume - cl).toFixed(2); return cl < min - 1e-9 || r < min - 1e-9 ? p.volume : r }; // can't take that much = stays whole
+  return { sides, side, ps, keep, kept, shut, runOf, best: ps[0] };
+}
+function ckHTML() {
+  const k = ckState(); if (!k) return '';
+  const nm = s => s === 'BUY' ? 'buys' : 'sells', cnt = s => S.positions.filter(p => p.type === s).length;
+  const tg = (S.targets || []).filter(g => g.kind === 'keepbest' && g.symbol === S.symbol);
+  return `${k.sides.length > 1 ? `<div class="sizes two">${k.sides.map(s => `<button data-mg="ckside" data-v="${s}" class="${s === k.side ? 'on' : ''}"><b>${s === 'BUY' ? 'Buys' : 'Sells'}</b><small>${cnt(s)} open</small></button>`).join('')}</div>
+    <div class="hint">Only your ${nm(k.side)} are changed. Your ${nm(k.side === 'BUY' ? 'SELL' : 'BUY')} stay as they are.</div>` : ''}
+    <div class="ckstep"><i>1</i>Tick the positions to keep</div><div class="ckq"><span>Quick:</span><button data-mg="ckpick" data-v="best">Best entry</button><button data-mg="ckpick" data-v="win">Profitable</button><button data-mg="ckpick" data-v="none">None</button></div>
+    <div class="cklist">${k.ps.map(p => { const on = k.keep.has(p.ticket); return `<button data-mg="cktog" data-t="${p.ticket}" class="${on ? 'on' : ''}"><i>${on ? '✓' : ''}</i><span>${p.volume} @ ${fx(p.price_open)}${p === k.best ? ' <em>best</em>' : ''}</span><b class="${cls(p.profit)}">${money(p.profit)}</b><small>${on ? 'keep' : 'close'}</small></button>` }).join('')}</div>
+    <div class="ckstep"><i>2</i>Lots to close from each kept one<span class="ckq"><button data-mg="cklq" data-v="0">None</button><button data-mg="cklq" data-v="max" title="Close all but the smallest lot">Leave ${num(S.volMin || .01, 2)}</button></span></div>
+    <div class="stepper"><button data-mg="cklot" data-v="-1">−</button><input id="ckLots" inputmode="decimal" value="${CK.lots ? num(CK.lots, 2) : ''}" placeholder="0.00 lot"><button data-mg="cklot" data-v="1">+</button></div><div class="hint" id="ckRunNote"></div>
+    <label class="tg"><input type="checkbox" id="ckBE" ${CK.be ? 'checked' : ''}><span></span>Move the runner's stop to break-even (when in profit)</label>
+    <div class="cksum" id="ckSum"></div>
+    <button class="btn acc wide" data-mg="ckgo" id="ckGo"></button>
+    ${tg.length ? `<div class="tglist">${tg.map(g => `<div><span>${tgLabel(g)}${g.be ? ' · BE' : ''}</span><button class="tgb" data-pa="tgx" data-id="${g.id}" data-t="0" title="Remove">waiting <i>×</i></button></div>`).join('')}</div>` : ''}`;
+}
+function ckRedraw() { const b = $('#ckBox'); if (b) { b.innerHTML = ckHTML(); mgLive() } }
 function mgLive() {
   const P = S.positions; if (!P.length || !$('#mgTot')) return;
   const tot = sum(P, p => p.profit), set = (id, h) => { const e = $(id); if (e) e.innerHTML = h };
@@ -1952,13 +2354,18 @@ function mgLive() {
   for (const k of ['Tp', 'Sl']) { const v = readNum($('#mg' + k)); set('#mgNote' + k, v ? (() => { const r = sum(P, p => pnlAt(p.type, p.price_open, p.volume, v)); return `<span class="${cls(r)}">if hit: ${money(r)}</span>` })() : '') }
   MGPCT = clamp(+$('#mgPct').value || 50, 1, 100);
   set('#mgPctV', MGPCT + '%'); set('#mgPctSub', `≈ ${num(sum(P, p => p.volume) * MGPCT / 100, 2)} of ${num(sum(P, p => p.volume), 2)} lots · <b class="${cls(tot)}">${money(tot * MGPCT / 100)}</b>`); set('#mgPctGo', `Close ${MGPCT}% of every position`);
-  const byWorst = [...P].sort((a, b) => a.profit - b.profit);
-  for (let k = 1; k <= 5; k++) { const b = $('#mgW' + k); if (b && k <= P.length) b.querySelector('small').textContent = money(sum(byWorst.slice(0, k), p => p.profit)) }
-  const los = P.filter(p => p.profit < 0), win = P.filter(p => p.profit > 0);
-  const lb = $('#mgLos'), wb = $('#mgWin');
-  if (lb) { lb.disabled = !los.length; lb.querySelector('small').textContent = `${los.length} · ${money(sum(los, p => p.profit))}` }
-  if (wb) { wb.disabled = !win.length; wb.querySelector('small').textContent = `${win.length} · ${money(sum(win, p => p.profit))}` }
-  const rb = $('#mgRun'); if (rb) { const best = byWorst[byWorst.length - 1], rest = byWorst.slice(0, -1); rb.textContent = `Keep ${best.type} ${best.volume} (${money(best.profit)}) · close ${rest.length} (${money(sum(rest, p => p.profit))})` }
+  const go = $('#ckGo'), k = ckState();
+  if (go && k) {
+    for (const r of $$('#ckBox .cklist button')) { const p = k.ps.find(x => x.ticket == r.dataset.t); if (p) { const b = r.querySelector('b'); b.textContent = money(p.profit); b.className = cls(p.profit) } }
+    const nm = k.side === 'BUY' ? 'buy' : 'sell', pl = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+    const runLots = num(sum(k.kept, k.runOf), 2), cut = k.kept.filter(p => k.runOf(p) < p.volume);
+    const cash = sum(k.shut, p => p.profit) + sum(cut, p => p.profit * (1 - k.runOf(p) / p.volume));
+    set('#ckSum', `<span>Close</span><b>${[k.shut.length && pl(k.shut.length, nm), cut.length && `part of ${cut.length} kept`].filter(Boolean).join(' + ') || 'nothing'}</b><span>Keep</span><b>${k.kept.length ? `${pl(k.kept.length, nm)} · ${runLots} lot` : 'nothing'}</b><span>Result</span><b class="${cls(cash)}">${money(cash)}</b>`);
+    const big = CK.lots > 0 ? k.kept.filter(p => k.runOf(p) >= p.volume) : [];
+    set('#ckRunNote', !k.kept.length || !(CK.lots > 0) ? 'kept positions stay whole' : big.length ? `<span class="dn">too much for ${big.map(p => p.volume).join(', ')} lot: stays whole</span>` : `runner: ${k.kept.map(p => `${p.volume}→${k.runOf(p)}`).join(', ')}`);
+    go.disabled = !k.shut.length && !cut.length;
+    go.textContent = !k.kept.length ? `Close all ${pl(k.ps.length, nm)}` : go.disabled ? 'Nothing to close yet' : `${[k.shut.length && `Close ${k.shut.length}`, cut.length && `${k.shut.length ? 'trim' : 'Trim'} ${cut.length}`].filter(Boolean).join(' + ')} · keep ${runLots} lot`;
+  }
 }
 async function mgAction(a, b) {
   const P = [...S.positions], L_ = { login: S.login };
@@ -1975,13 +2382,22 @@ async function mgAction(a, b) {
       if (!(await confirmList(pct === 100 ? `Close all ${P.length} positions?` : `Close ${pct}% of every position?`, P, pct === 100 ? 'Close all' : `Close ${pct}%`, pct < 100 ? `<p>Positions too small to split close fully only if you choose 100%.</p>` : ''))) return;
       return runMany(P, p => close(p, pct), pct === 100 ? 'Closed' : `Closed ${pct}%`);
     }
-    case 'worst': { const k = +b.dataset.k, list = [...P].sort((x, y) => x.profit - y.profit).slice(0, k); if (!(await confirmList(`Close the ${k} worst position${k > 1 ? 's' : ''}?`, list, `Close ${k}`))) return; return runMany(list, p => close(p), 'Closed') }
-    case 'losing': case 'winning': { const list = P.filter(p => a === 'losing' ? p.profit < 0 : p.profit > 0); if (!list.length) return; if (!(await confirmList(`Close ${list.length} ${a === 'losing' ? 'losing' : 'profitable'} position${list.length > 1 ? 's' : ''}?`, list, 'Close them'))) return; return runMany(list, p => close(p), 'Closed') }
-    case 'runner': {
-      if (P.length < 2) return; const best = [...P].sort((x, y) => y.profit - x.profit)[0], rest = P.filter(p => p !== best), be = $('#mgRunBE').checked; store.set('runBE', be);
-      if (!(await confirmList(`Keep 1 runner, close ${rest.length}`, rest, `Close ${rest.length}, keep runner`, `<div class="sum"><span>Runner kept</span><b>${best.type} ${best.volume} @ ${fx(best.price_open)} · <span class="${cls(best.profit)}">${money(best.profit)}</span></b>${be ? `<span>Runner stop</span><b>${best.profit > 0 ? 'to break-even ' + fx(best.price_open) : 'unchanged (not in profit)'}</b>` : ''}</div>`))) return;
-      await runMany(rest, p => close(p), 'Closed');
-      if (be && best.profit > 0) { try { await mod(best, best.price_open, best.tp); toast('Runner stop moved to break-even', 'ok') } catch (e) { toast('Runner BE: ' + e.message, 'err') } }
+    case 'ckside': CK.side = b.dataset.v; return ckRedraw();
+    case 'cktog': { const k = ckState(), t = +b.dataset.t; k.keep.has(t) ? k.keep.delete(t) : k.keep.add(t); k.keep.mine = true; return ckRedraw() }
+    case 'ckpick': { const k = ckState(), v = b.dataset.v; k.keep.clear(); k.keep.mine = v !== 'best'; for (const p of v === 'best' ? [k.best] : v === 'win' ? k.ps.filter(p => p.profit > 0) : []) k.keep.add(p.ticket); return ckRedraw() }
+    case 'cklot': case 'cklq': { const st = S.volStep || .01, k = ckState(); let v = a === 'cklot' ? CK.lots + (+b.dataset.v) * st : b.dataset.v === 'max' ? Math.max(0, (k && k.kept.length ? Math.min(...k.kept.map(p => p.volume)) : k.best.volume) - (S.volMin || .01)) : 0; CK.lots = Math.max(0, +v.toFixed(2)); store.set('ckLots', CK.lots); const i = $('#ckLots'); if (i) i.value = CK.lots ? num(CK.lots, 2) : ''; return mgLive() }
+    case 'ckgo': {
+      const k = ckState(); if (!k) return;
+      const min = S.volMin || .01, nm = k.side === 'BUY' ? 'buy' : 'sell', closePct = CK.lots > 0 ? 1 : 0;
+      const trim = k.kept.filter(p => k.runOf(p) < p.volume), small = closePct > 0 ? k.kept.filter(p => k.runOf(p) >= p.volume) : [];
+      if (!k.shut.length && !trim.length) return toast(small.length ? `Kept position${small.length > 1 ? 's are' : ' is'} smaller than that. Enter fewer lots or untick it.` : 'Nothing to close.', 'warn');
+      const runLots = num(sum(k.kept, p => small.includes(p) ? p.volume : k.runOf(p)), 2);
+      const extra = `<div class="sum"><span>Kept</span><b>${k.kept.length ? `${k.kept.length} ${nm}${k.kept.length > 1 ? 's' : ''} · ${runLots} lot` : 'nothing'}</b>${trim.length ? `<span>Lots closed from kept</span><b>${trim.map(p => `${p.volume}→${k.runOf(p)}`).join(', ')}</b>` : ''}${CK.be && k.kept.length ? '<span>Runner stop</span><b>break-even if in profit</b>' : ''}</div>${small.length ? `<p>${small.length} kept position${small.length > 1 ? 's are' : ' is'} smaller than that and stay${small.length > 1 ? '' : 's'} whole.</p>` : ''}${k.sides.length > 1 ? `<p>Your ${nm === 'buy' ? 'sells' : 'buys'} are not touched.</p>` : ''}`;
+      if (!(await confirmList(k.kept.length ? `Close ${k.shut.length} ${nm}${k.shut.length === 1 ? '' : 's'}, keep ${runLots} lot?` : `Close all ${k.shut.length} ${nm}s?`, k.shut, 'Do it', extra))) return;
+      const kept = [...k.kept]; delete CK.keep[S.symbol + k.side]; // next time starts fresh at the best entry
+      await runMany([...k.shut.map(p => ['c', p]), ...trim.map(p => ['t', p])], ([w, p]) => close(p, w === 'c' ? 100 : (p.volume - k.runOf(p)) / p.volume * 100), 'Done');
+      const beList = CK.be ? kept.filter(p => p.profit > 0 && Math.abs(p.sl - p.price_open) >= S.point / 2) : [];
+      if (beList.length) await runMany(beList, p => mod(p, p.price_open, p.tp), 'Runner stop to break-even');
       return;
     }
   }
@@ -2147,8 +2563,8 @@ function openSettings() {
     <p>The terminal talks to <b>app.py</b> (your MT5 bridge) on your PC. Your key stays in this browser.</p>
     <label>Bridge address<input id="sBase" value="${esc(CFG.base)}" ${BRIDGE_ORIGIN ? 'disabled' : ''}></label>
     <label>Bridge key (api_key from config.json)<input id="sKey" type="password" value="${esc(CFG.key)}" autocomplete="off"></label>
-    <div class="grid2"><label>Default risk % per trade<input id="sRisk" inputmode="decimal" value="${CFG.riskPct}"></label><label>Max daily loss % (0 = off)<input id="sDL" inputmode="decimal" value="${CFG.maxDailyLoss}"></label></div>
-    <div class="grid2"><label>Max open positions (0 = off)<input id="sMP" inputmode="numeric" value="${CFG.maxPositions}"></label><label>Time zone for chart & journal<select id="sTz">${TZ_LIST.map(([v, l]) => `<option value="${v}" ${v === CFG.tz ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
+    <div class="grid2"><label>Default risk % per trade<input id="sRisk" inputmode="decimal" value="${CFG.riskPct}"></label><label>Max daily loss % (optional)<input id="sDL" inputmode="decimal" placeholder="No limit" value="${CFG.maxDailyLoss || ''}"></label></div>
+    <div class="grid2"><label>Max open positions (optional)<input id="sMP" inputmode="numeric" placeholder="No limit" value="${CFG.maxPositions || ''}"></label><label>Time zone for chart & journal<select id="sTz">${TZ_LIST.map(([v, l]) => `<option value="${v}" ${v === CFG.tz ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
     <label class="tg"><input type="checkbox" id="sSound" ${CFG.sound ? 'checked' : ''}><span></span>Sounds for fills, closes and alerts</label>
     <label class="tg"><input type="checkbox" id="sDemo" ${CFG.demo ? 'checked' : ''}><span></span>Demo mode (simulated broker, no bridge needed)</label>
   </div><div class="mact"><button class="btn ghost" data-m="no">Cancel</button><button class="btn acc" data-act="saveSettings">Save & connect</button></div>`);
@@ -2223,7 +2639,7 @@ async function afterNewAccount(login, msg) {
 }
 async function createPaper() {
   const bal = readNum($('#naBal')); if (!bal || bal < 100) return toast('Enter a starting balance of at least 100.', 'err');
-  try { const r = await api('/api/paper/create', { name: $('#naName').value.trim(), balance: bal }); await afterNewAccount(r.account.login, `Paper account "${r.account.name}" created with ${money(bal, false)}`) } catch (e) { toast(e.message, 'err') }
+  try { const r = await api('/api/paper/create', { name: $('#naName').value.trim(), balance: bal }); Guard.rebase(r.account.login, 'reset'); await afterNewAccount(r.account.login, `Paper account "${r.account.name}" created with ${money(bal, false)}`) } catch (e) { toast(e.message, 'err') }
 }
 async function addMt5() {
   const login = parseInt($('#naLogin').value), server = $('#naServer').value.trim(), password = $('#naPass').value;
@@ -2239,15 +2655,16 @@ async function paperAction(kind) {
     const v = await formBox(`${add ? 'Add funds to' : 'Remove funds from'} ${cur.name}`, [{ id: 'a', label: `Amount (balance now ${money(bal, false)})`, value: add ? '1000' : '' }], add ? 'Add funds' : 'Remove funds'); if (!v) return;
     const amt = Math.abs(readNum(v.a)); if (!(amt > 0)) return toast('Enter an amount above 0.', 'err');
     if (!add && amt > bal) return toast(`You can remove at most ${money(bal, false)}.`, 'err');
-    await act(() => api('/api/paper/deposit', { login: S.login, amount: add ? amt : -amt }), `${add ? 'Added' : 'Removed'} ${money(amt, false)}`);
+    const d = add ? amt : -amt; Guard.rebase(S.login, d); // before the new balance arrives, so it never shows as a gain / loss for a moment
+    if (!(await act(() => api('/api/paper/deposit', { login: S.login, amount: d }), `${add ? 'Added' : 'Removed'} ${money(amt, false)}`))) Guard.rebase(S.login, -d);
     return loadHistory();
   }
   if (kind === 'reset') {
     const v = await formBox(`Reset ${cur.name}?`, [{ id: 'b', label: 'Fresh starting balance', value: String(S.account?.balance ? Math.round(S.account.balance) : 10000) }], 'Reset account', 'All positions, orders and history of this paper account are cleared.'); if (!v) return;
-    await act(() => api('/api/paper/reset', { login: S.login, balance: readNum(v.b) || 10000 }), 'Paper account reset'); return loadHistory();
+    await act(() => api('/api/paper/reset', { login: S.login, balance: readNum(v.b) || 10000 }), 'Paper account reset'); Guard.rebase(S.login, 'reset'); return loadHistory();
   }
   if (!(await confirmBox(`Delete ${cur.name}?`, '<p>The paper account and its history are removed for good.</p>', 'Delete', 'danger'))) return;
-  try { await api('/api/paper/delete', { login: S.login }); toast('Paper account deleted', 'ok'); S.login = 0; store.set('login', 0); connect() } catch (e) { toast(e.message, 'err') }
+  try { await api('/api/paper/delete', { login: S.login }); Guard.rebase(S.login, 'reset'); toast('Paper account deleted', 'ok'); S.login = 0; store.set('login', 0); connect() } catch (e) { toast(e.message, 'err') }
 }
 function openTfMore(a) { popover(a, `<h6>Timeframes · right-click to pin / unpin</h6><div class="tfgrid">${Object.keys(TF_SEC).map(t => `<button data-tf="${t}" class="${tfFav.includes(t) ? 'on' : ''}">${t}</button>`).join('')}</div>`) }
 
@@ -2337,7 +2754,11 @@ const ACTIONS = {
     for (const p of S.positions) { if (p.profit <= 0) { skip++; continue } try { await api('/api/modify', { login: S.login, ticket: p.ticket, sl: p.price_open, tp: p.tp }); ok++ } catch { skip++ } }
     toast(`✓ Break-even set on ${ok}` + (skip ? ` · ${skip} skipped (not in profit yet)` : ''), ok ? 'ok' : 'warn'); poll();
   },
-  alertHere: () => addAlert(S.bid), beAll, csv: exportCsv, refreshHist: loadHistory,
+  alertHere: () => addAlert(S.bid), beAll, csv: exportCsv, refreshHist: () => { loadHistory(); loadJournal(true) },
+  dockFold: () => dockFold(!dockMin()),
+  grpToggle: t => { const s = t.dataset.s; GRP.has(s) ? GRP.delete(s) : GRP.add(s); store.set('grpOff', [...GRP]); renderTab(true) },
+  histPer: t => { HJ.per = t.dataset.v; store.set('hper', HJ.per); renderTab(true) },
+  histSym: t => { HJ.sym = t.dataset.v; store.set('hsym', HJ.sym); renderTab(true) },
   closeAll: () => closeMany(() => true, 'Close all'), closeWin: () => closeMany(p => p.profit > 0, 'Close winners'), closeLose: () => closeMany(p => p.profit < 0, 'Close losers'),
   cancelAll: async () => { if (!(await confirmBox('Cancel all pending orders?', '', 'Cancel all', 'danger'))) return; for (const o of [...S.allPending]) { try { await api('/api/cancel', { login: S.login, ticket: o.ticket }) } catch (e) { toast(e.message, 'err') } } poll() },
   cpToggle: copyToggle, cpCheck: async () => { try { const r = await api('/api/copy/check', { master: +$('#cpM').value, slave: +$('#cpS').value }); toast(r.accounts.map(a => `${a.role}: ${a.ok ? money(a.balance, false) + ' ✓' : a.error}`).join(' · '), r.accounts.every(a => a.ok) ? 'ok' : 'err', 8000) } catch (e) { toast(e.message, 'err') } },
@@ -2373,7 +2794,11 @@ document.addEventListener('click', e => {
   if (d.bk) return bkAction(d.bk, t);
   if (d.act) { const a = ACTIONS[d.act]; if (a) a(t); return }
   if (d.tf) return setTF(d.tf);
-  if (d.tab) { tab = d.tab; store.set('tab', tab); tabSig = ''; return renderTab(true) }
+  if (d.tab) {
+    if (dockMin()) { tab = d.tab; store.set('tab', tab); return dockFold(false) } // a tab on the folded bar opens the panel
+    if (d.tab === tab && innerWidth <= 860) return dockFold(true); // phones: tap the open tab again to fold
+    tab = d.tab; store.set('tab', tab); tabSig = ''; return renderTab(true)
+  }
   if (d.mode) { T.mode = d.mode; if (T.mode !== 'market' && !T.entry && S.bid) T.entry = +mid().toFixed(S.digits); if (T.mode === 'market') { T.entry = T.entry2 = 0; T.layers = 1 } Ticket.render(); syncLines(); return }
   if (d.layers) { T.layers = clamp(T.layers + +d.layers, 1, 10); if (T.layers > 1 && !T.entry2 && T.entry) { const a = atr(S.candles) || S.point * 100; T.entry2 = +(T.entry + (tkSide() === 'sell' ? a : -a)).toFixed(S.digits) } if (T.layers === 1) T.entry2 = 0; Ticket.render(); return syncLines() }
   if (d.sz) { T.sizing = d.sz; store.set('sizing', T.sizing); Ticket.render(); return syncLines() }
@@ -2392,7 +2817,7 @@ document.addEventListener('click', e => {
   if (d.unwatch) { e.stopPropagation(); return toggleWatch(d.unwatch) }
   if (d.tool) return Drawings.setTool(d.tool === D.tool ? 'cursor' : d.tool);
   if (d.dopt) { if (d.dopt === 'magnet') { D.magnet = (D.magnet + 2) % 3; store.set('magnet', D.magnet); toast('Magnet: ' + ['off', 'weak', 'strong (always snaps to open / high / low / close)'][D.magnet]) } else if (d.dopt === 'lock') D.lock = !D.lock; else if (d.dopt === 'eye') { D.hidden = !D.hidden; Overlay.dirty = true } else clearDrawings(); return renderRail() }
-  if (d.pa) { const tk = +d.t; return ({ be: () => breakeven(tk), pct: () => closePos(tk, +d.p), close: () => closePos(tk), edit: () => editPos(tk), menu: () => closeMenu(t, tk) })[d.pa]() }
+  if (d.pa) { const tk = +d.t; return ({ be: () => breakeven(tk), pct: () => closePos(tk, +d.p), close: () => closePos(tk), edit: () => editPos(tk), menu: () => closeMenu(t, tk), ptp: () => partialTP(tk), tgx: () => tgRemove(+d.id) })[d.pa]() }
   if (d.oa) { const tk = +d.t; return d.oa === 'edit' ? editOrd(tk) : act(() => api('/api/cancel', { login: S.login, ticket: tk }), `Order #${tk} cancelled`) }
   if (d.al) { alerts = alerts.filter(a => a.id !== d.al); return saveAlerts() }
   if (d.pi != null) return Palette.run(+d.pi, e.shiftKey);
@@ -2403,6 +2828,7 @@ document.addEventListener('input', e => {
   (CFG.chartColors[CFG.theme] ||= {})[k] = e.target.value; saveCfg(); Chart.c.applyOptions(Chart.opts()); Chart.s.applyOptions(Chart.candleOpts());
 });
 document.addEventListener('change', e => {
+  if (e.target.id === 'ckBE') { CK.be = e.target.checked; store.set('runBE', CK.be); return }
   if (e.target.matches('[data-ccgrid]')) { (CFG.chartColors[CFG.theme] ||= {}).gridOff = !e.target.checked; saveCfg(); Chart.c.applyOptions(Chart.opts()) }
 });
 // selected-drawing toolbar
@@ -2436,6 +2862,7 @@ onNum('#tkEntry', v => T.entry = v); onNum('#tkSl', v => { T.sl = v; T.atrSide =
 onNum('#tkSize', v => { if (!v) return; if (T.sizing === 'lots') { T.lots = v; store.set('lots', v) } else T.risk = clamp(v, .01, 20) });
 $('#vPanel').addEventListener('input', e => {
   e.target.dataset.dirty = 1;
+  if (e.target.id === 'ckLots') { CK.lots = Math.max(0, readNum(e.target) || 0); store.set('ckLots', CK.lots); return mgLive() }
   if (e.target.id === 'bkT') store.set('bkT', bkTarget() || 0);
   if (e.target.id?.startsWith('ly')) { LY[{ lyA: 'a', lyB: 'b', lySL: 'sl', lyTP: 'tp', lyRisk: 'risk', lyN: 'n' }[e.target.id]] = e.target.id === 'lyN' ? clamp(+e.target.value || 1, 1, 20) : e.target.value; store.set('ly', LY) }
   renderPanel(); syncLines();
@@ -2464,12 +2891,42 @@ document.addEventListener('keydown', e => {
   if (lk === 'p') { indOn.pdhl = !indOn.pdhl; store.set('ind2', indOn); Levels.sync(); return toast('Previous day high / low ' + (indOn.pdhl ? 'on' : 'off')) }
   if (/^[1-9]$/.test(k)) { const l = [...tfFav].sort((a, b) => TF_SEC[a] - TF_SEC[b]); if (l[+k - 1]) setTF(l[+k - 1]) }
 });
-(() => { // resizable dock
-  let y0 = 0, h0 = 0; const g = $('#dockGrip'), set = h => document.documentElement.style.setProperty('--dockH', clamp(h, 90, innerHeight * .7) + 'px');
-  const saved = store.get('dockH', 0); if (saved && innerWidth > 860) set(saved);
-  g.addEventListener('pointerdown', e => { y0 = e.clientY; h0 = $('.dock').offsetHeight; g.setPointerCapture(e.pointerId) });
-  g.addEventListener('pointermove', e => { if (g.hasPointerCapture(e.pointerId)) set(h0 + y0 - e.clientY) });
-  g.addEventListener('pointerup', () => store.set('dockH', $('.dock').offsetHeight));
+(() => { // resizable + foldable dock: drag the grip, tap it, or press ▾ (phones snap to folded / ⅓ / ⅔)
+  const g = $('#dockGrip'), dock = $('.dock'), cen = $('.center'), R = document.documentElement.style;
+  const mob = () => innerWidth <= 860, key = () => mob() ? 'dockHm' : 'dockH';
+  const minH = () => $('.tabs').offsetHeight + (mob() ? 16 : 0) + 1, maxH = () => innerHeight * (mob() ? .78 : .7);
+  const set = h => R.setProperty('--dockH', clamp(h, minH(), maxH()) + 'px');
+  const isMin = () => dock.classList.contains('min');
+  const fold = on => {
+    dock.classList.toggle('min', on); store.set('dockMin', on);
+    $('#dockFold').textContent = on ? '▴' : '▾'; $('#dockFold').title = on ? 'Show the panel' : 'Hide the panel';
+    if (on) set(minH()); else { fitTools(); const h = store.get(key(), 0); h ? set(Math.max(h, minH() + 20)) : R.removeProperty('--dockH'); tabSig = ''; renderTab(true) }
+  };
+  window.dockFold = fold; window.dockMin = isMin;
+  { const h = store.get(key(), 0); if (h) set(h) }
+  if (store.get('dockMin', false)) fold(true);
+  let y0 = 0, h0 = 0, moved = false;
+  g.addEventListener('pointerdown', e => { y0 = e.clientY; h0 = dock.offsetHeight; moved = false; g.setPointerCapture(e.pointerId); dock.classList.add('drag') });
+  g.addEventListener('pointermove', e => {
+    if (!g.hasPointerCapture(e.pointerId)) return;
+    if (!moved && Math.abs(e.clientY - y0) < 5) return;
+    if (!moved) { moved = true; cen.classList.add('dragging'); if (isMin()) { dock.classList.remove('min'); fitTools() } }
+    set(h0 + y0 - e.clientY);
+  });
+  const end = () => {
+    dock.classList.remove('drag'); cen.classList.remove('dragging');
+    if (!moved) return fold(!isMin()); // a tap folds / unfolds
+    let h = dock.offsetHeight;
+    // "one line": the tab bar + the summary strip (Floating P/L, Open, Free margin…) shows exactly, never half a row
+    const line1 = minH() + ($('#tabBody .dsum')?.offsetHeight || 48);
+    if (mob()) { const sn = [minH(), line1, innerHeight * .34, innerHeight * .62]; h = sn.reduce((a, b) => Math.abs(b - h) < Math.abs(a - h) ? b : a) }
+    else if (Math.abs(h - line1) < 28) h = line1; // magnet: let go near the summary line = exactly that line
+    // only a drag right down to the tab bar folds; anything else stays where you let go
+    if (h < minH() + 20) { if (h0 >= minH() + 20) store.set(key(), Math.round(h0)); return fold(true) }
+    store.set(key(), Math.round(h)); set(h); fold(false);
+  };
+  g.addEventListener('pointerup', end); g.addEventListener('pointercancel', end);
+  addEventListener('resize', () => { if (isMin()) set(minH()) });
 })();
 
 /* =====================================================================

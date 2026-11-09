@@ -18,8 +18,8 @@
 {"@type":"Question","name":"Which brokers work?","acceptedAnswer":{"@type":"Answer","text":"Any broker that offers MetaTrader 5. MetaTrader 4 is not supported."}},
 {"@type":"Question","name":"Is my account safe?","acceptedAnswer":{"@type":"Answer","text":"Your MT5 password stays on your own computer and is never sent to us. Goldmine never places a trade by itself."}},
 {"@type":"Question","name":"What happens after the free trial?","acceptedAnswer":{"@type":"Answer","text":"No card is asked for the trial, so nothing is charged automatically. Pick a plan to keep going."}}]}</script>
-<link rel="stylesheet" href="gp-theme.css?v=20261109c">
-<script src="gp-shared.js?v=20261109c"></script>
+<link rel="stylesheet" href="gp-theme.css?v=20261109e">
+<script src="gp-shared.js?v=20261109e"></script>
 <script>document.documentElement.dataset.theme = 'light' // the website is always light (it has its own dark section); the terminal keeps its own theme</script>
 <style>
 html,body{overflow:auto;height:auto}
@@ -507,7 +507,9 @@ function renderNav(r) {
   const L = A.me
     ? [['dashboard', 'Dashboard'], ['setup', 'Setup'], ['billing', 'Billing'], ['terminal', 'Open terminal']]
     : [['features', 'Features'], ['pricing', 'Pricing'], ['faq', 'FAQ']];
-  if (store.get('saasAdmin', '')) L.push(['admin', 'Admin']);
+  // the owner sees Admin when a token is saved, or always when the site runs on this PC (your own bridge); visitors never see it
+  // Admin shows for admin accounts (any device), when a token is saved, or on your own PC; customers never see it
+  if (isAdmin() || store.get('saasAdmin', '') || /^(127\.0\.0\.1|localhost)$/.test(location.hostname)) L.push(['admin', 'Admin']);
   $('#links').innerHTML = L.map(([k, t]) => `<a class="nl ${r === k ? 'on' : ''}" href="#${k}">${t}</a>`).join('');
   $('#right').innerHTML = A.me
     ? `<button id="acctBtn" data-act="menu"><span class="hide-sm">${esc(A.me.user.name || A.me.user.email.split('@')[0])}</span><i>${esc((A.me.user.name || A.me.user.email)[0].toUpperCase())}</i></button>
@@ -1149,12 +1151,16 @@ function renderTerminal() {
 }
 
 /* ---------------------------------------------------------------- admin (you) */
+// Admin = an account marked as admin on the server (works on every device), or the admin token.
+function isAdmin() { return !!A.me?.user?.is_admin }
+function admHeaders(tok = store.get('saasAdmin', '')) { const h = { 'Content-Type': 'application/json' }; if (tok) h['X-Admin-Token'] = tok; if (A.token) h.Authorization = 'Bearer ' + A.token; return h }
 async function renderAdmin() {
   $('#view').dataset.v = 'admin';
-  const tok = store.get('saasAdmin', '');
-  $('#view').innerHTML = `<div class="page"><div class="wrap"><div class="ph"><div><h1>Admin</h1><p>Your business at a glance. Only visible with your admin token.</p></div><span class="grow"></span>
-    <input class="in" id="admTok" type="password" placeholder="Admin token" value="${esc(tok)}" style="width:220px"><button class="btn acc md" data-act="admLoad">Load</button></div><div id="adm"></div></div></div>`;
-  if (tok) admLoad();
+  const tok = store.get('saasAdmin', ''), local = /^(127\.0\.0\.1|localhost)$/.test(location.hostname);
+  $('#view').innerHTML = `<div class="page"><div class="wrap"><div class="ph"><div><h1>Admin</h1><p>${isAdmin() ? `Your business at a glance. Signed in as admin (<b>${esc(A.me.user.email)}</b>): this works on every device where you log in.`
+      : `Enter the admin token once${local ? ' (on your own bridge: the <b>api_key</b> in your config.json)' : ''}. ${A.me ? 'Your account then becomes an admin account: next time, on any device, just log in.' : '<b>Log in first</b> and your account becomes an admin account, so you never need the token again.'}`}</p></div><span class="grow"></span>
+    ${isAdmin() ? '' : `<input class="in" id="admTok" type="password" placeholder="Admin token" value="${esc(tok)}" style="width:220px"><button class="btn acc md" data-act="admLoad">Load</button>`}</div><div id="adm"></div></div></div>`;
+  if (isAdmin() || tok) admLoad();
 }
 const ADMF = [['all', 'Everyone', () => true], ['trialing', 'Free trial', u => u.status === 'trialing'], ['paying', 'Paying', u => ['active', 'past_due'].includes(u.status) || (u.status === 'canceled' && u.period_end > Date.now() / 1000)],
   ['past_due', 'Payment failed', u => u.status === 'past_due'], ['ending', 'Cancelled, ending', u => u.cancel_at_end || u.status === 'canceled'], ['expired', 'Ended / expired', u => u.status === 'expired']];
@@ -1172,7 +1178,7 @@ async function admDelete(email, force) {
   const u = A.adm?.customers.find(x => x.email === email), paying = u && ['active', 'past_due'].includes(u.status);
   if (!force && !(await confirmBox(`Delete ${email}?`, `<p>The account, its license key and payment records are removed for good. Their bridge stops working within 30 minutes.</p>${paying ? '<p style="margin-top:8px"><b>This is a paying customer.</b> Their Stripe subscription is cancelled right away (no refund is made automatically).</p>' : ''}<p style="margin-top:8px">This cannot be undone.</p>`, 'Delete for good', 'danger'))) return;
   try {
-    const r = await fetch(SRV + '/api/admin/delete_user', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Token': store.get('saasAdmin', '') }, body: JSON.stringify({ email, force: !!force }) });
+    const r = await fetch(SRV + '/api/admin/delete_user', { method: 'POST', headers: admHeaders(), body: JSON.stringify({ email, force: !!force }) });
     const j = await r.json(); if (!r.ok) throw Object.assign(new Error(j.detail), { code: r.status });
     toast(j.message, 'ok'); admLoad();
   } catch (e) {
@@ -1181,10 +1187,17 @@ async function admDelete(email, force) {
   }
 }
 async function admLoad() {
-  const tok = $('#admTok').value.trim(); store.set('saasAdmin', tok);
+  const tok = $('#admTok') ? $('#admTok').value.trim() : store.get('saasAdmin', ''); if ($('#admTok')) store.set('saasAdmin', tok);
   try {
-    const r = await fetch(SRV + '/api/admin/overview', { headers: { 'X-Admin-Token': tok } }); const j = await r.json();
+    const r = await fetch(SRV + '/api/admin/overview', { headers: admHeaders(tok) }); const j = await r.json();
     if (!r.ok) throw new Error(j.detail);
+    // token worked while logged in: mark this account as admin on the server, so every device works with just a login
+    if (tok && A.me && !isAdmin()) {
+      try {
+        const c = await fetch(SRV + '/api/admin/claim', { method: 'POST', headers: admHeaders(tok) });
+        if (c.ok) { setMe(await srv('/api/me')); toast('Your account is now an admin account: log in anywhere to open Admin.', 'ok', 7000); return renderAdmin() }
+      } catch {}
+    }
     const c = j.counts, conv = (c.active + c.past_due) / Math.max(1, j.customers.length) * 100;
     $('#adm').innerHTML = `<div class="g"><div class="g g4 kps">
       ${[['MRR', eur(j.mrr)], ['ARR', eur(j.arr)], ['Revenue 30 days', eur(j.revenue_30d)], ['Paying customers', c.active + c.past_due], ['In trial', c.trialing], ['Sign-ups 30 days', j.signups_30d], ['Trial → paid', conv.toFixed(0) + '%'], ['Churned / expired', c.expired + c.canceled]]
