@@ -626,7 +626,7 @@ body.lp2 .nav .btn.acc{background:linear-gradient(135deg,#f7c14f,#e0960c);color:
 .lp-spot{position:relative}
 .lp-spot::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;z-index:0;
   background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(245,183,59,.10),transparent 45%)}
-.lp-spot:hover::before{opacity:1}
+.lp-spot:hover::before{opacity:0}
 .lp-spot>*:not(.lp-tag){position:relative;z-index:1}
 /* console + stats */
 .lp-hood{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:stretch}
@@ -1664,10 +1664,6 @@ if (!window.lpMicro) {
   window.lpMicro = 1;
   const fine = matchMedia('(pointer:fine)').matches && !LPFX.still;
   if (fine) {
-    const glow = document.createElement('div'); glow.className = 'lp-cursor'; document.body.appendChild(glow);
-    let gx = -500, gy = -500, tx = gx, ty = gy;
-    addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; glow.style.opacity = document.querySelector('.lp') ? 1 : 0 }, { passive: true });
-    (function loop() { gx += (tx - gx) * 0.14; gy += (ty - gy) * 0.14; glow.style.transform = `translate(${gx}px, ${gy}px)`; requestAnimationFrame(loop) })();
     document.addEventListener('pointermove', e => {
       const b = e.target.closest && e.target.closest('.lp .lp-btn.gold, .lp .lp-btn.ghost'); $$('.lp-btn.mag').forEach(x => { if (x !== b) { x.classList.remove('mag'); x.style.transform = '' } });
       if (!b) return; const r = b.getBoundingClientRect(); b.classList.add('mag');
