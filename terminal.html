@@ -1,20 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Goldmine Sync</title>
-<script id="dualEarly">
-/* Dual chart: when this page is loaded inside the 2nd-chart pane (?pane=2) it runs as a chart-only copy. */
-(function(){try{
- if(!/[?&]pane=2(&|$)/.test(location.search))return;
- document.documentElement.classList.add('pane2');window.GM_PANE2=true;
- /* the pane never needs the "settings changed -> reload" step of the cloud-settings loader */
- if(!sessionStorage.getItem('gm_pr')){sessionStorage.setItem('gm_pr','1');setTimeout(function(){try{sessionStorage.removeItem('gm_pr')}catch(e){}},12000)}
- /* the pane has no ticket / symbol dock, so it ignores (and never changes) the docking preferences */
- var g=Storage.prototype.getItem,s=Storage.prototype.setItem,K={gm_dock:1,gm_symdock:1};
- Storage.prototype.getItem=function(k){if(this===window.localStorage&&K[k])return '0';return g.apply(this,arguments)};
- Storage.prototype.setItem=function(k,v){if(this===window.localStorage&&K[k])return;return s.apply(this,arguments)};
-}catch(e){}})();
-</script>
+<title>Goldmine Sync · v1103a</title>
 <meta name="theme-color" content="#f6f8f7">
 <script id="gmTheme">
 (function(){
@@ -667,11 +654,11 @@ button.prow:active{background:#f4f7f5}
 <style id="hdrfit">
 /* header on narrower desktop windows: the timeframe pill gives way (scrolls) instead of sliding over the Account button */
 @media(min-width:900px){
- #app{grid-template-columns:auto auto minmax(0,auto) minmax(max-content,1fr) auto auto auto auto}
+ #app{grid-template-columns:auto auto minmax(0,auto) minmax(150px,1fr) auto auto auto auto}
  #tfs{min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;scroll-behavior:smooth;overscroll-behavior-x:contain}
  #tfs::-webkit-scrollbar{display:none}
  #tfs button{flex:none}
- .top .acc{position:relative;z-index:1;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;transition:margin .2s ease}
+ .top .acc{position:relative;z-index:1;white-space:nowrap;min-width:0;max-width:min(240px,100%);overflow:hidden;text-overflow:ellipsis;transition:margin .2s ease}
  .top .bid,.top .ask,.top .pill{transition:padding .2s ease,margin .2s ease,font-size .2s ease}
 }
 /* a little tighter between 900 and 1250px so everything keeps fitting */
@@ -1038,31 +1025,13 @@ html.dark .acc-switch i{color:#4082e7}
 @media (max-width:899px){html.dark .top .tfs button.tfmore{background:#2d343c;color:#4082e7;box-shadow:-10px 0 8px 2px #303840}}
 html.dark,html.dark body{background:#101417!important}html.dark ::selection{background:#3b5870;color:#eaf0f4}html.dark input::placeholder{color:#6f7b84}
 </style>
-<style id="dualcss">
-/* ===== Dual chart (desktop only). Nothing here applies unless the "Dual chart" button is on. ===== */
-#dualPane{display:none;position:fixed;z-index:15;overflow:hidden;background:var(--chart,#f5f2ea);border-left:2px solid var(--line,#e3e7e5)}
-#dualPane.v{border-left:0;border-top:2px solid var(--line,#e3e7e5)}
-#dualPane iframe{border:0;display:block;transform-origin:0 0;background:var(--chart,#f5f2ea);opacity:0;transition:opacity .25s ease}
-#dualPane iframe.ready{opacity:1}
-html:not(.dual-on) #tDualL{display:none}
-@media(max-width:899px){#tDual,#tDualL{display:none!important}#dualPane{display:none!important}}
-@media(min-width:900px){
- /* one header, one ticket / symbol dock and one nav for both charts: only the chart area itself is split */
- html.dual-on #chartView{--tdw:0px}
- html.dual-on #chartView.trade-docked{--tdw:322px}
- html.dual-on #chartView #cw{width:auto!important;left:auto!important;right:auto!important;margin-right:calc(var(--dualw,0px) + var(--tdw,0px) + var(--symw,0px))!important;margin-bottom:var(--dualh,0px)!important}
-}
-/* inside the pane: compact header + chart only (no nav, ticket, symbol dock, trade chips or position strip) */
-html.pane2 #app .nav,html.pane2 #tradeWidget,html.pane2 #tradeRestore,html.pane2 #symDock,html.pane2 #chipbar,html.pane2 #row,html.pane2 #tDual,html.pane2 #tDualL{display:none!important}
-@media(min-width:900px){html.pane2 #app{grid-template-rows:46px minmax(0,1fr) 0px!important}}
-</style>
 </head><body>
 <div id="app">
 <div class="top"><button class="sym" id="symBtn">GOLD <i>▼</i></button><span class="dot" id="dot"></span><span class="pill" id="pl">+$0.00</span><button class="acc" id="accBtn" style="display:none">Account <i>▼</i></button><span class="sp"></span><span class="bid" id="hb">–</span><span class="ask" id="ha">–</span><button class="thm" id="thmBtn" title="Dark mode" aria-label="Toggle dark mode"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4 8.5 8.5 0 1020 14.5z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></div>
 <div class="tfs" id="tfs"></div>
 <div id="chartView">
  <div id="cw"><canvas id="c"></canvas><canvas id="riskOverlay" aria-hidden="true"></canvas>
-  <div class="tb"><button id="tEma">EMA</button><button id="tLbl">Labels: small</button><button id="tDual" title="Show a second chart next to this one">Dual chart</button><button id="tDualL" title="Switch between side-by-side and stacked">Side by side</button></div>
+  <div class="tb"><button id="tEma">EMA</button><button id="tLbl">Labels: small</button></div>
   <div id="tm">⧗ --:--</div><div id="toast"></div>
   <div id="chartSideRail" aria-label="Chart tools"><div id="railGrip" title="Drag to move · tap to hide/show" aria-label="Move or hide toolbar"><i></i><i></i></div><button class="rail-btn on" data-draw="select" title="Select" aria-label="Select"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 7-6 2-2 6z"/></svg></button><button class="rail-btn" data-draw="line" title="Horizontal line" aria-label="Horizontal line"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg></button><button class="rail-btn" data-draw="trend" title="Trendline" aria-label="Trendline"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19L20 5"/><circle cx="4" cy="19" r="1.6" fill="currentColor"/><circle cx="20" cy="5" r="1.6" fill="currentColor"/></svg></button><button class="rail-btn" data-draw="rect" title="Rectangle / zone" aria-label="Rectangle / zone"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="1.5"/></svg></button><button class="rail-btn" data-draw="fib" title="Fib retracement" aria-label="Fib retracement"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18M3 10h18M3 15h18M3 20h18"/><circle cx="6" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="5" r="1.6" fill="currentColor"/></svg></button><button class="rail-btn" data-draw="label" title="Text label" aria-label="Text label"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg></button><i class="rail-sep"></i><button class="rail-btn" data-draw="delete" title="Delete selected" aria-label="Delete selected"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button><button class="rail-btn" id="drawUndo" title="Undo drawing" aria-label="Undo drawing"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg></button><button class="rail-btn" id="drawClear" title="Clear all drawings" aria-label="Clear all drawings"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button><i class="rail-sep"></i><button class="rail-btn" id="magnetBtn" title="Magnet: snap to candle open / high / low / close" aria-label="Magnet snap"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v9a6 6 0 0012 0V3"/><path d="M6 7h4M14 7h4"/></svg></button><button class="rail-btn" id="indicatorEma" title="EMA on/off" aria-label="EMA on/off"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 16c3-8 6-8 9-3s6 3 9-6"/></svg></button><button class="rail-btn" id="indicatorLabels" title="Trade labels on/off" aria-label="Trade labels on/off"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H10l-4 4v-4H4z"/></svg></button></div>
   <div id="drawMenu"><div class="pane-head"><h4 id="drawMenuTitle">Drawing settings</h4><button id="drawPaneClose" aria-label="Close">×</button></div>
@@ -1175,6 +1144,7 @@ async function connect(){
   toast('✓ Connected — live '+S.symbol+' from your broker');
  }catch(e){status('off');toast(e.message,1);showPanel('Settings')}
 }
+function symViewFix(sym){setTimeout(()=>{if(S.symbol!==sym)return;view.vlo=null;view.vhi=null;view.scale=1;view.vshift=0;view.pan=0;dirty=true},900)}
 async function loadCandles(){
  const r=await api(`/api/candles?login=${S.login}&symbol=${encodeURIComponent(S.symbol)}&timeframe=${S.tf}&count=1000`);
  S.C=r.candles;S.digits=r.digits;S.point=r.point;S.tfs=r.tf_seconds;view.pan=0;view.vlo=null;view.vhi=null;view.scale=1;view.vshift=0;dirty=true;header()}
@@ -1190,8 +1160,8 @@ async function poll(){
   /* auto-follow: if trades are open but none on this chart, jump to the chart of the first (oldest) open trade */
   if(!S.fol&&r.positions&&r.positions.length&&!r.positions.some(p=>p.symbol===sym)){
    S.fol=true;const f=r.positions.reduce((a,b)=>b.ticket<a.ticket?b:a);
-   S.symbol=f.symbol;LS.set('gm_symbol',S.symbol);S.C=[];S.P=[];S.O=[];sheet(null);header();if(symDockOn)symDockRender();
-   loadCandles().then(poll).catch(x=>toast(x.message,1));return}
+   S.symbol=f.symbol;LS.set('gm_symbol',S.symbol);S.C=[];S.P=[];S.O=[];S.bid=S.ask=0;sheet(null);header();if(symDockOn)symDockRender();
+   {const sy=S.symbol;loadCandles().then(poll).then(()=>symViewFix(sy)).catch(x=>toast(x.message,1))}return}
   S.fol=true; // auto-jump to the open trade's chart happens only on the first update after connecting
   S.bid=r.bid;S.ask=r.ask;S.digits=r.digits;S.point=r.point;S.contract=r.contract||S.contract;{const o=r.time-Date.now()/1000;(S.offS=S.offS||[]).push(o);if(S.offS.length>30)S.offS.shift();S.off=Math.max(...S.offS)}
   for(const b of r.bars){const L=S.C[S.C.length-1];
@@ -1259,7 +1229,7 @@ function draw(){
   if(baseHi<baseLo){baseHi=(S.ask||1)+1;baseLo=(S.bid||0)-1}
   const m=(baseHi-baseLo)*.6||1;
   orderLevels().forEach(x=>{if(x>baseLo-m&&x<baseHi+m){baseHi=Math.max(baseHi,x);baseLo=Math.min(baseLo,x)}});
-  [S.ask,S.bid].forEach(x=>{if(x){baseHi=Math.max(baseHi,x);baseLo=Math.min(baseLo,x)}});
+  [S.ask,S.bid].forEach(x=>{if(x&&x>baseLo-m&&x<baseHi+m){baseHi=Math.max(baseHi,x);baseLo=Math.min(baseLo,x)}});
   const pad=(baseHi-baseLo)*.08||.5;view.vhi=baseHi+pad;view.vlo=baseLo-pad;
  }
  let hi=view.vhi,lo=view.vlo;
@@ -1267,7 +1237,7 @@ function draw(){
  const Y=p=>8+(hi-p)/(hi-lo)*(ph-16),X=k=>k*bw+bw/2;
  geo={ph,cw,bw,inv:y=>hi-(y-8)/(ph-16)*(hi-lo),Y:p=>Y(p)};
  // watermark
- g.fillStyle='rgba(80,90,86,.12)';g.font='900 42px -apple-system,Arial';g.textAlign='center';g.fillText('TRADECORE',cw/2,ph*.46);g.font='800 22px -apple-system,Arial';g.fillText('SYNC',cw/2,ph*.46+28);g.textAlign='left';
+ g.fillStyle='rgba(80,90,86,.12)';g.font='900 42px -apple-system,Arial';g.textAlign='center';g.fillText('GOLDMINE',cw/2,ph*.46);g.font='800 22px -apple-system,Arial';g.fillText('SYNC',cw/2,ph*.46+28);g.textAlign='left';
  // grid + price axis
  const pxPerPrice=(ph-16)/Math.max(1e-9,hi-lo);
  // Pick finer tick intervals as the user zooms vertically, keeping labels legible.
@@ -1347,6 +1317,7 @@ function draw(){
     placed.push(it)})}
   const isRiskLabel=it=>it.dragKind==='sl'||it.dragKind==='tp'||it.dragKind==='psl'||it.dragKind==='ptp';
   items.filter(it=>!isRiskLabel(it)).forEach(it=>box(it));
+  items.forEach(it=>{if((it.dragKind==='sl'||it.dragKind==='psl')&&!it.be&&!(drag&&drag.kind===it.dragKind&&drag.ticket===it.ticket))it.be=items.some(o=>o!==it&&Math.abs(o.by-it.by)<BH&&o.x<it.x+it.w&&it.x<o.x+o.w)}); // an SL label that would sit on top of another label stays hidden until hovered
   const beShown=it=>{if(!it.be)return true;const bx=it.x,by=it.by-BH/2;return(XH.on&&XH.x>=bx&&XH.x<=bx+it.w&&XH.y>=by&&XH.y<=by+BH)||(!XH.m&&activePos===it.ticket)};
   frontRiskLabels=items.filter(isRiskLabel).filter(beShown);
   frontRiskLabels.forEach(it=>box(it));
@@ -1360,8 +1331,7 @@ function draw(){
  // candle countdown: small tag on the price axis, right under the bid/ask tags
  {let cy=S.bid&&view.pan===0?Math.max(Y(S.bid),S.ask?Y(S.ask):0)+19:16;cy=clamp(cy,10,ph-10);
   rg.save();rg.font='700 10px -apple-system,Arial';const tw=rg.measureText(tmLabel).width+12;
-  rg.fillStyle=window.GM_DARK?'rgba(0,0,0,.5)':'#1d2b27';rg.beginPath();rg.roundRect(cw+(AX-tw)/2,cy-8,tw,16,4);rg.fill();
-  if(window.GM_DARK){rg.strokeStyle='rgba(79,227,160,.4)';rg.lineWidth=1;rg.stroke()}
+  rg.fillStyle=window.GM_DARK?'rgba(0,0,0,.4)':'#1d2b27';rg.beginPath();rg.roundRect(cw+(AX-tw)/2,cy-8,tw,16,4);rg.fill();
   rg.fillStyle='#4fe3a0';rg.textAlign='center';rg.fillText(tmLabel,cw+AX/2,cy+3.5);rg.restore()}
  // subtle dashed crosshair that follows the mouse (desktop)
  if(XH.on&&!drag&&!scaleDrag&&!(pan&&pan.moved)&&XH.x>=0&&XH.x<cw&&XH.y>=0&&XH.y<ph){
@@ -2191,7 +2161,7 @@ document.addEventListener('click',e=>{
  if(d.po){cancelPending(+d.po);return}
  if(d.n){showPanel(d.n);return}
  if(d.cmode||d.ctg||d.cseg){cpClick(d);return}
- if(d.sym){S.symbol=d.sym;LS.set('gm_symbol',S.symbol);S.C=[];S.P=[];S.O=[];sheet(null);header();if(symDockOn)symDockRender();if(S.ok)loadCandles().then(poll).catch(x=>toast(x.message,1));return}
+ if(d.sym){S.symbol=d.sym;LS.set('gm_symbol',S.symbol);S.C=[];S.P=[];S.O=[];S.bid=S.ask=0;sheet(null);header();if(symDockOn)symDockRender();if(S.ok){const sy=S.symbol;loadCandles().then(poll).then(()=>symViewFix(sy)).catch(x=>toast(x.message,1))}return}
  switch(t.id){
   case 'be':beAll();return;
   case 'mi':lots=lots>0.1?+(lots-0.1).toFixed(2):Math.max(0.01,+(lots-0.01).toFixed(2));LS.set('gm_lots',lots);header();return;
@@ -2601,69 +2571,6 @@ async function journal(){try{const r=await api(`/api/history?login=${S.login}&li
  const sum=Object.entries(ses).map(([k,o])=>k+': '+o.n+' trades, win '+Math.round(o.w/o.n*100)+'%, '+money(o.pl)).join(' | ')||'No closed trades found';
  const csv=rows.map(a=>a.join(',')).join('\n')+'\n\n'+Object.entries(ses).map(([k,o])=>`${k},${o.n},${(o.w/o.n*100).toFixed(0)}%,${o.pl.toFixed(2)}`).join('\n'),a=document.createElement('a');
  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='journal_'+Date.now()+'.csv';a.click();toast(sum)}catch(e){toast('Journal: '+e.message,1)}}
-</script><script id="dualchart">
-(function(){
- /* keep light/dark in step between the main chart and the 2nd chart */
- addEventListener('storage',function(e){if(e.key==='gm_theme'&&typeof applyTheme==='function'){try{applyTheme(e.newValue==='dark',false)}catch(x){}}});
-
- if(window.GM_PANE2){
-  /* ---- 2nd chart: own symbol + timeframe (saved as gm_p2_*), never follows trades, leaves the main chart's settings alone ---- */
-  const _set=LS.set,_get=LS.get,map=k=>k==='gm_symbol'?'gm_p2_symbol':k==='gm_tf'?'gm_p2_tf':k;
-  LS.set=function(k,v){return _set.call(LS,map(k),v)};
-  LS.get=function(k,d){return _get.call(LS,map(k),d)};
-  const ps=_get.call(LS,'gm_p2_symbol',''),pt=_get.call(LS,'gm_p2_tf','');
-  if(ps)S.symbol=ps;
-  if(pt&&TFLIST.includes(pt))S.tf=pt;
-  Object.defineProperty(S,'fol',{get(){return true},set(){},configurable:true});
-  try{header()}catch(e){}
-  return;
- }
-
- /* ---- main page: button + chart-area split ---- */
- const root=document.documentElement,DESKQ=window.matchMedia('(min-width:900px)'),bT=$('#tDual'),bL=$('#tDualL'),cv=$('#chartView'),cw=$('#cw');
- if(!bT||!bL||!cv||!cw)return;
- let on=LS.get('gm_dual','0')==='1',lay=LS.get('gm_dual_l','h')==='v'?'v':'h',frame=null,raf=0;
- const wrap=document.createElement('div');wrap.id='dualPane';document.body.appendChild(wrap);
- const url=()=>{const u=new URL(location.href);u.hash='';u.searchParams.set('pane','2');return u.href};
- const num=v=>parseFloat(v)||0;
- /* size the split (CSS vars on #chartView) and put the pane exactly in the space it frees */
- function place(){
-  raf=0;
-  const show=on&&DESKQ.matches;
-  if(!show){cv.style.removeProperty('--dualw');cv.style.removeProperty('--dualh');wrap.style.display='none';return}
-  if(cv.offsetParent===null||getComputedStyle(cv).display==='none'){wrap.style.display='none';return} /* Positions / History / Account tabs are open */
-  const cs=getComputedStyle(cv),r=cv.getBoundingClientRect(),row=$('#row'),rowH=row&&getComputedStyle(row).display!=='none'?row.offsetHeight:0;
-  const availW=r.width-num(cs.getPropertyValue('--tdw'))-num(cs.getPropertyValue('--symw')),availH=r.height-rowH;
-  const dw=lay==='h'?Math.floor(availW/2):0,dh=lay==='v'?Math.floor(availH/2):0;
-  cv.style.setProperty('--dualw',dw+'px');cv.style.setProperty('--dualh',dh+'px');
-  const c=cw.getBoundingClientRect(); /* read after the new margins applied */
-  const box=lay==='h'?{left:c.right,top:c.top,width:dw,height:c.height}:{left:c.left,top:c.bottom,width:c.width,height:dh};
-  wrap.className=lay==='v'?'v':'';wrap.style.display='block';
-  wrap.style.left=box.left+'px';wrap.style.top=box.top+'px';wrap.style.width=box.width+'px';wrap.style.height=box.height+'px';
-  if(frame){
-   const MIN=900; /* keep the pane in its desktop layout even when it is narrower than 900px */
-   if(box.width>0&&box.width<MIN){const k=box.width/MIN;frame.style.width=MIN+'px';frame.style.height=(box.height/k)+'px';frame.style.transform='scale('+k+')'}
-   else{frame.style.width='100%';frame.style.height='100%';frame.style.transform=''}
-  }
- }
- const sched=()=>{if(!raf)raf=requestAnimationFrame(place)};
- function apply(){
-  const show=on&&DESKQ.matches;
-  root.classList.toggle('dual-on',show);root.classList.toggle('dual-v',show&&lay==='v');
-  bT.classList.toggle('on',show);bL.textContent=lay==='v'?'Stacked':'Side by side';
-  if(show&&!frame){frame=document.createElement('iframe');frame.title='Second chart';frame.addEventListener('load',()=>frame&&frame.classList.add('ready'));frame.src=url();wrap.appendChild(frame)}
-  if(!show&&frame){frame.remove();frame=null}
-  place();
-  requestAnimationFrame(()=>{try{size()}catch(e){}dirty=true});
- }
- bT.addEventListener('click',()=>{on=!on;LS.set('gm_dual',on?'1':'0');apply()});
- bL.addEventListener('click',()=>{lay=lay==='v'?'h':'v';LS.set('gm_dual_l',lay);apply()});
- if(window.ResizeObserver){const ro=new ResizeObserver(sched);ro.observe(cv);const row=$('#row');if(row)ro.observe(row)}
- new MutationObserver(sched).observe(cv,{attributes:true,attributeFilter:['class','style']}); /* docks opening/closing, tab switches */
- addEventListener('resize',sched);
- DESKQ.addEventListener?DESKQ.addEventListener('change',apply):DESKQ.addListener(apply);
- apply();
-})();
 </script></body></html>
 
 <style>@media(max-width:899px){#cw.pane-open ~ #chipbar{left:8px!important;right:8px!important;top:48px!important}#cw.pane-open ~ #chipbar #chips{flex-wrap:wrap!important;max-width:calc(100% - 8px)!important}#cw.pane-open ~ #chipbar #chips>*{font-size:10px!important;padding:5px 7px!important}#cw.pane-open #drawMenu{bottom:52px!important}}#cw.pane-open #chips .be,#cw.pane-open #chips .bk,#cw.pane-open #chips [data-do=manage]{margin-left:4px}</style>
