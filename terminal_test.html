@@ -18,8 +18,8 @@
 {"@type":"Question","name":"Which brokers work?","acceptedAnswer":{"@type":"Answer","text":"Any broker that offers MetaTrader 5. MetaTrader 4 is not supported."}},
 {"@type":"Question","name":"Is my account safe?","acceptedAnswer":{"@type":"Answer","text":"Your MT5 password stays on your own computer and is never sent to us. Goldmine never places a trade by itself."}},
 {"@type":"Question","name":"What happens after the free trial?","acceptedAnswer":{"@type":"Answer","text":"No card is asked for the trial, so nothing is charged automatically. Pick a plan to keep going."}}]}</script>
-<link rel="stylesheet" href="gp-theme.css?v=20261109b">
-<script src="gp-shared.js?v=20261109b"></script>
+<link rel="stylesheet" href="gp-theme.css?v=20261109c">
+<script src="gp-shared.js?v=20261109c"></script>
 <style>
 html,body{overflow:auto;height:auto}
 body{background:var(--bg);min-height:100vh}
@@ -49,8 +49,9 @@ a{color:inherit}
 /* landing */
 .hero{padding:64px 0 28px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:-40% -10% auto;height:620px;background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,#f5b73b 22%,transparent),transparent 60%),radial-gradient(ellipse at 20% 60%,color-mix(in srgb,var(--acc) 16%,transparent),transparent 55%);pointer-events:none;z-index:-1}
-.pill{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:30px;border:1px solid var(--line);background:var(--panel);font-size:12px;font-weight:700;color:var(--mut)}
-.pill b{color:var(--acc)}
+.pill{display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:2px 8px;min-height:30px;padding:5px 14px;max-width:100%;line-height:1.35;text-align:center;border-radius:30px;border:1px solid var(--line);background:var(--panel);font-size:12px;font-weight:700;color:var(--mut)}
+.pill b{color:var(--acc);white-space:nowrap}
+@media (max-width:560px){.hero .pill{border-radius:14px;padding:7px 14px;font-size:11.5px}.hero .pill b{flex-basis:100%}}
 .hero h1{font-size:clamp(34px,5.6vw,62px);line-height:1.04;letter-spacing:-.035em;font-weight:850;margin:18px auto 16px;max-width:880px}
 .hero h1 em{font-style:normal;background:linear-gradient(90deg,#e0960c,#f5b73b 40%,var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p.sub{font-size:clamp(15px,1.8vw,18px);color:var(--mut);max-width:640px;margin:0 auto 26px;line-height:1.55}
@@ -327,7 +328,8 @@ input.in:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--a
 .tour .txt li{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:10px 12px;font-size:13px;color:#dfe8e2;line-height:1.4}
 .tour .txt li::before{content:'✓';color:#5fd39c}
 .tour .cta .btn.acc{box-shadow:0 12px 40px -10px rgba(30,154,101,.8)}
-@media (max-width:900px){.tour{padding:64px 0}.tour .show{grid-template-columns:minmax(0,1fr);gap:24px;margin-bottom:64px}.tour .txt ul{grid-template-columns:minmax(0,1fr)}.tourtabs{margin-bottom:36px}}
+.tour .shotf .bar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-width:900px){.tour{padding:64px 0}.tour .show,.tour .show.rev{grid-template-columns:minmax(0,1fr);gap:24px;margin-bottom:64px}.tour .txt ul{grid-template-columns:minmax(0,1fr)}.tourtabs{margin-bottom:36px}}
 
 /* outcomes: gradient band + live widgets */
 .outs{background:linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--acc) 9%,var(--bg)) 40%,var(--bg))}
@@ -487,6 +489,11 @@ function route() {
   location.hash = 'home';
 }
 addEventListener('hashchange', route);
+// closing the sign-up / log-in box sets the address back to #home: "Start free trial" opens it again, and a refresh no longer pops it up by itself
+new MutationObserver(() => { if (!modalEl().classList.contains('on') && /^#(signup|login)$/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#home') })
+  .observe(modalEl(), { attributes: true, attributeFilter: ['class'] });
+// a link to the page you are already on (same #hash) still works
+document.addEventListener('click', e => { const a = e.target.closest('a[href^="#"]'); if (a && a.getAttribute('href') === location.hash && a.getAttribute('href').length > 1) { e.preventDefault(); route() } }, true);
 
 function renderNav(r) {
   const L = A.me
@@ -542,7 +549,7 @@ function renderLanding() {
 
   <section class="hero"><div class="wrap">
     <span class="pill"><b>FOR MT5 TRADERS</b> who scale in, stack positions and manage risk</span>
-    <h1>Scale in. Protect. Exit.<br><em>All in one click.</em></h1>
+    <h1>Scale in. Protect. Exit. <br><em>All in one click.</em></h1>
     <p class="sub">Goldmine Pro is a web terminal for MetaTrader 5. Layer entries sized by your risk, move a whole basket to break-even, close your worst entries, and see in a real journal what actually makes you money. Works with any MT5 broker, on any device.</p>
     <div class="cta"><a class="btn acc lg" href="#signup" data-cta="hero-trial">Start my free ${td}-day trial</a><button class="btn lg" data-act="demo" data-cta="hero-demo">▶ Try the live demo · no sign-up</button></div>
     <div class="trust"><span>No card needed</span><span>Cancel in 2 clicks</span><span>Then from ${minPrice()}/month</span></div>
@@ -1150,9 +1157,21 @@ function admTable() {
   const left = u => { if (!u.period_end) return '—'; const d = Math.ceil((u.period_end - now) / 86400); return d < 0 ? `<span class="dn">${-d} d ago</span>` : d <= 2 ? `<b style="color:var(--orange)">${d} d</b>` : d + ' d' };
   $('#admN').textContent = `${rows.length} shown`;
   $$('[data-admf]').forEach(b => b.classList.toggle('on', b.dataset.admf === A.admF));
-  $('#admT').innerHTML = `<table class="tbl2"><thead><tr><th>Email</th><th>Status</th><th>Plan</th><th>${A.admF === 'trialing' ? 'Trial ends' : 'Renews / ends'}</th><th>Left</th><th>PCs</th><th>Bridge last seen</th><th>Joined</th></tr></thead><tbody>
-    ${rows.map(u => `<tr><td><a href="mailto:${esc(u.email)}" style="color:var(--acc);font-weight:700;text-decoration:none">${esc(u.email)}</a></td><td>${stPill(u)}</td><td>${esc(P(u.plan)?.name || '—')} ${u.interval === 'year' ? '<span class="mut">yearly</span>' : ''}</td><td>${dt(u.period_end)}${u.cancel_at_end ? ' <span class="st warn">ends</span>' : ''}</td><td>${left(u)}</td><td>${u.machines}</td><td>${ago(u.last_seen)}</td><td>${dt(u.created)}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">Nobody in this group.</td></tr>'}
+  $('#admT').innerHTML = `<table class="tbl2"><thead><tr><th>Email</th><th>Status</th><th>Plan</th><th>${A.admF === 'trialing' ? 'Trial ends' : 'Renews / ends'}</th><th>Left</th><th>PCs</th><th>Bridge last seen</th><th>Joined</th><th></th></tr></thead><tbody>
+    ${rows.map(u => `<tr><td><a href="mailto:${esc(u.email)}" style="color:var(--acc);font-weight:700;text-decoration:none">${esc(u.email)}</a></td><td>${stPill(u)}</td><td>${esc(P(u.plan)?.name || '—')} ${u.interval === 'year' ? '<span class="mut">yearly</span>' : ''}</td><td>${dt(u.period_end)}${u.cancel_at_end ? ' <span class="st warn">ends</span>' : ''}</td><td>${left(u)}</td><td>${u.machines}</td><td>${ago(u.last_seen)}</td><td>${dt(u.created)}</td><td><button class="btn sm danger" data-admdel="${esc(u.email)}" title="Delete this user for good">🗑 Delete</button></td></tr>`).join('') || '<tr><td colspan="9" class="empty">Nobody in this group.</td></tr>'}
     </tbody></table>`;
+}
+async function admDelete(email, force) {
+  const u = A.adm?.customers.find(x => x.email === email), paying = u && ['active', 'past_due'].includes(u.status);
+  if (!force && !(await confirmBox(`Delete ${email}?`, `<p>The account, its license key and payment records are removed for good. Their bridge stops working within 30 minutes.</p>${paying ? '<p style="margin-top:8px"><b>This is a paying customer.</b> Their Stripe subscription is cancelled right away (no refund is made automatically).</p>' : ''}<p style="margin-top:8px">This cannot be undone.</p>`, 'Delete for good', 'danger'))) return;
+  try {
+    const r = await fetch(SRV + '/api/admin/delete_user', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Token': store.get('saasAdmin', '') }, body: JSON.stringify({ email, force: !!force }) });
+    const j = await r.json(); if (!r.ok) throw Object.assign(new Error(j.detail), { code: r.status });
+    toast(j.message, 'ok'); admLoad();
+  } catch (e) {
+    if (e.code === 502 && await confirmBox('Stripe did not answer', `<p>${esc(e.message)}</p>`, 'Delete anyway', 'danger')) return admDelete(email, true);
+    toast(e.message, 'err');
+  }
 }
 async function admLoad() {
   const tok = $('#admTok').value.trim(); store.set('saasAdmin', tok);
@@ -1182,6 +1201,7 @@ document.addEventListener('click', async e => {
   const cta = e.target.closest('[data-cta]'); if (cta) track('cta_click', { id: cta.dataset.cta }); // analytics hook
   const of = e.target.closest('[data-offer]'); if (of) { if (of.dataset.offer === 'no') return resolveModal(null); return offerAction(of.dataset.offer) }
   const af = e.target.closest('[data-admf]'); if (af) { A.admF = af.dataset.admf; return admTable() }
+  const ad = e.target.closest('[data-admdel]'); if (ad) return admDelete(ad.dataset.admdel);
   const z = e.target.closest('[data-zoom]');
   const tr = e.target.closest('[data-tour]'); if (tr) { e.preventDefault(); return document.getElementById('tour' + tr.dataset.tour)?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }
   if (z) { const m = openModal(`<img src="${z.dataset.zoom}" alt="">`, true); m.classList.add('shotbox'); return }
