@@ -2608,11 +2608,12 @@ function openAccounts(a) {
   const cur = S.accounts.find(x => x.login === S.login);
   popover(a, `<h6>Accounts</h6>${S.accounts.map(x => { const [b, c] = acctBadge(x); return `<button class="it ${x.login === S.login ? 'on' : ''}" data-login="${x.login}"><span class="badge ${c}">${b}</span>${esc(x.name)}<small>${x.login} · ${esc(x.server)}</small></button>` }).join('') || '<p class="mut" style="padding:8px">Not connected</p>'}
     <button class="it" data-act="newAccount" style="color:var(--acc);font-weight:800">＋ New demo account</button>
-    ${cur?.paper ? `<hr><h6>This paper account</h6><button class="it" data-act="paperDeposit">＋ Add funds</button><button class="it" data-act="paperWithdraw">－ Remove funds</button><button class="it" data-act="paperReset">↺ Reset (fresh balance, clear history)</button><button class="it dn" data-act="paperDelete">🗑 Delete this paper account</button>` : ''}
+    ${cur?.paper ? `<hr><h6>This paper account</h6><button class="it" data-act="paperDeposit">＋ Add funds</button><button class="it" data-act="paperWithdraw">－ Remove funds</button><button class="it" data-act="paperLeverage">⚖ Leverage · 1:${cur.leverage || 100}</button><button class="it" data-act="paperReset">↺ Reset (fresh balance, clear history)</button><button class="it dn" data-act="paperDelete">🗑 Delete this paper account</button>` : ''}
     <hr><a class="it" href="journal.html" target="_blank">📒 Open journal</a><button class="it" data-act="settings">⚙ Bridge settings</button>`);
 }
 /* ---------- new demo account: instant paper account, or add a real MT5 demo account ---------- */
-let NA = { kind: 'paper', bal: 10000 };
+let NA = { kind: 'paper', bal: 10000, lev: store.get('naLev', 500) };
+const LEVS = [30, 50, 100, 200, 500, 1000, 2000, 5000, 10000];
 function openNewAccount() {
   closePopover();
   const bals = [5000, 10000, 25000, 50000, 100000, 200000];
@@ -2620,10 +2621,12 @@ function openNewAccount() {
     <div class="sizes two"><button data-na="paper" class="${NA.kind === 'paper' ? 'on' : ''}">⚡ Instant paper account<small>ready in 1 second</small></button><button data-na="mt5" class="${NA.kind === 'mt5' ? 'on' : ''}">🔌 Add an MT5 demo account<small>one you opened in MT5</small></button></div>
     ${NA.kind === 'paper' ? `<div class="mbody">
       <p>Trades on <b>live prices from your MT5</b>; orders are simulated in the bridge, so nothing is ever sent to your broker. Create as many as you like, reset or delete them anytime. Great for practising and for prop-challenge simulations.</p>
-      <label>Name<input id="naName" placeholder="e.g. Gold scalping 10K, FTMO 100K practice" maxlength="40"></label>
+      <label>Name<input id="naName" placeholder="e.g. Gold scalping 10K, Strategy test 100K" maxlength="40"></label>
       <label>Starting balance (${esc(CUR().trim())})</label>
       <div class="sizes" style="grid-template-columns:repeat(3,1fr)">${bals.map(b => `<button data-nab="${b}" class="${NA.bal === b ? 'on' : ''}">${num(b, 0)}</button>`).join('')}</div>
       <label>Or a custom amount<input id="naBal" inputmode="decimal" value="${NA.bal}"></label>
+      <label>Leverage</label>
+      <div class="sizes" style="grid-template-columns:repeat(5,1fr)">${LEVS.map(l => `<button data-nalev="${l}" class="${NA.lev === l ? 'on' : ''}">1:${l}</button>`).join('')}</div>
     </div><div class="mact"><button class="btn ghost" data-m="no">Cancel</button><button class="btn acc" data-act="createPaper">Create & switch to it</button></div>`
     : `<div class="mbody">
       <p>Open a free demo in MT5 first (<b>File → Open an Account</b> → MetaQuotes-Demo or your broker → "Open a demo account"). MT5 shows the login and password. Paste them here: the bridge tests the login and adds it. No config.json editing, no restart.</p>
@@ -2639,7 +2642,7 @@ async function afterNewAccount(login, msg) {
 }
 async function createPaper() {
   const bal = readNum($('#naBal')); if (!bal || bal < 100) return toast('Enter a starting balance of at least 100.', 'err');
-  try { const r = await api('/api/paper/create', { name: $('#naName').value.trim(), balance: bal }); Guard.rebase(r.account.login, 'reset'); await afterNewAccount(r.account.login, `Paper account "${r.account.name}" created with ${money(bal, false)}`) } catch (e) { toast(e.message, 'err') }
+  try { const r = await api('/api/paper/create', { name: $('#naName').value.trim(), balance: bal, leverage: NA.lev }); store.set('naLev', NA.lev); Guard.rebase(r.account.login, 'reset'); await afterNewAccount(r.account.login, `Paper account "${r.account.name}" created with ${money(bal, false)} · 1:${NA.lev}`) } catch (e) { toast(e.message, 'err') }
 }
 async function addMt5() {
   const login = parseInt($('#naLogin').value), server = $('#naServer').value.trim(), password = $('#naPass').value;
@@ -2658,6 +2661,11 @@ async function paperAction(kind) {
     const d = add ? amt : -amt; Guard.rebase(S.login, d); // before the new balance arrives, so it never shows as a gain / loss for a moment
     if (!(await act(() => api('/api/paper/deposit', { login: S.login, amount: d }), `${add ? 'Added' : 'Removed'} ${money(amt, false)}`))) Guard.rebase(S.login, -d);
     return loadHistory();
+  }
+  if (kind === 'leverage') {
+    const v = await formBox(`Leverage for ${cur.name}`, [{ id: 'l', label: 'Leverage', type: 'select', value: String(cur.leverage || 500), options: LEVS.map(l => [String(l), `1:${l}`]) }], 'Set leverage', 'Applies to open positions too: the margin and free margin update right away.'); if (!v) return;
+    await act(() => api('/api/paper/leverage', { login: S.login, leverage: +v.l }), `Leverage set to 1:${v.l}`);
+    const a = await api('/api/accounts'); S.accounts = a.accounts; return;
   }
   if (kind === 'reset') {
     const v = await formBox(`Reset ${cur.name}?`, [{ id: 'b', label: 'Fresh starting balance', value: String(S.account?.balance ? Math.round(S.account.balance) : 10000) }], 'Reset account', 'All positions, orders and history of this paper account are cleared.'); if (!v) return;
@@ -2775,7 +2783,7 @@ const ACTIONS = {
     saveInds(); Indicators.rebuild(); applyChartButtons();
   },
   newAccount: openNewAccount, createPaper, addMt5,
-  paperDeposit: () => paperAction('deposit'), paperWithdraw: () => paperAction('withdraw'), paperReset: () => paperAction('reset'), paperDelete: () => paperAction('delete'),
+  paperDeposit: () => paperAction('deposit'), paperWithdraw: () => paperAction('withdraw'), paperReset: () => paperAction('reset'), paperLeverage: () => paperAction('leverage'), paperDelete: () => paperAction('delete'),
 };
 document.addEventListener('click', e => {
   const t = e.target.closest('button,[data-sym],[data-pa],.lvl,[data-pi],[data-tkv]'); if (!t || t.closest('#tl')) return;
@@ -2783,6 +2791,7 @@ document.addEventListener('click', e => {
   if (d.m) return;
   if (d.dsave) return saveDrawSettings();
   if (d.na) { NA.kind = d.na; return openNewAccount() }
+  if (d.nalev) { NA.lev = +d.nalev; $$('[data-nalev]').forEach(b => b.classList.toggle('on', b === t)); return }
   if (d.nab) { NA.bal = +d.nab; $('#naBal').value = d.nab; $$('[data-nab]').forEach(b => b.classList.toggle('on', b === t)); return }
   if (d.dsadd) { const box = $('#dsLv'); box.insertAdjacentHTML('beforeend', lvRow({ v: '', c: '#2962ff', on: true }, box.children.length)); box.lastElementChild.querySelector('.fi').focus(); return }
   if (d.dsdel != null) return t.parentElement.remove();

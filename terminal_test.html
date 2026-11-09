@@ -46,6 +46,7 @@ a{color:inherit}
 #acctBtn{display:flex;align-items:center;gap:8px;height:36px;padding:0 6px 0 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);font-weight:700;font-size:12.5px}
 #acctBtn i{width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--acctx);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px}
 .burger{display:none}
+.only-sm{display:none!important}@media (max-width:860px){#links.open .only-sm{display:flex!important}}
 
 /* landing */
 .hero{padding:64px 0 28px;text-align:center;position:relative;overflow:hidden}
@@ -780,6 +781,148 @@ body.lp2 .nav .btn.acc{background:linear-gradient(135deg,#f7c14f,#e0960c);color:
 .lp-faq summary::after{transition:transform .3s}.lp-faq details[open] summary::after{transform:rotate(180deg)}
 @media (max-width:860px){.race{grid-template-columns:1fr;gap:10px}.race-vs{height:20px}.race-vs span{width:38px;height:38px;font-size:12px}.race-desk{height:240px}.race-win{width:76%}.race-jobs{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:2px 2px 8px;scrollbar-width:none}.race-jobs::-webkit-scrollbar{display:none}.race-jobs button{flex:none}}
 @media (prefers-reduced-motion:reduce){.race-win{animation:none}.race-btn.hit::after{display:none}}
+/* ================= launch offer: seats, guarantee, offer stack, lead magnet, welcome ================= */
+.lp-seats{margin:0 0 14px}.lp-seats div{height:8px;border-radius:6px;background:#1c2230;overflow:hidden}
+.lp-seats i{display:block;height:100%;background:linear-gradient(90deg,#f5b73b,#f0454f);border-radius:6px;animation:seatPulse 2.4s ease-in-out infinite}
+.lp-seats small{display:block;margin-top:6px;font-size:12px;color:#aab3c3;font-weight:600}.lp-seats b{color:#f5b73b}
+@keyframes seatPulse{50%{filter:brightness(1.35)}}
+.lp-guar{margin-top:10px;text-align:center;font-size:12.5px;font-weight:700;color:#16c784}
+.lp-plan li.plus{color:#f3f5f9;font-weight:700}.lp-plan li.plus::before{content:'★';color:#f5b73b}
+.lp-plans{grid-template-columns:minmax(0,1.15fr) minmax(0,.9fr);max-width:880px;margin:0 auto}
+/* lead magnet under the calculator */
+.lp-lead{margin-top:16px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:center;padding:22px 24px;border-radius:20px;
+  border:1px solid rgba(245,183,59,.4);background:radial-gradient(500px 200px at 0% 0%,rgba(245,183,59,.14),transparent 70%),#0f0d09;box-shadow:0 30px 80px -40px rgba(245,183,59,.4)}
+.lp-leadt{display:flex;gap:14px;align-items:flex-start}.lp-leadt>span{font-size:30px;line-height:1}
+.lp-leadt b{display:block;font-size:18px;letter-spacing:-.01em}.lp-leadt small{display:block;color:#c9bfa9;font-size:13.5px;line-height:1.5;margin-top:4px}
+.lp-leadf{display:flex;gap:8px}.lp-leadf input{flex:1;min-width:0;height:48px;border-radius:12px;border:1px solid #3a2e14;background:#07090e;color:#fff;padding:0 14px;font:inherit;font-size:15px;outline:none}
+.lp-leadf input:focus{border-color:#f5b73b}.lp-leadf .lp-btn{min-height:48px;white-space:nowrap}
+.lp-leadn{grid-column:1/-1;color:#8a7d63;font-size:12px}
+/* offer stack */
+.lp-offer{background:radial-gradient(900px 500px at 50% 0%,rgba(245,183,59,.07),transparent 70%)}
+.lp-stack{max-width:900px;margin:0 auto;border-radius:24px;border:1px solid rgba(245,183,59,.35);background:#0c0f15;overflow:hidden;box-shadow:0 50px 120px -60px rgba(245,183,59,.5)}
+.lp-si{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:16px;align-items:center;padding:18px 24px;border-bottom:1px solid #161c27;transition:background .3s}
+.lp-si:hover{background:rgba(245,183,59,.04)}
+.lp-si .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:#151a24;border:1px solid #232b38}
+.lp-si h4{font-size:16px}.lp-si p{color:#8a94a8;font-size:13.5px;line-height:1.5;margin-top:2px}
+.lp-si>b{font-size:13px;font-weight:900;color:#16c784;background:rgba(22,199,132,.1);border:1px solid rgba(22,199,132,.3);padding:5px 10px;border-radius:999px;white-space:nowrap}
+.lp-si:first-child>b{color:#f5b73b;background:rgba(245,183,59,.1);border-color:rgba(245,183,59,.35)}
+.rv:not(.in) .lp-si{opacity:0;transform:translateX(-14px)}.lp-si{transition:opacity .5s ease,transform .5s ease,background .3s;transition-delay:calc(var(--i,0) * 90ms)}
+.lp-stot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px 24px;background:linear-gradient(90deg,rgba(245,183,59,.12),rgba(245,183,59,.03))}
+.lp-stot span{display:block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#a8987b}
+.lp-stot b{font-size:40px;font-weight:900;letter-spacing:-.04em}.lp-stot b small{font-size:15px;color:#a8987b;letter-spacing:0;margin-left:3px}
+.lp-stot em{display:block;font-style:normal;font-size:12.5px;color:#8a94a8}
+.lp-guarbig{max-width:900px;margin:18px auto 0;display:flex;gap:22px;align-items:center;padding:22px 26px;border-radius:20px;border:1px solid rgba(22,199,132,.3);background:rgba(22,199,132,.05)}
+.lp-guarbig .seal{flex:none;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;align-content:center;text-align:center;
+  background:radial-gradient(circle,#0f1a15 58%,transparent 60%),conic-gradient(#16c784,#f5b73b,#16c784);box-shadow:0 0 40px -6px rgba(22,199,132,.6);animation:sealSpin 12s linear infinite}
+.lp-guarbig .seal b{font-size:30px;font-weight:900;line-height:1;color:#16c784;animation:sealSpin 12s linear infinite reverse}.lp-guarbig .seal small{font-size:7.5px;font-weight:900;letter-spacing:.06em;color:#aab3c3;line-height:1.2;animation:sealSpin 12s linear infinite reverse}
+@keyframes sealSpin{to{transform:rotate(360deg)}}
+.lp-guarbig h3{font-size:20px;margin-bottom:6px}.lp-guarbig p{color:#aab3c3;line-height:1.6}
+/* exit-intent lead form */
+.exitlead{display:flex;gap:8px;margin-top:14px}.exitlead .in{flex:1;min-width:0}
+/* welcome page (after buying) */
+.welcome .wel-hero{text-align:center;padding:30px 10px 10px}
+.wel-badge{display:inline-block;font-size:12px;font-weight:900;letter-spacing:.1em;color:#9a6a00;background:#fff4dc;border:1px solid #f1d9a6;padding:6px 12px;border-radius:999px}
+.welcome h1{font-size:clamp(26px,4vw,38px);letter-spacing:-.03em;margin:14px 0 8px}.welcome .wel-hero p{color:var(--mut);max-width:620px;margin:0 auto}
+.wel-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:26px 0 14px}
+.wel-step{position:relative;display:flex;flex-direction:column;gap:8px}.wel-step .n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--acc);color:var(--acctx);font-weight:900}
+.wel-step p{font-size:13.5px;flex:1}.wel-step .btn{align-self:flex-start}
+.reflink{display:flex;gap:8px}.reflink .in{flex:1;min-width:0;font-size:12.5px}
+@media (max-width:860px){.lp-lead{grid-template-columns:1fr}.lp-plans{grid-template-columns:1fr}.wel-steps{grid-template-columns:1fr}}
+@media (max-width:640px){.lp-leadf{flex-direction:column}.lp-si{grid-template-columns:40px minmax(0,1fr);padding:16px 18px}.lp-si>b{grid-column:2;justify-self:start}
+  .lp-guarbig{flex-direction:column;text-align:center;padding:22px}.lp-stot{flex-direction:column;align-items:stretch;text-align:center}.exitlead{flex-direction:column}}
+@media (prefers-reduced-motion:reduce){.lp-guarbig .seal,.lp-guarbig .seal b,.lp-guarbig .seal small,.lp-seats i{animation:none}}
+/* ================= landing B (conversion funnel) ================= */
+body.lpb #links,body.lpb .burger,body.lpb #right .btn.acc{display:none!important} /* one goal: no menu */
+.lpb-hero{position:relative;padding:56px 0 64px}
+.lpb-hgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center;position:relative;z-index:1}.lpb-hgrid>*{min-width:0}.lpb-call{max-width:100%}
+.lpb-call{display:inline-block;font-size:14px;font-weight:800;color:#f5c25b;background:rgba(245,183,59,.1);border:1px solid rgba(245,183,59,.3);padding:6px 12px;border-radius:999px;margin-bottom:16px}
+.lpb-hero h1{font-size:clamp(30px,4.2vw,52px);line-height:1.06;letter-spacing:-.035em;font-weight:900}
+.lpb-hero h1 span{background:linear-gradient(90deg,#ffd982,#f5b73b 45%,#e0960c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lpb-hero .lp-sub{margin:16px 0 20px}
+.lpb-form{display:grid;gap:12px;padding:18px;border-radius:18px;border:1px solid rgba(245,183,59,.45);background:radial-gradient(500px 200px at 0% 0%,rgba(245,183,59,.12),transparent 70%),#0d0f14;box-shadow:0 30px 80px -40px rgba(245,183,59,.5)}
+.lpb-row label,.lpb-row.two label{display:block;font-size:11.5px;font-weight:800;color:#8a94a8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.lpb-row.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.lpb-form{min-width:0}.lpb-form input{width:100%;min-width:0}.lpb-form .lp-seg{grid-auto-columns:minmax(0,1fr)}
+.lpb-form .lp-inp{height:42px}
+.lpb-skip{display:inline-block;margin-top:14px;color:#8a94a8;font-size:13.5px;font-weight:700;text-decoration:none}.lpb-skip:hover{color:#f5b73b}
+.lpb-prev{padding:22px;border-radius:22px;border:1px solid #273042;background:linear-gradient(180deg,#10141c,#0b0e14);box-shadow:0 50px 120px -50px rgba(0,0,0,.9),0 0 0 1px rgba(245,183,59,.06);display:grid;gap:12px;transform:rotate(1.2deg)}
+.lpb-ph{display:flex;justify-content:space-between;align-items:center;font-weight:800}.lpb-ph em{font-style:normal;font-size:11px;color:#16c784;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.lpb-ph em::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#16c784;margin-right:6px;animation:lpPulse 2s infinite}
+.lpb-prev small{display:block;font-size:11px;color:#8a94a8;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.lpb-big b{font-size:34px;font-weight:900;letter-spacing:-.03em}
+.lpb-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lpb-g>div{padding:12px;border-radius:12px;background:#151a24;border:1px solid #1e2531}.lpb-g b{font-size:22px;font-weight:900}.lpb-g .dn{color:#f0454f}
+.lpb-t{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.lpb-t>div{padding:10px;border-radius:10px;background:#151a24;border:1px solid #1e2531;text-align:center}
+.lpb-t span{display:block;font-size:11px;color:#8a94a8;font-weight:700}.lpb-t b{font-size:18px;color:#f5b73b}.lpb-t small{grid-column:1/-1;text-align:center;text-transform:none;letter-spacing:0}
+.lpb-warn{padding:10px 12px;border-radius:10px;background:rgba(240,69,79,.08);border:1px solid rgba(240,69,79,.3);color:#ffc9cc;font-size:13px;line-height:1.5}
+.lpb-more{font-size:12.5px;color:#566074;text-align:center}
+.lpb-prev [data-k].lpb-pop{animation:lpbPop .45s ease}
+@keyframes lpbPop{0%{color:#fff;text-shadow:0 0 14px rgba(245,183,59,.9)}100%{text-shadow:none}}
+.lpb-cta{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:30px}.lpb-cta span{font-size:12.5px;color:#8a94a8;font-weight:600}
+.lpb-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.lpb-step{padding:24px;border-radius:18px;border:1px solid #1e2531;background:#0e121a}
+.lpb-step i{font-style:normal;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#f9c95a,#e0960c);color:#1a1203;font-weight:900;font-size:16px}
+.lpb-step small{display:block;margin-top:14px;font-size:11.5px;font-weight:800;color:#16c784;text-transform:uppercase;letter-spacing:.06em}
+.lpb-step h4{font-size:17px;margin:4px 0 6px}.lpb-step p{color:#8a94a8;font-size:14px;line-height:1.55}
+.lpb-total{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;border-bottom:1px solid #161c27;color:#8a94a8;font-weight:800}
+.lpb-total s{font-size:22px;color:#aab3c3}
+.lpb-urg{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:18px auto 0;max-width:900px}
+.lpb-urg div{flex:1;min-width:150px;text-align:center;padding:14px;border-radius:14px;border:1px solid #1e2531;background:#0e121a}
+.lpb-urg b{display:block;font-size:26px;font-weight:900;color:#f5b73b}.lpb-urg small{color:#8a94a8;font-size:12px;font-weight:700}
+.lpb-yearly{max-width:900px;margin:14px auto 0;padding:14px 18px;border-radius:14px;border:1px dashed rgba(245,183,59,.4);color:#c9bfa9;font-size:14px;text-align:center}
+.lpb-fork{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px auto 6px;max-width:760px;text-align:left}
+.lpb-fork>div{padding:18px;border-radius:16px;border:1px solid #2a2a2a}.lpb-fork b{display:block;font-size:16px;margin-bottom:6px}.lpb-fork p{color:#b9ad95;font-size:14px;line-height:1.55;margin:0}
+.lpb-fork .no{background:rgba(240,69,79,.06);border-color:rgba(240,69,79,.3)}.lpb-fork .no b{color:#ff8a91}
+.lpb-fork .yes{background:rgba(22,199,132,.06);border-color:rgba(22,199,132,.35)}.lpb-fork .yes b{color:#16c784}
+.lpb-ty .ocmp .win{border-color:var(--acc)}.lpb-ty .ocmp .win b{color:var(--acc);letter-spacing:.02em}.lpb-ty .ocmp b em{font-style:normal;font-size:.5em;color:var(--mut)}.lpb-ty .ocmp s{opacity:.7}.lpb-ty h3 .free{color:var(--acc)}
+@media (max-width:980px){.lpb-hgrid{grid-template-columns:minmax(0,1fr);gap:30px}.lpb-prev{transform:none}}
+@media (max-width:640px){.lpb-hero{padding:34px 0 46px}.lpb-steps,.lpb-fork{grid-template-columns:1fr}.lpb-form .lp-leadf{flex-direction:column}.lpb-form .lp-leadf input{flex:none;height:48px}.lpb-form .lp-seg button{font-size:12px}}
+/* ================= landing B: way-in menu, add-ons ================= */
+.lpb-pill3{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0 4px}
+.lpb-pill3 li{padding:10px 12px;border-radius:12px;border:1px solid #1e2531;background:#0e121a;font-size:12.5px;color:#8a94a8;line-height:1.4}
+.lpb-pill3 b{display:block;color:#f3f5f9;font-size:14px;margin-bottom:2px}
+.lpb-inl{color:#f5b73b;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.lpb-two{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:14px}.lpb-two .lpb-skip{margin:0}
+.lpb-ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch;max-width:1000px;margin:0 auto}
+.lpb-wc{position:relative;display:flex;flex-direction:column;gap:10px;padding:26px 22px;border-radius:20px;border:1px solid #1e2531;background:#0e121a}
+.lpb-wc.best{border:1.5px solid rgba(245,183,59,.6);background:radial-gradient(400px 200px at 50% 0%,rgba(245,183,59,.12),transparent 70%),#10141c;box-shadow:0 40px 90px -45px rgba(245,183,59,.5);transform:translateY(-8px)}
+.lpb-wc.anchor{border-color:#3a2e14;background:radial-gradient(400px 200px at 0% 0%,rgba(245,183,59,.1),transparent 70%),#0f0d09}
+.lpb-wc .tag{align-self:flex-start;font-size:11px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#1a1203;background:#f5b73b;padding:4px 10px;border-radius:999px}
+.lpb-wc .tag.ghost{background:#151a24;color:#aab3c3;border:1px solid #2b3445}
+.lpb-wc.anchor .tag{background:rgba(245,183,59,.14);color:#f5c25b}
+.lpb-wc h4{font-size:18px}.lpb-wc .pr{font-size:38px;font-weight:900;letter-spacing:-.04em;line-height:1}.lpb-wc .pr small{font-size:15px;color:#8a94a8;letter-spacing:0}
+.lpb-wc p{color:#aab3c3;font-size:13.5px;line-height:1.55;flex:1}.lpb-wc p b{color:#f5c25b}
+.lpb-link{background:none;border:0;color:#f5b73b;font:inherit;font-weight:800;font-size:13px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
+.lpb-wc .lpb-link{align-self:center}
+.lpb-alt{display:flex;justify-content:center;gap:10px 28px;flex-wrap:wrap;margin-top:20px;color:#8a94a8;font-size:13.5px}
+.addons .addgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.addc{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:12px;border:1px solid var(--line);background:var(--panel2)}
+.addc em{font-style:normal;font-weight:700;font-size:13px;color:var(--acc)}.addc p{color:var(--mut);font-size:13px;flex:1}.addc .btn{align-self:flex-start}
+.addc.own{opacity:.75}
+@media (max-width:860px){.lpb-ways{grid-template-columns:1fr;max-width:460px}.lpb-wc.best{transform:none;order:-1}.lpb-pill3{grid-template-columns:1fr}}
+/* ================= admin: customer card ================= */
+.admrows tbody tr{cursor:pointer}.admrows tbody tr:hover td{background:var(--hover)}
+.admem{color:var(--acc)}
+.tagx{display:inline-block;margin-left:5px;font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--mut);vertical-align:1px}
+.tagx.gold{background:#fff4dc;border-color:#f1d9a6;color:#9a6a00}
+.admtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}.admtabs button{height:32px}
+.admbar{display:flex;align-items:center;gap:12px;margin-bottom:10px}.admbar .in{max-width:320px}
+.modal.admbox .mbox{width:min(980px,96vw);max-height:92vh;overflow:auto;padding:22px}
+.adhead{display:flex;align-items:flex-start;gap:8px;margin-bottom:14px}.adhead h3{font-size:18px;word-break:break-all}
+.adbadges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center}.adbadges .tagx{margin:0}
+.adgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.adsec{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--panel)}
+.adsec h4{font-size:13px;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.adkv{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:13px}.adkv span{color:var(--mut)}.adkv b{text-align:right}
+.adbtns{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.adrow{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:7px 0;border-top:1px solid var(--line);font-size:13px}.adrow:first-child{border-top:0}
+.adrow span:first-child{flex:1;min-width:0}
+.adlic{display:flex;gap:6px;align-items:center;margin-bottom:8px}.adlic code{flex:1;font-size:12px;background:var(--panel2);padding:6px 8px;border-radius:8px;overflow:hidden;text-overflow:ellipsis}
+.adpay{max-height:170px;overflow:auto}
+.adnote{width:100%;min-height:80px;resize:vertical;font:inherit;font-size:13px;padding:8px}
+.adlog{font-size:12.5px;display:grid;gap:5px;max-height:190px;overflow:auto}.adlog.big{max-height:none}.adlog small{color:var(--mut);font-variant-numeric:tabular-nums}
+.adlog a{color:var(--acc);font-weight:700}
+.adempty{font-size:12.5px;padding:4px 0}
+.pwbig{display:inline-block;font-size:20px;font-weight:800;letter-spacing:.04em;background:var(--panel2);padding:8px 12px;border-radius:10px;user-select:all}
+@media (max-width:760px){.adgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -851,7 +994,7 @@ async function bridge(path, body) { // direct call to the customer's bridge (nev
 }
 const setMe = j => {
   if (!j?.user) return;
-  A.me = { user: j.user, sub: j.sub, license: j.license, machines: j.machines, payments: j.payments, server: j.server, pubkey: j.pubkey, test_mode: j.test_mode, bridge_key: j.bridge_key };
+  A.me = { user: j.user, sub: j.sub, license: j.license, machines: j.machines, payments: j.payments, server: j.server, pubkey: j.pubkey, test_mode: j.test_mode, bridge_key: j.bridge_key, founding: !!j.founding, booking_url: j.booking_url || '', ref: j.ref || {}, addons: j.addons || {}, paused_until: j.paused_until || 0 };
   // the downloaded bridge uses this key: the customer never has to type it.
   // NOT when this page is served by a bridge (your own test setup): there the saved key is YOUR bridge key and must stay.
   if (j.bridge_key && !BRIDGE_ORIGIN && !store.get('manualBridge', 0) && (CFG.key !== j.bridge_key || CFG.demo)) { CFG.key = j.bridge_key; CFG.base = CFG.base || 'http://127.0.0.1:8765'; CFG.demo = false; saveCfg() }
@@ -868,16 +1011,17 @@ const FEAT = { terminal: 'Web terminal', journal: 'Trading journal', alerts: 'Pr
 const ALLF = Object.keys(FEAT);
 
 /* ---------------------------------------------------------------- routing */
-const PUBLIC = ['home', 'pricing', 'features', 'faq', 'login', 'signup'];
+const SECTIONS = ['home', 'pricing', 'features', 'faq', 'offer', 'calc', 'engine', 'lead']; // landing sections a #link can scroll to
+const PUBLIC = [...SECTIONS, 'login', 'signup'];
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; // a refresh starts at the top, not where the phone last was
 function route() {
   const [r0, qs] = (location.hash.slice(1) || 'home').split('?'); const r = r0 || 'home';
-  closeMenus(); renderTester(); document.body.classList.toggle('lp2', PUBLIC.includes(r));
+  closeMenus(); renderTester(); document.body.classList.toggle('lp2', PUBLIC.includes(r)); document.body.classList.toggle('lpb', LPV === 'b' && PUBLIC.includes(r));
   if (r !== 'terminal') { $('#termWrap').classList.remove('on'); document.body.style.overflow = '' }
-  if (['dashboard', 'setup', 'billing', 'terminal'].includes(r) && !A.me) { location.hash = 'login'; return }
+  if (['dashboard', 'setup', 'billing', 'terminal', 'welcome'].includes(r) && !A.me) { location.hash = 'login'; return }
   renderNav(r);
   if (r === 'login' || r === 'signup') { renderLanding(); return authBox(r) }
-  if (['home', 'pricing', 'features', 'faq'].includes(r)) {
+  if (SECTIONS.includes(r)) {
     renderLanding();
     // section links scroll once, then the address goes back to #home: a refresh starts at the top instead of jumping to the prices again
     if (r !== 'home') { setTimeout(() => document.getElementById(r)?.scrollIntoView({ behavior: 'smooth' }), 30); history.replaceState(null, '', location.pathname + location.search + '#home') }
@@ -886,10 +1030,11 @@ function route() {
   }
   scrollTo(0, 0);
   if (r === 'dashboard') { if (new URLSearchParams(qs).get('paid')) afterPayment(); return renderDashboard() }
+  if (r === 'welcome') { if (new URLSearchParams(qs).get('paid')) afterPayment(); return renderWelcome() }
   if (r === 'setup') return renderSetup();
   if (r === 'billing') return renderBilling();
   if (r === 'terminal') return renderTerminal();
-  if (r === 'admin') return renderAdmin();
+  if (r === 'admin') { if (!A.me) { location.hash = 'login'; return } if (!isAdmin() && !store.get('saasAdmin', '') && !/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) { location.hash = 'dashboard'; return } return renderAdmin() }
   location.hash = 'home';
 }
 addEventListener('hashchange', route);
@@ -902,17 +1047,17 @@ document.addEventListener('click', e => { const a = e.target.closest('a[href^="#
 function renderNav(r) {
   const L = A.me
     ? [['dashboard', 'Dashboard'], ['setup', 'Setup'], ['billing', 'Billing'], ['terminal', 'Open terminal']]
-    : [['features', 'Features'], ['pricing', 'Pricing'], ['faq', 'FAQ']];
+    : [['offer', 'The offer'], ['features', 'Features'], ['pricing', 'Pricing'], ['faq', 'FAQ'], ['login', 'Log in']];
   // the owner sees Admin when a token is saved, or always when the site runs on this PC (your own bridge); visitors never see it
   // Admin shows for admin accounts (any device), when a token is saved, or on your own PC; customers never see it
-  if (isAdmin() || store.get('saasAdmin', '') || /^(127\.0\.0\.1|localhost)$/.test(location.hostname)) L.push(['admin', 'Admin']);
-  $('#links').innerHTML = L.map(([k, t]) => `<a class="nl ${r === k ? 'on' : ''}" href="#${k}">${t}</a>`).join('');
+  if (isAdmin() || (A.me && store.get('saasAdmin', ''))) L.push(['admin', 'Admin']); // only the owner sees it
+  $('#links').innerHTML = L.map(([k, t]) => `<a class="nl ${r === k ? 'on' : ''} ${k === 'login' ? 'only-sm' : ''}" href="#${k}">${t}</a>`).join('');
   $('#right').innerHTML = A.me
     ? `<button id="acctBtn" data-act="menu"><span class="hide-sm">${esc(A.me.user.name || A.me.user.email.split('@')[0])}</span><i>${esc((A.me.user.name || A.me.user.email)[0].toUpperCase())}</i></button>
        <div class="menu" id="menu"><div class="who">${esc(A.me.user.email)}<br>${stPill(SUB())} ${esc(P(SUB().plan)?.name || '')}</div><hr>
        <a href="#dashboard">🏠 Dashboard</a><a href="#billing">💳 Billing</a><a href="journal.html" target="_blank">📒 Journal</a><hr>
        <button data-act="logout">↩ Log out</button></div>`
-    : `<a class="nl hide-sm" href="#login">Log in</a><a class="btn acc md" href="#signup">Start free trial</a>`;
+    : `<a class="nl hide-sm" href="#login">Log in</a><a class="btn acc md" href="#signup">Get the Risk Lock</a>`;
   const tm = A.me?.test_mode ?? A.plans?.test_mode;
   if (!A.plans || (A.plans.offline && !A.me)) return; // keep the "server not running" bar
   $('#ribbon').className = tm ? 'on' : '';
@@ -923,11 +1068,17 @@ function closeMenus() { $('#menu')?.classList.remove('on'); $('#links').classLis
 /* ---------------------------------------------------------------- landing */
 /* ---------------------------------------------------------------- landing (conversion page)
    Analytics: every CTA has data-cta="<where>". Hook your pixel/analytics into track() below. */
-function track(name, data) { /* e.g. gtag('event', name, data); fbq('trackCustom', name, data); plausible(name, { props: data }) */ }
+function track(name, data) { data = { ...(data || {}), lp: typeof LPV === 'undefined' ? 'a' : LPV }; /* e.g. gtag('event', name, data); fbq('trackCustom', name, data); plausible(name, { props: data }) */ }
 const money2 = v => '€' + (Number.isInteger(+v) ? v : (+v).toFixed(2));
+// launch offer: founding price (live seats), guarantee, card trial. All from the server, with offline defaults.
+const FOUND = () => { const f = A.plans?.founding || OFFLINE_PLANS.founding; return f.month < (P(f.plan)?.month || 0) ? f : { ...f, open: false, left: 0 } }; // an old server without founding prices: no founding offer
+const isFound = k => k === FOUND().plan && (A.me?.founding || FOUND().open) && FOUND().month < (P(k)?.month || 0);
+const planPrice = (k, ivl) => isFound(k) && FOUND()[ivl] ? FOUND()[ivl] : P(k)?.[ivl];
+const GUAR = () => A.plans?.guarantee_days || 30;
+const trialWord = () => A.plans?.trial_card ? `Start my ${A.plans?.trial_days || 7}-day trial` : `Start ${A.plans?.trial_days || 7} days free`;
 function priceCard(k) {
   const p = P(k), yr = A.interval === 'year', cur = A.me && SUB().plan === k && SUB().status === 'active' && SUB().interval === A.interval;
-  const price = yr ? Math.round(p.year / 12 * 100) / 100 : p.month, reg0 = p.regular ?? OFFLINE_PLANS.plans[k]?.regular, reg = reg0 > price ? reg0 : 0;
+  const price = yr ? Math.round(planPrice(k, 'year') / 12 * 100) / 100 : planPrice(k, 'month'), reg = isFound(k) ? (yr ? Math.round(p.year / 12 * 100) / 100 : p.month) : 0;
   const items = [`${p.accounts === 1 ? '1 MT5 account' : p.accounts + ' MT5 accounts'}`, `${p.machines} PC${p.machines > 1 ? 's' : ''} / VPS`]
     .map(t => `<li>${t}</li>`).join('') + ALLF.map(f => `<li class="${p.features.includes(f) ? '' : 'no'}">${FEAT[f]}</li>`).join('');
   let btn;
@@ -936,13 +1087,13 @@ function priceCard(k) {
   else btn = `<button class="btn ${k === 'pro' ? 'acc' : ''} lg" data-buy="${k}" data-cta="buy-${k}">${SUB().status === 'active' ? 'Switch to ' + p.name : 'Get ' + p.name}</button>`;
   return `<div class="plan ${k === 'pro' ? 'best' : ''} ${cur ? 'cur' : ''}">${k === 'pro' ? '<div class="tag">MOST POPULAR</div>' : ''}
     <h4>${p.name}</h4><div class="bl">${p.blurb}</div>
-    ${reg ? `<div class="was"><s>${money2(reg)}</s> <span>founding price −${Math.round((1 - price / reg) * 100)}%</span></div>` : ''}
+    ${reg ? `<div class="was"><span>Founding price, locked for life · normally ${money2(reg)}/mo</span></div>` : ''}
     <div class="pr"><b>${money2(price)}</b><span>/ month</span></div>
-    <div class="eq">${yr ? `${money2(p.year)} billed yearly · 2 months free` : 'billed monthly · cancel anytime'}</div>
+    <div class="eq">${yr ? `${money2(planPrice(k, 'year'))} billed yearly` : 'billed monthly · cancel anytime'}</div>
     ${btn}<ul>${items}</ul></div>`;
 }
-const ivlSeg = () => `<div class="ivl"><div class="seg"><button data-ivl="month" class="${A.interval === 'month' ? 'on' : ''}">Monthly</button><button data-ivl="year" class="${A.interval === 'year' ? 'on' : ''}">Yearly<em>2 months free</em></button></div></div>`;
-const minPrice = () => { const ps = Object.values(A.plans?.plans || {}).map(p => p.month); return ps.length ? money2(Math.min(...ps)) : '€4.99' };
+const ivlSeg = () => `<div class="ivl"><div class="seg"><button data-ivl="month" class="${A.interval === 'month' ? 'on' : ''}">Monthly</button><button data-ivl="year" class="${A.interval === 'year' ? 'on' : ''}">Yearly<em>save ${Math.round((1 - planPrice('pro', 'year') / (planPrice('pro', 'month') * 12)) * 100)}%</em></button></div></div>`;
+const minPrice = () => money2(planPrice('pro', 'month') || 29);
 
 /* ---------------------------------------------------------------- landing v2: "the risk manager MT5 never gave you"
    Buyer: every MT5 trader who stacks positions and cares about risk: live accounts first, funded accounts too. The old landing is kept in terminal_test_v1.html.
@@ -951,21 +1102,22 @@ const LPC = { bal: 10000, mkt: 'xau', n: 3 };
 const lpMoney = v => '$' + Math.round(v).toLocaleString('en-US');
 function lpPlan(k) {
   const p = P(k), yr = A.interval === 'year', cur = A.me && SUB().plan === k && SUB().status === 'active' && SUB().interval === A.interval;
-  const price = yr ? Math.round(p.year / 12 * 100) / 100 : p.month;
+  const ivl = yr ? 'year' : 'month', fd = isFound(k), price = planPrice(k, ivl), F = FOUND();
   let btn;
-  if (!A.me) btn = `<a class="lp-btn ${k === 'pro' ? 'gold' : 'ghost'} full" href="#signup" data-cta="price-${k}">Start ${A.plans.trial_days} days free</a>`;
+  if (!A.me) btn = `<a class="lp-btn ${k === 'pro' ? 'gold' : 'ghost'} full" href="#signup" data-cta="price-${k}">${k === 'pro' ? 'Get the Risk Lock · ' : ''}${trialWord().replace('Start ', k === 'pro' ? '' : 'Start ')}</a>`;
   else if (cur) btn = `<button class="lp-btn ghost full" disabled>Your current plan</button>`;
   else btn = `<button class="lp-btn ${k === 'pro' ? 'gold' : 'ghost'} full" data-buy="${k}" data-cta="buy-${k}">${SUB().status === 'active' ? 'Switch to ' + p.name : 'Get ' + p.name}</button>`;
-  const who = { starter: 'One account, the terminal and the journal.', pro: 'Everything to size, manage and protect your trades.', elite: 'Many accounts, teams and small funds.' }[k] || p.blurb;
-  const items = [`${p.accounts === 1 ? '1 MT5 account' : p.accounts + ' MT5 accounts'} · ${p.machines} PC${p.machines > 1 ? 's' : ''}`]
-    .map(t => `<li>${t}</li>`).join('') + ALLF.map(f => `<li class="${p.features.includes(f) ? '' : 'no'}">${FEAT[f]}</li>`).join('');
-  return `<div class="lp-plan ${k === 'pro' ? 'best' : ''}">${k === 'pro' ? '<div class="lp-tag">Most popular</div>' : ''}
+  const who = { pro: 'The 5-Minute Risk Lock: everything to size, manage and protect your trades.', elite: 'For many accounts and small teams.' }[k] || p.blurb;
+  const items = [`${p.accounts === 1 ? '1 MT5 account' : p.accounts + ' MT5 accounts'} · ${p.machines} PC${p.machines > 1 ? 's' : ''}`, ...(k === 'pro' && fd ? ['1-on-1 setup call (founding)', 'Private Discord + weekly review'] : []), ...(k === 'elite' ? ['Priority support'] : [])]
+    .map(t => `<li class="plus">${t}</li>`).join('') + ALLF.filter(f => f !== 'priority').map(f => `<li class="${p.features.includes(f) ? '' : 'no'}">${FEAT[f]}</li>`).join('');
+  return `<div class="lp-plan ${k === 'pro' ? 'best' : ''}">${k === 'pro' ? `<div class="lp-tag">${fd ? 'Founding price · locked for life' : 'Most popular'}</div>` : ''}
     <h4>${p.name}</h4><p class="lp-who">${who}</p>
-    <div class="lp-pr"><b>${money2(price)}</b><span>/ month</span></div>
-    <div class="lp-eq">${yr ? `${money2(p.year)} billed yearly · 2 months free` : 'billed monthly · cancel anytime'}</div>
-    ${btn}<ul>${items}</ul></div>`;
+    <div class="lp-pr"><b>${money2(yr ? Math.round(price / 12 * 100) / 100 : price)}</b><span>/ month</span></div>
+    <div class="lp-eq">${fd ? `normally ${money2(yr ? Math.round(p.year / 12 * 100) / 100 : p.month)}/mo · ` : ''}${yr ? `${money2(price)} billed yearly` : 'billed monthly · cancel anytime'}</div>
+    ${k === 'pro' && fd && F.open ? `<div class="lp-seats"><div><i style="width:${Math.max(4, (F.seats - F.left) / F.seats * 100)}%"></i></div><small><b>${F.left}</b> of ${F.seats} founding seats left${F.ends ? ` · closes ${new Date(F.ends).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}` : ''}</small></div>` : ''}
+    ${btn}${k === 'pro' ? `<div class="lp-guar">🛡 ${GUAR()}-day “pays for itself” guarantee</div>` : ''}<ul>${items}</ul></div>`;
 }
-const lpPlans = () => ['starter', 'pro', 'elite'].map(lpPlan).join('');
+const lpPlans = () => ['pro', 'elite'].map(lpPlan).join('');
 
 const LP_DAY = [
   ['Chart', 'Drag your stop and target out of the entry', 'Hover any entry and pull a stop loss or take profit straight out of it. The label shows the money at risk while you drag. Works on limit orders before they fill.', 'lp-drag.jpg'],
@@ -982,27 +1134,31 @@ const LP_FAQ = [
   ['Is my account safe?', 'Your MT5 password stays on your own computer and is never sent to us. Every request to the app on your PC needs your private key. Real-money trading stays off until you switch it on with a confirmation.'],
   ['Do I need to keep my PC on?', 'The small Goldmine app runs next to MT5, so yes, while you trade. Partial take profits keep working with the web page closed, as long as the app runs. For 24/7, use a small Windows VPS (from about €10/month).'],
   ['I have a Mac.', 'The app that talks to MT5 needs Windows. Mac users run it on a Windows VPS and use the web terminal from their Mac or phone.'],
-  ['What happens after the free trial?', 'No card is asked, so nothing is charged. Pick a plan to keep going. If you don\'t, Goldmine stops and your MT5 account and trades are not affected.'],
+  ['How does the guarantee work?', 'Use Goldmine on at least 20 trades in your first 30 days. If it didn\'t save you at least its price in mistakes or time, email us and you get a full refund. You keep your Risk Rulebook.'],
+  ['What is the founding setup call?', 'A 20-minute call, one-on-one, for the first 100 members. We install Goldmine with you, set your risk per trade, your daily loss limit and your layer plan, and fill in your Risk Rulebook together.'],
+  ['What does "founding price, locked for life" mean?', 'The first 100 Pro members pay €19 a month instead of €29, for as long as they stay subscribed. When the seats are gone, new members pay the normal price.'],
+  ['What happens after the trial?', 'Pick a plan to keep going. If you don\'t, Goldmine stops and your MT5 account and trades are not affected. You can cancel in two clicks.'],
   ['Is this a signal service or advice?', 'No. Goldmine Pro is software. You make every trading decision. Trading leveraged products carries a high risk of losing money.'],
 ];
 
 function renderLanding() {
+  if (LPV === 'b') return renderLandingB();
   document.body.classList.add('lp2');
   if ($('#view').dataset.v === 'landing') { const pl = $('#plans'); if (pl) pl.innerHTML = A.plans ? lpPlans() : ''; return }
   $('#view').dataset.v = 'landing';
   const td = A.plans?.trial_days || 7, pro = P('pro') || OFFLINE_PLANS.plans.pro;
-  const ck = '<i class="y">✓</i>';
+  const ck = '<i class="y">✓</i>', F = FOUND();
   $('#view').innerHTML = `<div class="lp">
-  <a class="lp-ann" href="#pricing" data-cta="announce"><span class="lp-dot"></span><b>Founding members</b> keep their launch price for as long as they stay subscribed <u>See pricing</u></a>
+  <a class="lp-ann" href="#offer" data-cta="announce"><span class="lp-dot"></span>${F.open ? `<b>Founding members:</b> ${money2(F.month)}/month for life + a 1-on-1 setup call · <b>${F.left}</b> of ${F.seats} seats left` : `<b>The 5-Minute Risk Lock</b> · ${GUAR()}-day guarantee`} <u>See the offer</u></a>
   <div class="lp-tape" aria-hidden="true"><div class="lp-tape-in" id="lpTape"></div></div><div class="lp-prog" id="lpProg"></div>
 
   <section class="lp-hero"><canvas class="lp-hcv" id="lpHcv" aria-hidden="true"></canvas><div class="wrap lp-hgrid">
     <div class="lp-htxt">
-      <div class="lp-eye">For every MetaTrader 5 trader · live, funded or demo</div>
+      <div class="lp-eye">The 5-Minute Risk Lock · for every MT5 trader</div>
       <h1>The risk manager <span>MT5 never gave you.</span></h1>
       <p class="lp-sub">Every lot sized from your risk. Ten positions managed like one. A daily loss limit that locks the buttons before you break a rule. Goldmine Pro runs next to your own MT5, and your password never leaves your PC.</p>
-      <div class="lp-cta"><a class="lp-btn gold lg" href="#signup" data-cta="hero-trial">Start ${td} days free</a><button class="lp-btn ghost lg" data-act="demo" data-cta="hero-demo">▶ Try the live demo</button></div>
-      <ul class="lp-checks"><li>No card for the trial</li><li>Any MT5 broker</li><li>Set up in ~5 minutes</li></ul>
+      <div class="lp-cta"><a class="lp-btn gold lg" href="#signup" data-cta="hero-trial">Get the Risk Lock · ${td} days ${A.plans?.trial_card ? 'trial' : 'free'}</a><a class="lp-btn ghost lg" href="#calc" data-cta="hero-calc">Free: check your lot size ↓</a></div>
+      <ul class="lp-checks"><li>${GUAR()}-day guarantee</li><li>Any MT5 broker</li><li>Set up in ~5 minutes</li></ul>
     </div>
     <div class="lp-hvis">
       <div class="lp-frame"><div class="bar"><i></i><i></i><i></i><span>Live demo · simulated prices</span></div><div class="vp" id="vp"><iframe id="heroFrame" src="terminal_pro.html?demo=1&theme=midnight" tabindex="-1" loading="lazy" title="Live demo of the Goldmine Pro terminal"></iframe></div>
@@ -1047,6 +1203,9 @@ function renderLanding() {
       </div>
       <div class="lp-cout" id="cOut"></div>
     </div>
+    <form class="lp-lead" id="lpLead"><div class="lp-leadt"><span>📄</span><div><b>Get your free Risk Rulebook</b><small>Your 5 rules, built from the numbers above: lot table, daily stop, layer plan, fat-finger ceiling and a checklist for every trade. Ready to print.</small></div></div>
+      <div class="lp-leadf"><input type="email" name="email" required placeholder="you@email.com" autocomplete="email"><button class="lp-btn gold" type="submit">Send me my Rulebook</button></div>
+      <small class="lp-leadn" id="lpLeadN">Free. 5 short emails about risk after that, unsubscribe in one click.</small></form>
   </div></section>
 
   ${raceHTML()}
@@ -1060,7 +1219,7 @@ function renderLanding() {
           : `<div class="lp-shot" data-zoom="${img}"><img src="${img}" alt="${esc(h)}: screenshot of the Goldmine Pro terminal" loading="lazy" width="880" height="660" style="object-position:${pos || 'left top'}" onerror="this.parentNode.classList.add('noimg')"></div>`}</div>
       </article>`).join('')}
     </div>
-    <div class="lp-cta c"><a class="lp-btn gold lg" href="#signup" data-cta="features-trial">Try all of it free for ${td} days</a></div>
+    <div class="lp-cta c"><a class="lp-btn gold lg" href="#offer" data-cta="features-offer">See what you get →</a></div>
   </div></section>
 
   <section class="lp-sec"><div class="wrap lp-fit">
@@ -1081,13 +1240,28 @@ function renderLanding() {
     </div>
   </div></section>
 
+  <section class="lp-sec lp-offer" id="offer"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">The offer</div><h2>The <span>5-Minute Risk Lock</span></h2><p>Everything you need to stop losing money to clicks, and it's set up with you.</p></div>
+    <div class="lp-stack">
+      ${[['⚡', 'Goldmine Pro', 'The full risk terminal next to your MT5: lots from your risk, layers, close & keep, partial take profits, daily lock, journal and paper accounts.', `${money2(pro.month)}/mo`, 1],
+         ['📞', '1-on-1 setup call · 20 min', 'We install it with you and set your risk per trade, daily limit and layer plan. Founding members only.', `${F.left} left`, F.open],
+         ['📄', 'Your Risk Rulebook', 'Your five rules on one page, filled in with you. Print it and keep it next to your screen.', 'included', 1],
+         ['💬', 'Private Discord + weekly trade review', 'Ask questions, share setups, and a live review of members\' journals every week.', 'included', 1],
+         ['🔄', 'Every update, forever', 'New tools land in your terminal automatically. Nothing extra to buy.', 'included', 1],
+         ['🏷️', 'Founding price, locked for life', `${money2(F.month)}/month instead of ${money2(pro.month)}, for as long as you stay subscribed.`, `save ${money2((pro.month - F.month) * 12)}/yr`, F.open]]
+        .filter(x => x[4]).map(([i, t, d, v], k) => `<div class="lp-si" style="--i:${k}"><span class="ic">${i}</span><div><h4>${t}</h4><p>${d}</p></div><b>${v}</b></div>`).join('')}
+      <div class="lp-stot"><div><span>You pay</span><b>${money2(F.open ? F.month : pro.month)}<small>/month</small></b><em>${F.open ? `normally ${money2(pro.month)} · ` : ''}${td}-day ${A.plans?.trial_card ? 'trial' : 'free trial'} first</em></div><a class="lp-btn gold lg" href="#signup" data-cta="offer-trial">Get the Risk Lock →</a></div>
+    </div>
+    <div class="lp-guarbig"><div class="seal"><b>${GUAR()}</b><small>DAY<br>GUARANTEE</small></div><div><h3>The “pays for itself” guarantee</h3><p>Use Goldmine on at least 20 trades in your first ${GUAR()} days. If it didn't save you at least its price in mistakes or time, email us and get every cent back. You keep your Risk Rulebook.</p></div></div>
+  </div></section>
+
   <section class="lp-sec" id="pricing"><div class="wrap">
-    <div class="lp-head"><div class="lp-eye">Founding-member pricing</div><h2>Cheaper than one oversized trade</h2>
-      <p>One wrong lot size or one revenge trade can cost more than a full year of Goldmine Pro (${money2(pro.year)}). Every plan starts with ${td} days of Pro, free, no card.</p></div>
+    <div class="lp-head"><div class="lp-eye">Pricing</div><h2>Cheaper than one <span>oversized trade</span></h2>
+      <p>One wrong lot size or one revenge trade can cost more than a full year of Pro. Every plan starts with a ${td}-day trial and the ${GUAR()}-day guarantee.</p></div>
     ${ivlSeg()}<div class="lp-plans" id="plans">${A.plans ? lpPlans() : ''}</div>
-    ${pro.lifetime ? `<div class="lp-life"><div><span class="lp-badge">Founding launch only</span><h4>Pro Lifetime: pay once, keep it forever</h4><p>Every Pro feature and every future Pro update. Nothing to renew.</p></div><div class="lp-lifep"><b>${money2(pro.lifetime)}</b><small>one-time</small></div>
+    ${pro.lifetime && F.lifetime_left > 0 ? `<div class="lp-life"><div><span class="lp-badge">Only ${F.lifetime_left} of ${F.lifetime_seats} left</span><h4>Pro Lifetime: pay once, keep it forever</h4><p>Every Pro feature and every future update, plus the setup call. Nothing to renew.</p></div><div class="lp-lifep"><b>${money2(pro.lifetime)}</b><small>one-time</small></div>
       ${A.me ? (SUB().interval === 'lifetime' ? '<button class="lp-btn ghost" disabled>You own Lifetime ✓</button>' : `<button class="lp-btn gold" data-buy="pro" data-bivl="lifetime" data-cta="buy-lifetime">Get Lifetime</button>`) : `<a class="lp-btn ghost" href="#signup" data-cta="lifetime-trial">Try free first</a>`}</div>` : ''}
-    <div class="lp-rr">${[`🎁 ${td} days of Pro, no card`, '↩ Cancel anytime in 2 clicks', '🏷️ Your founding price stays yours', '🔒 We never touch your MT5 account'].map(x => `<span>${x}</span>`).join('')}</div>
+    <div class="lp-rr">${[`🎁 ${td}-day trial`, `🛡 ${GUAR()}-day guarantee`, '↩ Cancel in 2 clicks', '🔒 We never touch your MT5 account'].map(x => `<span>${x}</span>`).join('')}</div>
   </div></section>
 
   <section class="lp-sec" id="faq"><div class="wrap">
@@ -1097,8 +1271,8 @@ function renderLanding() {
 
   <section class="lp-sec"><div class="wrap"><div class="lp-final">
     <h2>Your next trade can be the first one with a risk manager.</h2>
-    <p>Lots from your risk · ten positions like one · a daily limit you can't break.<br>${td} days free, no card. Then from ${minPrice()}/month, founding price for as long as you stay.</p>
-    <div class="lp-cta c"><a class="lp-btn gold lg" href="#signup" data-cta="final-trial">Start my free trial</a><button class="lp-btn ghost lg" data-act="demo" data-cta="final-demo">Try the demo first</button></div>
+    <p>Lots from your risk · ten positions like one · a daily limit you can't break.<br>${td}-day trial, ${GUAR()}-day guarantee. Then ${minPrice()}/month${F.open ? ', founding price for as long as you stay' : ''}.</p>
+    <div class="lp-cta c"><a class="lp-btn gold lg" href="#signup" data-cta="final-trial">Get the Risk Lock →</a><button class="lp-btn ghost lg" data-act="demo" data-cta="final-demo">Try the demo first</button></div>
   </div></div></section>
 
   <footer class="lp-foot"><div class="wrap">
@@ -1107,11 +1281,11 @@ function renderLanding() {
     <p><b>Risk warning:</b> CFDs and forex are complex instruments and come with a high risk of losing money rapidly due to leverage. Goldmine Pro is software only and does not provide investment advice, signals or brokerage services. It does not guarantee passing any prop-firm challenge. MetaTrader is a trademark of MetaQuotes Ltd; Goldmine Pro is not affiliated with MetaQuotes or any prop firm.</p>
     <p>© ${new Date().getFullYear()} Goldmine Pro</p>
   </div></footer>
-  <div class="stickycta" id="stickyCta"><div><b>${td} days free</b><small>then from ${minPrice()}/mo · no card</small></div><a class="btn acc md" href="#signup" data-cta="sticky-trial">Start free trial</a></div>
+  <div class="stickycta" id="stickyCta"><div><b>${F.open ? `${F.left} founding seats left` : `${td}-day trial`}</b><small>${minPrice()}/mo · ${GUAR()}-day guarantee</small></div><a class="btn acc md" href="#signup" data-cta="sticky-trial">Get the Risk Lock</a></div>
   </div>`;
   fitHero(); lpCalc(); lpReveal();
   $$('.lp-painc, .lp-tc, .lp-fitc, .lp-stat, .lp-calc, .lp-console').forEach(el => el.classList.add('lp-spot'));
-  $$('.lp-vs, .lp-trust, .lp-pains, .lp-stats, .lp-plans').forEach(p => [...p.children].forEach((ch, i) => ch.style.setProperty('--i', i)));
+  $$('.lp-vs, .lp-trust, .lp-pains, .lp-stats, .lp-plans, .lp-stack').forEach(p => [...p.children].forEach((ch, i) => ch.style.setProperty('--i', i)));
   lpFx(); ENG.auto = !ENG_ORDER.includes(ENG_Q); engBoot();
 }
 
@@ -1154,7 +1328,7 @@ document.addEventListener('input', e => { if (['cDL', 'cRisk', 'cStop'].includes
 /* sections fade in once */
 function lpReveal() {
   // only below the fold: nothing you can already see starts hidden
-  $$('.lp-sec .lp-head, .lp-moment, .lp-calc, .lp-vs, .lp-plans, .lp-trust, .lp-pains, .lp-hood').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) el.classList.add('rv') });
+  $$('.lp-sec .lp-head, .lp-moment, .lp-calc, .lp-vs, .lp-plans, .lp-trust, .lp-pains, .lp-hood, .lp-stack, .lp-lead, .lp-guarbig').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) el.classList.add('rv') });
   lpRevealCheck();
 }
 function lpRevealCheck() { for (const el of $$('.rv:not(.in)')) if (el.getBoundingClientRect().top < innerHeight * .92) el.classList.add('in') }
@@ -1683,6 +1857,183 @@ if (!window.lpMicro) {
   });
 }
 
+/* ================================================================ LANDING B: the conversion funnel (A/B test against the main landing)
+   Built on Hormozi's $100M Leads / $100M Offers / $100M Money Models:
+   - one goal per page (the free lead magnet), no menu, CTA after every section
+   - call out the audience, then dream outcome + time + effort in the headline
+   - lead magnet = reveal a problem (your numbers), specific, consumable in 30 seconds
+   - proof by demonstration (live chart, click race), no fake testimonials
+   - right after the lead: make the offer (Grand Slam Offer: value stack, scarcity, urgency, conditional guarantee)
+   - continuity bonus for yearly, downsell to monthly, objections answered before the last CTA
+   B is the main landing. ?lp=a shows the old one, ?lp=split splits visitors 50/50 (remembered per visitor). */
+const LPV = (() => {
+  const q = new URLSearchParams(location.search).get('lp');
+  if (q === 'a' || q === 'b') { store.set('lpVar', q); return q }
+  if (q === 'split') { const v = store.get('lpVar', '') || (Math.random() < 0.5 ? 'a' : 'b'); store.set('lpVar', v); return v }
+  return store.get('lpVar', '') === 'a' ? 'a' : 'b'; // B is the main landing
+})();
+const BONUS = () => { // the value stack. Values are what each piece would cost on its own: change them to numbers you can defend.
+  const pro = P('pro') || OFFLINE_PLANS.plans.pro, F = FOUND();
+  return [
+    ['⚡', 'Goldmine Pro, 12 months', 'Lots from your risk, layers, close & keep, partial take profits, daily lock, journal, paper accounts.', pro.month * 12, 1],
+    ['📞', 'Bonus 1 · 1-on-1 setup call (20 min)', 'We install it with you and lock in your risk, daily limit and layer plan.', 150, F.open],
+    ['📄', 'Bonus 2 · Your Risk Rulebook, done with you', 'Your 5 rules on one page, filled in on the call. Print it, keep it next to the screen.', 47, 1],
+    ['💬', 'Bonus 3 · Private Discord + weekly trade review', 'Live review of members\' journals every week: what to cut, what to repeat.', 240, 1],
+    ['🔄', 'Bonus 4 · Every update, forever', 'New tools land in your terminal automatically.', 0, 1],
+  ].filter(b => b[4]);
+};
+function lpbLot(bal, risk, stop) { return Math.max(0, Math.floor(bal * risk / 100 / (stop * 100) * 100) / 100) }
+function lpbPreview() {
+  const el = $('#lpbPrev'); if (!el) return;
+  const num = id => { const v = parseFloat(String($('#' + id)?.value || '').replace(',', '.')); return isFinite(v) && v > 0 ? v : 0 };
+  const bal = LPC.bal, risk = num('cRisk') || 1, dl = num('cDL') || 5, R = bal * risk / 100, D = bal * dl / 100;
+  const set = (k, v) => { const e = el.querySelector(`[data-k="${k}"]`); if (e && e.textContent !== v) { e.textContent = v; e.classList.remove('lpb-pop'); void e.offsetWidth; e.classList.add('lpb-pop') } };
+  set('bal', lpMoney(bal)); set('r', lpMoney(R)); set('d', lpMoney(D)); set('s', String(Math.floor(dl / risk + 1e-9)));
+  set('l2', lpbLot(bal, risk, 2).toFixed(2)); set('l5', lpbLot(bal, risk, 5).toFixed(2)); set('l10', lpbLot(bal, risk, 10).toFixed(2));
+  set('ff', (lpbLot(bal, risk, 4) / 3 * 10).toFixed(2));
+}
+function renderLandingB() {
+  document.body.classList.add('lp2', 'lpb');
+  if ($('#view').dataset.v === 'landingB') return;
+  $('#view').dataset.v = 'landingB'; track('lp_view', { v: 'b' });
+  const td = A.plans?.trial_days || 7, pro = P('pro') || OFFLINE_PLANS.plans.pro, F = FOUND(), G = GUAR();
+  const price = F.open ? F.month : pro.month, B = BONUS(), total = B.reduce((s, b) => s + b[3], 0);
+  const cta = (where, txt) => `<div class="lpb-cta"><a class="lp-btn gold lg" href="#lead" data-cta="b-${where}">${txt || 'Get my free Risk Rulebook →'}</a><span>Free · 30 seconds · no card</span></div>`;
+  const offerCta = where => `<div class="lpb-cta"><a class="lp-btn gold lg" href="#signup" data-cta="b-${where}">Get the Risk Lock for ${money2(price)}/mo →</a><span>${td}-day trial · ${G}-day guarantee${F.open ? ` · ${F.left} founding seats left` : ''}</span></div>`;
+  $('#view').innerHTML = `<div class="lp lpb-page">
+  <div class="lp-prog" id="lpProg"></div>
+  ${F.open ? `<a class="lp-ann" href="#offer" data-cta="b-announce"><span class="lp-dot"></span><b>${F.left} of ${F.seats}</b> founding seats left: ${money2(F.month)}/month for life + a free setup call${F.ends ? ` · closes ${new Date(F.ends).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}` : ''}</a>` : ''}
+
+  <!-- 1 · HOOK: call out the audience, the outcome, the lead magnet right here -->
+  <section class="lpb-hero" id="lead"><canvas class="lp-hcv" id="lpHcv" aria-hidden="true"></canvas><div class="wrap lpb-hgrid">
+    <div>
+      <div class="lpb-call">MT5 traders who hold more than one position at a time:</div>
+      <h1>Trade MT5 <span>faster, safer and clearer</span>, without changing your strategy.</h1>
+      <ul class="lpb-pill3"><li><b>⚡ Faster</b>layers and close & keep in one click</li><li><b>🛡 Protected</b>lots from your risk, a daily limit that locks</li><li><b>📒 Clearer</b>a journal that shows what really works</li></ul>
+      <p class="lp-sub">Start free: put in your account and risk, and get your <b>Risk Rulebook</b> in 30 seconds. Or <a href="#" data-act="demo" data-cta="b-hero-demo" class="lpb-inl">open the live demo</a>, no sign-up.</p>
+      <form class="lpb-form" id="lpLead">
+        <div class="lpb-row"><label>Account</label><div class="lp-seg">${[1000, 5000, 10000, 25000, 100000].map(v => `<button type="button" data-lpc="bal" data-v="${v}" class="${v === LPC.bal ? 'on' : ''}">${v >= 1000 ? v / 1000 + 'k' : v}</button>`).join('')}</div></div>
+        <div class="lpb-row two"><div><label>Risk per trade</label><div class="lp-inp"><input id="cRisk" inputmode="decimal" value="1"><span>%</span></div></div><div><label>Daily loss limit</label><div class="lp-inp"><input id="cDL" inputmode="decimal" value="5"><span>%</span></div></div></div>
+        <input type="hidden" id="cStop" value="4">
+        <div class="lp-leadf"><input type="email" name="email" required placeholder="Your email" autocomplete="email"><button class="lp-btn gold" type="submit" data-cta="b-hero-lead">Get my free Rulebook →</button></div>
+        <small class="lp-leadn" id="lpLeadN">Free. Opens instantly. Then 5 short emails about risk, unsubscribe in one click.</small>
+      </form>
+      <div class="lpb-two"><button class="lp-btn ghost" data-act="demo" data-cta="b-hero-demo2">▶ Free live demo · no sign-up</button><a class="lpb-skip" href="#pricing" data-cta="b-skip">Already sure? See the options ↓</a></div>
+    </div>
+    <div class="lpb-prev" id="lpbPrev">
+      <div class="lpb-ph"><span>📄 Your Risk Rulebook</span><em>live preview</em></div>
+      <div class="lpb-big"><small>Account</small><b data-k="bal"></b></div>
+      <div class="lpb-g"><div><small>Max loss per trade</small><b data-k="r"></b></div><div><small>Stop trading today at</small><b class="dn" data-k="d"></b></div></div>
+      <div class="lpb-t"><div><span>Stop 2 $</span><b data-k="l2"></b></div><div><span>Stop 5 $</span><b data-k="l5"></b></div><div><span>Stop 10 $</span><b data-k="l10"></b></div><small>max lots on gold for your risk</small></div>
+      <div class="lpb-warn">⚠ You can only take <b data-k="s"></b> losses in a row today. One extra zero = <b data-k="ff"></b> lots.</div>
+      <div class="lpb-more">+ layer plan · fat-finger ceiling · 10-second pre-trade checklist</div>
+    </div>
+  </div></section>
+
+  <!-- 2 · REVEAL THE PROBLEM: the lead magnet shows it, this section names it -->
+  <section class="lp-sec lp-pain"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">What MT5 makes slow</div><h2>It's rarely the setup.<br><span>It's the clicking.</span></h2><p>Three moments cost MT5 traders more than every bad trade idea combined.</p></div>
+    <div class="lp-pains">
+      ${[['0.50', 'instead of 0.05', 'One extra zero in the lot box. Ten times your planned risk, gone in one candle.'], ['8 ×', 'close, confirm, close…', 'Closing a basket by hand while price runs against you.'], ['−4% → −9%', '"one more trade"', 'The trade after a bad morning is the one that empties the week.']]
+        .map(([n, s, d]) => `<div class="lp-painc"><b>${n}</b><small>${s}</small><p>${d}</p></div>`).join('')}
+    </div>
+    ${cta('pain', 'Get my free Rulebook →')}
+  </div></section>
+
+  <!-- 3 · PROOF BY DEMONSTRATION (no fake testimonials) -->
+  ${engHTML()}
+  <div class="wrap"><div class="lpb-cta"><button class="lp-btn gold lg" data-act="demo" data-cta="b-demo-open">▶ Open the full live demo, free</button><span>A real terminal with simulated prices · nothing to install</span></div></div>
+  ${raceHTML()}
+
+  <!-- 4 · DECREASE EFFORT + TIME -->
+  <section class="lp-sec"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">5 minutes, start to finish</div><h2>You do three things. <span>Goldmine does the rest.</span></h2></div>
+    <div class="lpb-steps">${[['1', 'Download, double-click', 'It finds your MT5 account by itself. No passwords to type.', '2 min'], ['2', 'Set your two numbers', 'Risk per trade and daily loss limit. From your Rulebook.', '1 min'], ['3', 'Trade faster', 'Lots sized for you, positions managed in one click, the limit locks itself, the journal fills itself.', 'every day']]
+      .map(([n, t, d, tm]) => `<div class="lpb-step"><i>${n}</i><small>${tm}</small><h4>${t}</h4><p>${d}</p></div>`).join('')}</div>
+    ${cta('steps')}
+  </div></section>
+
+  <!-- 5 · THE GRAND SLAM OFFER: value stack, price anchor, scarcity, urgency, guarantee -->
+  <section class="lp-sec lp-offer" id="offer"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">The offer</div><h2>The <span>5-Minute Risk Lock</span></h2><p>Faster execution, a protected account and a clear journal, set up with you, for less than the cost of one oversized trade.</p></div>
+    <div class="lp-stack">
+      ${B.map(([i, t, d, v], k) => `<div class="lp-si" style="--i:${k}"><span class="ic">${i}</span><div><h4>${t}</h4><p>${d}</p></div><b>${v ? `${money2(v)} value` : 'included'}</b></div>`).join('')}
+      <div class="lpb-total"><span>Total value</span><s>${money2(total)}</s></div>
+      <div class="lp-stot"><div><span>Your price${F.open ? ' · founding' : ''}</span><b>${money2(price)}<small>/month</small></b><em>${F.open ? `normally ${money2(pro.month)} · locked for as long as you stay` : 'cancel anytime in 2 clicks'}</em></div><a class="lp-btn gold lg" href="#pricing" data-cta="b-offer">Choose my way in →</a></div>
+    </div>
+    <div class="lpb-urg">${F.open ? `<div><b>${F.left}</b><small>founding seats left</small></div>` : ''}${F.open && F.ends ? `<div><b>${new Date(F.ends).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</b><small>founding price closes</small></div>` : ''}<div><b>${td} days</b><small>trial first</small></div></div>
+    <div class="lp-guarbig"><div class="seal"><b>${G}</b><small>DAY<br>GUARANTEE</small></div><div><h3>Use it on 20 trades. If it didn't pay for itself, you pay nothing.</h3><p>Trade with Goldmine on at least 20 trades in your first ${G} days. If it didn't save you at least its price in mistakes or time, email us and get every cent back. You keep the Rulebook.</p></div></div>
+  </div></section>
+
+  <!-- 5b · CHOOSE YOUR WAY IN (menu + anchor upsell, payment-plan and feature downsells, continuity bonus) -->
+  <section class="lp-sec lpb-way" id="pricing"><div class="wrap">
+    <div class="lp-head"><div class="lp-eye">Choose your way in</div><h2>Same Goldmine. <span>Pick how you pay.</span></h2><p>Every option starts with the ${td}-day trial (Lifetime excepted) and the ${G}-day guarantee.</p></div>
+    <div class="lpb-ways">
+      ${pro.lifetime && F.lifetime_left > 0 ? `<div class="lpb-wc anchor"><span class="tag">Only ${F.lifetime_left} of ${F.lifetime_seats} left</span><h4>Lifetime</h4><div class="pr">${money2(pro.lifetime)}<small> once</small></div>
+        <p>Pay once, never again. Every update and the setup call included.</p>
+        <button class="lp-btn ghost full" data-intent="pro:lifetime" data-cta="b-way-lifetime">Get Lifetime</button>
+        ${pro.lifetime3 ? `<button class="lpb-link" data-intent="pro:lifetime3" data-cta="b-way-lifetime3">or 3 payments of ${money2(pro.lifetime3)}</button>` : ''}</div>` : ''}
+      <div class="lpb-wc best"><span class="tag">Best value · bonus</span><h4>Yearly</h4><div class="pr">${money2(Math.round(planPrice('pro', 'year') / 12 * 100) / 100)}<small>/mo</small></div>
+        <p>${money2(planPrice('pro', 'year'))} billed yearly, save ${Math.round((1 - planPrice('pro', 'year') / (planPrice('pro', 'month') * 12)) * 100)}%.<br><b>Bonus:</b> the 1-on-1 setup call, even after founding closes.</p>
+        <button class="lp-btn gold full" data-intent="pro:year" data-cta="b-way-year">Start ${td} days free</button></div>
+      <div class="lpb-wc"><span class="tag ghost">${F.open ? `Founding · ${F.left} left` : 'Flexible'}</span><h4>Monthly</h4><div class="pr">${money2(price)}<small>/mo</small></div>
+        <p>${F.open ? `Founding price, locked for as long as you stay (normally ${money2(pro.month)}).` : 'Cancel anytime in 2 clicks.'}</p>
+        <button class="lp-btn ghost full" data-intent="pro:month" data-cta="b-way-month">Start ${td} days free</button></div>
+    </div>
+    <div class="lpb-alt">${P('starter') ? `<span>Only 1 account and the basics? <button class="lpb-link" data-intent="starter:month" data-cta="b-way-starter">Starter · ${money2(P('starter').month)}/mo</button></span>` : ''}
+      ${P('elite') ? `<span>Managing many accounts? <button class="lpb-link" data-intent="elite:month" data-cta="b-way-elite">Elite · 25 accounts · ${money2(P('elite').month)}/mo</button></span>` : ''}</div>
+  </div></section>
+
+  <!-- 6 · OBJECTIONS, then the close -->
+  <section class="lp-sec" id="faq"><div class="wrap">
+    <div class="lp-head"><h2>Before you decide</h2></div>
+    <div class="lp-faq">${[
+      ['Does it work with my broker?', 'If your broker has MetaTrader 5, yes: forex, gold, indices, crypto CFDs. MetaTrader 4 is not supported.'],
+      ['Is my account safe?', 'Goldmine runs on your own PC next to MT5. Your broker password never leaves your computer and Goldmine never opens a trade by itself.'],
+      ['I trade a funded / prop account.', 'Goldmine is a manual trade-management tool: you click every order. Most firms allow tools like this, but rules differ, so check your firm\'s rules.'],
+      ['I don\'t have time to set it up.', 'That\'s what the setup call is for: 20 minutes, done with you. Without the call it takes about 5 minutes.'],
+      ['I have a Mac.', 'The part that talks to MT5 needs Windows. Run it on a small Windows VPS and use the web terminal from your Mac or phone.'],
+      ['What if it\'s not for me?', `Cancel in two clicks. And with the ${G}-day guarantee, if it didn't pay for itself, you get your money back.`],
+    ].map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>
+  </div></section>
+
+  <section class="lp-sec"><div class="wrap"><div class="lp-final">
+    <h2>Two ways your next month goes.</h2>
+    <div class="lpb-fork"><div class="no"><b>Keep doing it by hand</b><p>Calculating lots in your head, closing positions one by one, and hoping the bad day stops by itself.</p></div>
+      <div class="yes"><b>Lock in your rules</b><p>Every lot sized from your risk, ten positions closed in one click, a limit that stops you before you break it.</p></div></div>
+    <div class="lp-cta c"><a class="lp-btn gold lg" href="#pricing" data-cta="b-final">Choose my way in →</a><a class="lp-btn ghost lg" href="#lead" data-cta="b-final-lead">Start with the free Rulebook</a></div>
+  </div></div></section>
+
+  <footer class="lp-foot"><div class="wrap">
+    <div class="row"><a class="brand" href="#home" style="font-size:14px">${LOGO}Goldmine<span>PRO</span></a><span class="grow"></span>
+      <a href="#" data-act="legal" data-k="terms">Terms</a><a href="#" data-act="legal" data-k="privacy">Privacy</a><a href="#" data-act="legal" data-k="risk">Risk disclosure</a><a href="mailto:support@yourdomain.com">Support</a></div>
+    <p><b>Risk warning:</b> CFDs and forex are complex instruments and come with a high risk of losing money rapidly due to leverage. Goldmine Pro is software only and does not provide investment advice, signals or brokerage services. Bonus values are what each item would cost on its own. MetaTrader is a trademark of MetaQuotes Ltd; Goldmine Pro is not affiliated with MetaQuotes or any prop firm.</p>
+    <p>© ${new Date().getFullYear()} Goldmine Pro</p>
+  </div></footer>
+  <div class="stickycta" id="stickyCta"><div><b>${store.get('gpLead', '') ? 'Your rules, enforced' : 'Free Risk Rulebook'}</b><small>${store.get('gpLead', '') ? `${money2(price)}/mo · ${G}-day guarantee` : '30 seconds · no card'}</small></div><a class="btn acc md" href="${store.get('gpLead', '') ? '#signup' : '#lead'}" data-cta="b-sticky">${store.get('gpLead', '') ? 'Get the Risk Lock' : 'Get it free'}</a></div>
+  </div>`;
+  lpReveal(); lpbPreview();
+  $$('.lp-painc, .lp-stack, .lpb-step').forEach(el => el.classList.add('lp-spot'));
+  $$('.lp-pains, .lp-stack, .lpb-steps').forEach(p => [...p.children].forEach((ch, i) => ch.style.setProperty('--i', i)));
+  lpFx(); ENG.auto = !ENG_ORDER.includes(ENG_Q); engBoot();
+}
+document.addEventListener('input', e => { if (['cRisk', 'cDL'].includes(e.target.id)) lpbPreview() });
+document.addEventListener('click', e => { if (e.target.closest('[data-lpc="bal"]')) setTimeout(lpbPreview, 0) });
+// $100M Money Models: the moment someone takes the free thing, make the offer
+function afterLead(source) {
+  if (LPV !== 'b') return;
+  const F = FOUND(), pro = P('pro') || OFFLINE_PLANS.plans.pro, price = F.open ? F.month : pro.month, td = A.plans?.trial_days || 7;
+  const card = !!A.plans?.trial_card;
+  setTimeout(() => openModal(`<div class="offer lpb-ty"><span class="obadge">✓ YOUR RULEBOOK IS OPEN IN A NEW TAB</span>
+    <h3>Now try Goldmine <span class="free">free for ${td} days</span></h3>
+    <p>Your Rulebook tells you the rules. Goldmine applies them on every order: it sizes the lot from your risk, shows the money at risk before you click, and locks new trades at your daily limit.</p>
+    <div class="ocmp"><div class="win"><small>Next ${td} days</small><b>FREE</b><span>${card ? 'nothing charged until day ' + (td + 1) : 'no card needed'}</span></div>
+      <div><small>After that, only if you stay</small><b>${money2(price)}<em>/mo</em></b><span>${F.open ? `founding price for life · <s>${money2(pro.month)}</s>` : 'cancel anytime'}</span></div></div>
+    <div class="oact"><a class="btn acc lg" href="#signup" data-cta="b-ty-offer" onclick="resolveModal(null)">Start my free ${td}-day trial →</a><button class="btn ghost md" data-offer="no">Just the Rulebook, thanks</button></div>
+    <small class="mut" style="display:block;margin-top:10px">${card ? 'Card needed, nothing charged during the trial' : 'No card · nothing to cancel if you don\'t continue'} · ${GUAR()}-day guarantee after you subscribe</small></div>`), 500);
+  track('ty_offer', { source });
+}
+
 const SHOWCASE = [
   ['lp-layers.jpg', '🪜', 'Layered entries, sized by your risk', 'Pick a zone, a stop and how much you want to risk. Goldmine spreads 2–10 limit orders over the zone and calculates every lot size, so the total risk is exactly what you chose.',
     ['Risk in % of balance or a fixed amount', 'Equal lots, or more lots deeper in the zone', 'Average entry, max risk and R:R before you send', 'Every layer on the chart, drag to adjust']],
@@ -1718,8 +2069,8 @@ addEventListener('scroll', () => { // sticky trial button on phones: after the h
 function authBox(mode) {
   const su = mode === 'signup';
   openModal(`<form class="auth" id="authF" autocomplete="on">
-    <h3>${su ? 'Start your free trial' : 'Welcome back'}</h3>
-    <p>${su ? `${A.plans?.trial_days || 7} days of every Pro feature, free. No card, nothing to cancel.` : 'Log in to your Goldmine Pro account.'}</p>
+    <h3>${su ? 'Start the 5-Minute Risk Lock' : 'Welcome back'}</h3>
+    <p>${su ? (A.plans?.trial_card ? `${A.plans?.trial_days || 7} days of every Pro feature. Add a card next; nothing is charged before day ${(A.plans?.trial_days || 7) + 1}, cancel in 2 clicks.` : `${A.plans?.trial_days || 7} days of every Pro feature, free. No card, nothing to cancel.`) + (store.get('gpRef', '') ? '<br><b style="color:var(--acc)">🎁 Invited by a friend: your first paid month is free.</b>' : '') : 'Log in to your Goldmine Pro account.'}</p>
     <label>Email<input class="in" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
     <label>Password<input class="in" name="password" type="password" autocomplete="${su ? 'new-password' : 'current-password'}" required minlength="8" placeholder="${su ? 'At least 8 characters' : ''}"></label>
     <div class="err" id="authErr"></div>
@@ -1732,8 +2083,15 @@ function authBox(mode) {
     e.preventDefault(); const f = new FormData(e.target), b = e.target.querySelector('button[type=submit]');
     b.disabled = true; b.textContent = 'One moment…'; $('#authErr').textContent = '';
     try {
-      const j = await srv('/api/auth/' + mode, Object.fromEntries(f));
-      A.token = j.token; store.set('saasToken', j.token); setMe(j); resolveModal(null);
+      const j = await srv('/api/auth/' + mode, { ...Object.fromEntries(f), ...(su ? { ref: store.get('gpRef', '') } : {}) });
+      A.token = j.token; store.set('saasToken', j.token); setMe(j); resolveModal(null); track(su ? 'signup' : 'login');
+      const want = su && store.get('gpIntent', ''); store.set('gpIntent', '');
+      if (want) { // picked a plan before signing up: Lifetime goes straight to checkout; monthly / yearly start the free trial and remember the choice
+        const [pl, iv] = want.split(':');
+        if (iv.startsWith('lifetime') || A.plans?.trial_card) return buy(pl, iv, !iv.startsWith('lifetime') && !!A.plans?.trial_card);
+        A.interval = iv; store.set('saasIvl', iv); store.set('gpWant', want);
+      }
+      if (su && A.plans?.trial_card && SUB().status === 'none') return buy('pro', A.interval, true); // card trial: straight to checkout
       toast(su ? `🎉 Welcome! Your ${A.plans?.trial_days || 7}-day Pro trial has started.` : 'Logged in', 'ok');
       location.hash = su ? 'setup' : 'dashboard'; route();
     } catch (err) { $('#authErr').textContent = err.message; b.disabled = false; b.textContent = su ? 'Start my free trial →' : 'Log in' }
@@ -1764,9 +2122,10 @@ function trialOffer() {
   const pro = P('pro'), st = P('starter'); if (!pro) return '';
   const urgent = s.status !== 'trialing' || s.days_left <= 3;
   return `<div class="toffer ${urgent ? 'urgent' : ''}"><div><b>${s.status === 'trialing' ? (urgent ? `⏳ ${s.days_left} day${s.days_left === 1 ? '' : 's'} left: lock your founding price now` : '🏷️ Founding price is still open') : 'Pick up where you left off'}</b>
-      <small>Pro ${money2(pro.month)}/month${pro.regular ? ` instead of ${money2(pro.regular)}` : ''}, locked for as long as you stay. Or yearly ${money2(pro.year)} (2 months free).</small></div>
-    <div class="tbtns"><button class="btn acc md" data-buy="pro" data-bivl="month" data-cta="trial-pro">Keep Pro · ${money2(pro.month)}/mo</button><button class="btn md" data-buy="pro" data-bivl="year" data-cta="trial-pro-year">Yearly · ${money2(pro.year)}</button>
-      ${st ? `<button class="btn ghost md" data-buy="starter" data-bivl="month" data-cta="trial-starter">Just Starter · ${money2(st.month)}</button>` : ''}</div></div>`;
+      <small>Pro ${money2(planPrice('pro', 'month'))}/month${isFound('pro') ? ` instead of ${money2(pro.month)}, locked for as long as you stay` : ''}. Or yearly ${money2(planPrice('pro', 'year'))}.</small></div>
+    <div class="tbtns">${store.get('gpWant', '') && store.get('gpWant', '') !== 'pro:month' && P(store.get('gpWant').split(':')[0]) ? `<button class="btn acc md" data-buy="${store.get('gpWant').split(':')[0]}" data-bivl="${store.get('gpWant').split(':')[1]}" data-cta="trial-chosen">Continue with ${P(store.get('gpWant').split(':')[0]).name} ${store.get('gpWant').split(':')[1] === 'year' ? 'yearly' : 'monthly'}</button>` : ''}<button class="btn acc md" data-buy="pro" data-bivl="month" data-cta="trial-pro">Keep Pro · ${money2(planPrice('pro', 'month'))}/mo</button><button class="btn md" data-buy="pro" data-bivl="year" data-cta="trial-pro-year">Yearly · ${money2(planPrice('pro', 'year'))}</button>
+      ${pro.lifetime3 && FOUND().lifetime_left > 0 ? `<button class="btn md" data-buy="pro" data-bivl="lifetime3" data-cta="trial-lifetime3">Lifetime · 3 × ${money2(pro.lifetime3)}</button>` : ''}
+      ${st ? `<button class="btn ghost md" data-buy="starter" data-bivl="month" data-cta="trial-starter">Just the basics · Starter ${money2(st.month)}</button>` : ''}</div></div>`;
 }
 function renderDashboard() {
   $('#view').dataset.v = 'dash';
@@ -1791,6 +2150,8 @@ function renderDashboard() {
         ${s.plan === 'starter' && s.valid && P('pro') ? `<div class="toffer" style="margin-top:14px"><div><b>Unlock Layers, Basket BE & the Trade manager</b><small>Pro is only ${money2(Math.round((P('pro').month - P('starter').month) * 100) / 100)} more per month, plus 5 accounts and paper trading.</small></div><div class="tbtns"><button class="btn acc md" data-buy="pro" data-bivl="${s.interval === 'year' ? 'year' : 'month'}" data-cta="upsell-starter-pro">Upgrade to Pro</button></div></div>` : ''}
         ${s.plan !== 'elite' ? `<a class="btn md" style="margin-top:14px;width:100%" href="#billing">Compare plans</a>` : ''}</div>
     </div>
+    ${callBox() || refBox() ? `<div class="g g2">${callBox()}${refBox()}</div>` : ''}
+    ${SUB().valid && SUB().status !== 'trialing' ? addonMenu() : ''}
     ${accountsBox()}
     ${licenseBox()}
     </div></div></div>`;
@@ -2056,25 +2417,84 @@ function renderBilling() {
     <div class="ph"><div><h1>Plan & billing</h1><p>Change plan, switch to yearly billing, update your card or cancel.</p></div><span class="grow"></span>
       ${A.me.test_mode ? (s.status === 'active' ? (s.cancel_at_end ? '<button class="btn md" data-act="resume">Resume subscription</button>' : '<button class="btn md" data-act="cancelSub">Cancel subscription</button>') : '') : '<button class="btn md" data-act="portal">Manage billing & invoices</button>' + (s.status === 'active' && s.interval !== 'lifetime' && !s.cancel_at_end ? '<button class="btn ghost md" data-act="cancelSub">Cancel</button>' : '')}</div>
     <div class="g">${subSummary()}
-      ${ivlSeg()}<div class="plans" id="plans">${['starter', 'pro', 'elite'].map(k => priceCard(k)).join('')}</div>${lifetimeCard()}
+      ${ivlSeg()}<div class="plans" id="plans">${['starter', 'pro', 'elite'].filter(k => !P(k)?.hidden || s.plan === k).map(k => priceCard(k)).join('')}</div>${lifetimeCard()}
       <div class="box"><h3>Payment history</h3>${pays.length ? `<div class="tscroll"><table class="tbl2"><thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead><tbody>
         ${pays.map(p => `<tr><td>${dt(p.ts)}</td><td>${esc(p.descr)}</td><td style="text-align:right;font-weight:800">${eur(p.amount)}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No payments yet.</div>'}</div>
     </div></div></div>`;
 }
-async function buy(plan, ivl) {
+async function buy(plan, ivl, trial) {
   ivl = ivl || A.interval;
   try {
-    track('checkout_start', { plan, interval: ivl });
-    const j = await srv('/api/billing/checkout', { plan, interval: ivl });
+    track('checkout_start', { plan, interval: ivl, trial: !!trial });
+    const j = await srv('/api/billing/checkout', { plan, interval: ivl, trial: !!trial });
     if (j.url) { toast('Opening secure checkout…'); location.href = j.url; return }
-    setMe(j); track('purchase', { plan, interval: ivl });
-    toast(`✓ ${P(plan).name}${ivl === 'lifetime' ? ' Lifetime' : ''} activated${j.test ? ' (test payment)' : ''}`, 'ok'); route();
-    upsellYearly();
+    setMe(j); track(trial ? 'trial_start' : 'purchase', { plan, interval: ivl });
+    toast(trial ? `🎉 Your ${A.plans?.trial_days || 7}-day trial has started${j.test ? ' (test)' : ''}` : `✓ ${P(plan).name}${ivl === 'lifetime' ? ' Lifetime' : ''} activated${j.test ? ' (test payment)' : ''}`, 'ok');
+    location.hash = trial ? 'setup' : 'welcome'; route();
   } catch (e) { toast(e.message, 'err') }
 }
 async function afterPayment() {
   toast('Payment received · activating your plan…', 'ok');
-  for (let i = 0; i < 8; i++) { await sleep(1500); try { const j = await srv('/api/me'); setMe(j); if (SUB().status === 'active') { toast('✓ Your plan is active', 'ok'); history.replaceState(null, '', '#dashboard'); route(); return upsellYearly() } } catch {} }
+  for (let i = 0; i < 8; i++) { await sleep(1500); try { const j = await srv('/api/me'); setMe(j); if (['active', 'trialing'].includes(SUB().status)) { toast('✓ Your plan is active', 'ok'); history.replaceState(null, '', '#welcome'); return renderWelcome() } } catch {} }
+}
+
+/* ---------------------------------------------------------------- welcome: right after buying (setup call, connect, invite, one upsell) */
+const refLink = () => `${location.origin}${location.pathname}?ref=${A.me?.ref?.code || ''}#signup`;
+function refBox() {
+  const r = A.me?.ref || {}; if (!r.code) return '';
+  return `<div class="box refbox"><h3>🎁 Give a month, get a month</h3>
+    <p class="mut" style="font-size:13px;margin:-2px 0 12px">Share your link. Your friend's first paid month is free, and you get a month free when they join.</p>
+    <div class="reflink"><input class="in" readonly value="${esc(refLink())}"><button class="btn acc md" data-act="copyRef">Copy link</button></div>
+    <div class="lim" style="margin-top:12px"><span>Friends joined</span><b>${r.joined || 0}</b><span>Months earned</span><b>${r.rewarded || 0}</b></div></div>`;
+}
+function callBox() {
+  const u = A.me?.booking_url; if (!u) return '';
+  return `<div class="box callbox"><h3>📞 Your founding setup call</h3><p class="mut" style="font-size:13px;margin:-2px 0 12px">20 minutes, one-on-one. We install Goldmine with you and set your risk per trade, daily limit and layer plan.</p>
+    <a class="btn acc md" href="${esc(u)}" target="_blank" rel="noopener" data-cta="book-call">Book my call →</a></div>`;
+}
+// classic upsells after the purchase: one-time add-ons (from the server's ADDONS)
+const ADDON_WHY = { vps: 'Your targets and daily limit only run while your PC is on. On a VPS they run 24/7.', review: 'The journal shows what happened. The review turns it into a plan.' };
+function addonMenu() {
+  const all = A.plans?.addons || {}, have = A.me?.addons || {}, keys = Object.keys(all); if (!keys.length) return '';
+  return `<div class="box addons"><h3>Make it run on its own <span class="grow"></span><span class="mut" style="font-size:12px">one-time · optional</span></h3>
+    <div class="addgrid">${keys.map(k => { const a = all[k], own = k in have; return `<div class="addc ${own ? 'own' : ''}"><b>${esc(a.name)}</b><em>${esc(ADDON_WHY[k] || '')}</em><p>${esc(a.blurb)}</p>
+      ${own ? '<span class="st ok">✓ Yours</span>' : `<button class="btn acc md" data-addon="${k}" data-cta="addon-${k}">Add for ${money2(a.price)}</button>`}</div>` }).join('')}</div></div>`;
+}
+async function buyAddon(k) {
+  try {
+    track('addon_start', { addon: k });
+    const j = await srv('/api/billing/addon', { addon: k });
+    if (j.url) { toast('Opening secure checkout…'); location.href = j.url; return }
+    setMe(j); track('addon', { addon: k }); toast(`✓ ${A.plans.addons[k].name} added${j.test ? ' (test payment)' : ''}. We'll email you to schedule it.`, 'ok', 7000); route();
+  } catch (e) { toast(e.message, 'err') }
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-addon]'); if (a) return buyAddon(a.dataset.addon);
+  const i = e.target.closest('[data-intent]'); if (!i) return;
+  const [pl, iv] = i.dataset.intent.split(':'); track('intent', { plan: pl, interval: iv });
+  if (A.me) return buy(pl, iv);
+  store.set('gpIntent', i.dataset.intent); location.hash = 'signup';
+});
+function renderWelcome() {
+  $('#view').dataset.v = 'welcome';
+  const s = SUB(), me = A.me, F = FOUND(), pro = P('pro'), lt = s.interval === 'lifetime';
+  const up = !lt && pro?.lifetime && F.lifetime_left > 0
+    ? `<div class="toffer"><div><b>One-time offer: Pro Lifetime for ${money2(pro.lifetime)}</b><small>Pay once and never pay again. Only ${F.lifetime_left} of ${F.lifetime_seats} left.</small></div><div class="tbtns"><button class="btn acc md" data-buy="pro" data-bivl="lifetime" data-cta="welcome-lifetime">Get Lifetime</button>${pro.lifetime3 ? `<button class="btn md" data-buy="pro" data-bivl="lifetime3" data-cta="welcome-lifetime3">3 × ${money2(pro.lifetime3)}</button>` : ''}</div></div>`
+    : s.interval === 'month' && P(s.plan)?.year ? `<div class="toffer"><div><b>Switch to yearly and save ${Math.round((1 - planPrice(s.plan, 'year') / (planPrice(s.plan, 'month') * 12)) * 100)}%</b><small>${money2(planPrice(s.plan, 'year'))} a year instead of ${money2(planPrice(s.plan, 'month') * 12)}.</small></div><div class="tbtns"><button class="btn acc md" data-buy="${s.plan}" data-bivl="year" data-cta="welcome-yearly">Switch to yearly</button></div></div>` : '';
+  $('#view').innerHTML = `<div class="page"><div class="wrap welcome">
+    <div class="wel-hero"><div class="wel-badge">${me.founding ? '🏷️ FOUNDING MEMBER' : lt ? '♾ LIFETIME MEMBER' : '✓ YOU\'RE IN'}</div>
+      <h1>Welcome to the Risk Lock, ${esc(me.user.name || me.user.email.split('@')[0])} 🎉</h1>
+      <p>${esc(P(s.plan)?.name || 'Pro')}${lt ? ' Lifetime' : ''} is active${me.founding ? `, at ${money2(planPrice('pro', s.interval === 'year' ? 'year' : 'month'))}${s.interval === 'year' ? '/year' : '/month'} for as long as you stay` : ''}. Three steps and you're trading with your rules locked in.</p></div>
+    <div class="wel-steps">
+      ${[[me.booking_url ? 'Book your setup call' : 'Read your Risk Rulebook', me.booking_url ? '20 minutes: we set your risk, daily limit and layers with you.' : 'Your 5 rules on one page.', me.booking_url ? `<a class="btn acc md" href="${esc(me.booking_url)}" target="_blank" rel="noopener" data-cta="welcome-call">Book my call</a>` : `<a class="btn acc md" href="rulebook.html" target="_blank">Open my Rulebook</a>`],
+         ['Install Goldmine next to MT5', 'One download, one double-click. It finds your account by itself.', '<a class="btn md" href="#setup">Start setup</a>'],
+         ['Invite a friend', 'They get their first month free, you get a month free.', '<button class="btn md" data-act="copyRef">Copy my link</button>']]
+        .map(([t, d, b], i) => `<div class="box wel-step"><span class="n">${i + 1}</span><h3>${t}</h3><p class="mut">${d}</p>${b}</div>`).join('')}
+    </div>
+    ${addonMenu()}
+    ${up ? `<div class="box">${up}</div>` : ''}
+    <p class="mut" style="text-align:center;font-size:12.5px;margin-top:6px">🛡 ${GUAR()}-day guarantee: use it on 20 trades; if it didn't pay for itself, email us for a full refund.</p>
+  </div></div>`;
 }
 
 /* ---------------------------------------------------------------- upsells & downsells (all one click, all honest) */
@@ -2091,16 +2511,19 @@ function upsellYearly() {
 // 2. Trying to cancel: offer a cheaper way to stay before cancelling.
 function downsellCancel() {
   const s = SUB(), p = P(s.plan), st = P('starter'), opts = [];
+  if (!A.me?.paused_until || A.me.paused_until < Date.now() / 1000) opts.push(['pause', 'Pause for 1 month · €0', 'Take a break: nothing is charged for 30 days and you keep your price and your setup.']);
   if (s.plan !== 'starter' && st) opts.push(['starter', `Switch to Starter · ${money2(st.month)}/month`, 'Keep the terminal and your journal for less.']);
-  if (s.interval === 'month' && p?.year) opts.push(['yearly', `Switch to yearly · ${money2(Math.round(p.year / 12 * 100) / 100)}/month`, `Same ${esc(p.name)}, 2 months free.`]);
+  if (s.interval === 'month' && p?.year) opts.push(['yearly', `Switch to yearly · ${money2(Math.round(planPrice(s.plan, 'year') / 12 * 100) / 100)}/month`, `Same ${esc(p.name)}, cheaper per month.`]);
   openModal(`<div class="offer"><span class="obadge warn">BEFORE YOU GO</span><h3>Keep your founding price for less?</h3>
-    <p>If you cancel, your founding price is gone: coming back later means the regular price${p?.regular ? ` (${money2(p.regular)}/month for ${esc(p.name)})` : ''}.</p>
+    <p>${A.me?.founding ? `If you cancel, your founding price is gone: coming back later means the normal price (${money2(p?.month)}/month for ${esc(p?.name || '')}).` : 'Before you go, two cheaper ways to keep your rules locked in:'}</p>
     <div class="olist">${opts.map(([k, t, d]) => `<button class="oopt" data-offer="${k}" data-cta="downsell-${k}"><b>${t}</b><small>${d}</small></button>`).join('')}</div>
     <div class="oact"><button class="btn ghost md" data-offer="cancel">No, cancel my subscription</button><button class="btn md" data-offer="no">Keep my plan</button></div></div>`);
 }
 async function offerAction(k) {
   const s = SUB(); resolveModal(null);
   if (k === 'yearly') return buy(s.plan, 'year');
+  if (k === 'pause') { try { setMe(await srv('/api/billing/pause', {})); track('pause'); toast(`Paused: nothing is charged until ${dt(A.me.paused_until)}. Your plan and price stay.`, 'ok', 7000); return route() } catch (err) { return toast(err.message, 'err') } }
+  if (k === 'lifetime3') return buy('pro', 'lifetime3');
   if (k === 'starter') return buy('starter', s.interval === 'year' ? 'year' : 'month');
   if (k === 'lifetime') return buy('pro', 'lifetime');
   if (k === 'demo') { window.open('terminal_pro.html?demo=1', '_blank'); return }
@@ -2113,20 +2536,44 @@ async function offerAction(k) {
 }
 // 3. Exit intent (desktop, landing, logged out, once per visit): show the product instead of losing the visitor.
 document.addEventListener('mouseout', e => {
-  if (e.relatedTarget || e.clientY > 8 || A.me || modalOpen() || $('#view').dataset.v !== 'landing' || innerWidth < 900 || sessionStorage.getItem('gpExit')) return;
+  if (e.relatedTarget || e.clientY > 8 || A.me || modalOpen() || !['landing', 'landingB'].includes($('#view').dataset.v) || innerWidth < 900 || sessionStorage.getItem('gpExit')) return;
+  if (store.get('gpLead', '')) return; // already a lead: don't ask again
   sessionStorage.setItem('gpExit', 1); track('exit_intent');
-  openModal(`<div class="offer"><span class="obadge">WAIT, 30 SECONDS</span><h3>See it working before you go</h3>
-    <p>Open the live demo: a full terminal with simulated prices. No sign-up, no download. Drag a stop loss, place layers, try Basket BE.</p>
-    <div class="oact"><button class="btn acc lg" data-offer="demo" data-cta="exit-demo">▶ Open the live demo</button><button class="btn md" data-offer="trial" data-cta="exit-trial">Start the ${A.plans?.trial_days || 7}-day free trial</button></div>
-    <small class="mut" style="display:block;margin-top:12px">Founding price from ${minPrice()}/month · no card for the trial</small></div>`);
+  openModal(`<div class="offer"><span class="obadge">BEFORE YOU GO · FREE</span><h3>Take your Risk Rulebook with you</h3>
+    <p>Five rules built for your account: the right lot for every stop, your daily stop, your layer plan and a 10-second checklist for every trade. One page, ready to print.</p>
+    <form class="exitlead" data-lead="exit"><input class="in" type="email" name="email" required placeholder="you@email.com" autocomplete="email"><button class="btn acc lg" type="submit">Send me my Rulebook</button></form>
+    <small class="mut" style="display:block;margin-top:12px">Or <a href="#" data-offer="demo" style="color:var(--acc);font-weight:700">open the live demo</a> first. No spam, unsubscribe in one click.</small></div>`);
+});
+// the free Risk Rulebook (lead magnet): save the email, open the rulebook built from the calculator numbers
+async function sendLead(form, source) {
+  const email = form.querySelector('[name=email]').value.trim(), btn = form.querySelector('button[type=submit]');
+  const nv = id => (document.getElementById(id)?.value || '').replace(',', '.');
+  const d = { bal: LPC.bal, dl: nv('cDL') || 5, risk: nv('cRisk') || 1, stop: nv('cStop') || 4, n: LPC.n, mkt: LPC.mkt };
+  const url = 'rulebook.html?' + new URLSearchParams({ ...d, site: location.pathname.split('/').pop() || 'terminal_test.html' });
+  const win = window.open('about:blank', '_blank'); // open now so the popup isn't blocked
+  btn.disabled = true; btn.textContent = 'One moment…';
+  try { if (!A.plans?.offline) await srv('/api/leads', { email, source: source + (LPV === 'b' ? '-b' : ''), data: d }) } catch (e) { if (/valid email/i.test(e.message)) { btn.disabled = false; btn.textContent = 'Send me my Rulebook'; win?.close(); return toast(e.message, 'err') } }
+  store.set('gpLead', email); track('lead', { source }); afterLead(source);
+  if (win) win.location = url; else location.href = url;
+  btn.textContent = '✓ Sent · opened in a new tab';
+  const n = $('#lpLeadN'); if (n && source === 'calculator') n.innerHTML = `✓ Your Rulebook is open in a new tab. Ready to have Goldmine enforce it? <a href="#signup" style="color:#f5b73b;font-weight:800">Get the Risk Lock →</a>`;
+  if (source === 'exit') setTimeout(() => resolveModal(null), 900);
+}
+document.addEventListener('submit', e => {
+  const f = e.target; if (f.id === 'lpLead') { e.preventDefault(); sendLead(f, 'calculator') } else if (f.dataset?.lead) { e.preventDefault(); sendLead(f, f.dataset.lead) }
+});
+{ const r = new URLSearchParams(location.search).get('ref'); if (r && /^[A-Za-z0-9]{4,12}$/.test(r)) store.set('gpRef', r.toUpperCase()) } // referral link
+document.addEventListener('click', e => {
+  if (!e.target.closest('[data-act="copyRef"]')) return;
+  navigator.clipboard?.writeText(refLink()); toast('Referral link copied: share it with a trader friend', 'ok'); track('ref_copy');
 });
 // 4. Lifetime deal card (top upsell, shown under the plans)
 function lifetimeCard() {
-  const p = P('pro'); if (!p?.lifetime) return '';
+  const p = P('pro'), F = FOUND(); if (!p?.lifetime || (F.lifetime_left <= 0 && SUB().interval !== 'lifetime')) return '';
   const owned = A.me && SUB().interval === 'lifetime';
-  return `<div class="lifetime"><div class="lt1"><span class="obadge">FOUNDING LAUNCH ONLY</span><h4>Pro Lifetime: pay once, keep it forever</h4>
+  return `<div class="lifetime"><div class="lt1"><span class="obadge">LIMITED: ${F.lifetime_left} LEFT</span><h4>Pro Lifetime: pay once, keep it forever</h4>
     <p>Every Pro feature and every future Pro update, for life. No subscription, nothing to renew.</p></div>
-    <div class="lt2"><small><s>${money2(p.regular * 12)}/year</s></small><b>${money2(p.lifetime)}</b><span>one-time · about ${Math.round(p.lifetime / p.month)} months of Pro</span></div>
+    <div class="lt2"><small>only ${F.lifetime_left} of ${F.lifetime_seats} left</small><b>${money2(p.lifetime)}</b><span>one-time · about ${Math.round(p.lifetime / p.month)} months of Pro</span></div>
     ${owned ? '<button class="btn lg" disabled>You own Lifetime ✓</button>' : A.me ? `<button class="btn acc lg" data-buy="pro" data-bivl="lifetime" data-cta="buy-lifetime">Get Lifetime</button>` : `<a class="btn acc lg" href="#signup" data-cta="lifetime-trial">Try free first</a>`}</div>`;
 }
 
@@ -2173,30 +2620,147 @@ async function renderAdmin() {
   if (isAdmin() || tok) admLoad();
 }
 const ADMF = [['all', 'Everyone', () => true], ['trialing', 'Free trial', u => u.status === 'trialing'], ['paying', 'Paying', u => ['active', 'past_due'].includes(u.status) || (u.status === 'canceled' && u.period_end > Date.now() / 1000)],
-  ['past_due', 'Payment failed', u => u.status === 'past_due'], ['ending', 'Cancelled, ending', u => u.cancel_at_end || u.status === 'canceled'], ['expired', 'Ended / expired', u => u.status === 'expired']];
+  ['past_due', 'Payment failed', u => u.status === 'past_due'], ['ending', 'Cancelled, ending', u => u.cancel_at_end || u.status === 'canceled'], ['expired', 'Ended / expired', u => u.status === 'expired'],
+  ['founding', 'Founding', u => u.founding], ['banned', 'Blocked', u => u.banned]];
+STATUS.banned = ['Blocked', 'bad'];
+const admApi = async (path, body) => {
+  const r = await fetch(SRV + path, body ? { method: 'POST', headers: admHeaders(), body: JSON.stringify(body) } : { headers: admHeaders() });
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(j.detail || 'Request failed'), { code: r.status }); return j;
+};
+const ivlName = i => ({ month: 'monthly', year: 'yearly', lifetime: 'lifetime', lifetime3: 'lifetime · 3 payments' })[i] || '';
 function admTable() {
   const j = A.adm; if (!j) return; A.admF = A.admF || 'all';
-  const fn = (ADMF.find(x => x[0] === A.admF) || ADMF[0])[2], rows = j.customers.filter(fn), now = Date.now() / 1000;
-  const left = u => { if (!u.period_end) return '—'; const d = Math.ceil((u.period_end - now) / 86400); return d < 0 ? `<span class="dn">${-d} d ago</span>` : d <= 2 ? `<b style="color:var(--orange)">${d} d</b>` : d + ' d' };
+  const term = (A.admQ || '').toLowerCase(), fn = (ADMF.find(x => x[0] === A.admF) || ADMF[0])[2];
+  const rows = j.customers.filter(fn).filter(u => !term || (u.email + ' ' + (u.name || '')).toLowerCase().includes(term)), now = Date.now() / 1000;
+  const left = u => { if (!u.period_end) return '—'; if (u.interval === 'lifetime') return '∞'; const d = Math.ceil((u.period_end - now) / 86400); return d < 0 ? `<span class="dn">${-d} d ago</span>` : d <= 2 ? `<b style="color:var(--orange)">${d} d</b>` : d + ' d' };
   $('#admN').textContent = `${rows.length} shown`;
   $$('[data-admf]').forEach(b => b.classList.toggle('on', b.dataset.admf === A.admF));
-  $('#admT').innerHTML = `<table class="tbl2"><thead><tr><th>Email</th><th>Status</th><th>Plan</th><th>${A.admF === 'trialing' ? 'Trial ends' : 'Renews / ends'}</th><th>Left</th><th>PCs</th><th>Bridge last seen</th><th>Joined</th><th></th></tr></thead><tbody>
-    ${rows.map(u => `<tr><td><a href="mailto:${esc(u.email)}" style="color:var(--acc);font-weight:700;text-decoration:none">${esc(u.email)}</a></td><td>${stPill(u)}</td><td>${esc(P(u.plan)?.name || '—')} ${u.interval === 'year' ? '<span class="mut">yearly</span>' : ''}</td><td>${dt(u.period_end)}${u.cancel_at_end ? ' <span class="st warn">ends</span>' : ''}</td><td>${left(u)}</td><td>${u.machines}</td><td>${ago(u.last_seen)}</td><td>${dt(u.created)}</td><td><button class="btn sm danger" data-admdel="${esc(u.email)}" title="Delete this user for good">🗑 Delete</button></td></tr>`).join('') || '<tr><td colspan="9" class="empty">Nobody in this group.</td></tr>'}
+  $('#admT').innerHTML = `<table class="tbl2 admrows"><thead><tr><th>Customer</th><th>Status</th><th>Plan</th><th>${A.admF === 'trialing' ? 'Trial ends' : 'Renews / ends'}</th><th>Left</th><th>Paid</th><th>PCs</th><th>Bridge seen</th><th>Joined</th></tr></thead><tbody>
+    ${rows.map(u => `<tr data-admu="${esc(u.email)}" title="Open ${esc(u.email)}"><td><b class="admem">${esc(u.email)}</b>${u.name ? `<small class="mut"> ${esc(u.name)}</small>` : ''}
+      ${u.founding ? '<span class="tagx gold">founding</span>' : ''}${u.is_admin ? '<span class="tagx">admin</span>' : ''}${u.notes ? '<span class="tagx" title="Has a note">📝</span>' : ''}${(u.addons || []).map(a => `<span class="tagx">${esc(a)}</span>`).join('')}</td>
+      <td>${stPill(u)}</td><td>${esc(P(u.plan)?.name || '—')} <span class="mut">${ivlName(u.interval)}</span></td><td>${u.interval === 'lifetime' ? '—' : dt(u.period_end)}${u.cancel_at_end ? ' <span class="st warn">ends</span>' : ''}</td><td>${left(u)}</td><td>${u.paid ? eur(u.paid) : '—'}</td><td>${u.machines}</td><td>${ago(u.last_seen)}</td><td>${dt(u.created)}</td></tr>`).join('') || '<tr><td colspan="9" class="empty">Nobody here.</td></tr>'}
     </tbody></table>`;
 }
 async function admDelete(email, force) {
   const u = A.adm?.customers.find(x => x.email === email), paying = u && ['active', 'past_due'].includes(u.status);
-  if (!force && !(await confirmBox(`Delete ${email}?`, `<p>The account, its license key and payment records are removed for good. Their bridge stops working within 30 minutes.</p>${paying ? '<p style="margin-top:8px"><b>This is a paying customer.</b> Their Stripe subscription is cancelled right away (no refund is made automatically).</p>' : ''}<p style="margin-top:8px">This cannot be undone.</p>`, 'Delete for good', 'danger'))) return;
-  try {
-    const r = await fetch(SRV + '/api/admin/delete_user', { method: 'POST', headers: admHeaders(), body: JSON.stringify({ email, force: !!force }) });
-    const j = await r.json(); if (!r.ok) throw Object.assign(new Error(j.detail), { code: r.status });
-    toast(j.message, 'ok'); admLoad();
-  } catch (e) {
+  if (!force && !(await confirmBox(`Delete ${email}?`, `<p>The account, its license key and payment records are removed for good. Their bridge stops working within 30 minutes.</p>${paying ? '<p style="margin-top:8px"><b>This is a paying customer.</b> Their Stripe subscription is cancelled right away (no refund is made automatically).</p>' : ''}<p style="margin-top:8px">This cannot be undone. To stop someone without losing their history, use <b>Block</b> instead.</p>`, 'Delete for good', 'danger'))) return;
+  try { const j = await admApi('/api/admin/delete_user', { email, force: !!force }); toast(j.message, 'ok'); resolveModal(null); admLoad() }
+  catch (e) {
     if (e.code === 502 && await confirmBox('Stripe did not answer', `<p>${esc(e.message)}</p>`, 'Delete anyway', 'danger')) return admDelete(email, true);
     toast(e.message, 'err');
   }
 }
-async function admLoad() {
+// one admin action, then refresh the customer card and the list
+async function admAct(email, action, extra = {}, confirmText) {
+  if (confirmText && !(await confirmBox(confirmText[0], `<p>${confirmText[1]}</p>`, confirmText[2] || 'Confirm', confirmText[3] || 'acc'))) return admUser(email);
+  try {
+    const j = await admApi('/api/admin/action', { email, action, ...extra });
+    if (j.password) { await confirmBox('Temporary password', `<p>${esc(j.message.split(':')[0])}:</p><p style="margin-top:10px"><code class="pwbig">${esc(j.password)}</code></p><p class="mut" style="margin-top:8px">Copy it now: it is not shown again.</p>`, 'Copy & close'); navigator.clipboard?.writeText(j.password) }
+    else toast(j.message, 'ok', 6000);
+    await admLoad(true); if (action !== 'create') admUser(email);
+  } catch (e) { toast(e.message, 'err'); admUser(email) }
+}
+async function admUser(email) {
+  let u; try { u = await admApi('/api/admin/user?email=' + encodeURIComponent(email)) } catch (e) { return toast(e.message, 'err') }
+  A.admU = u; const now = Date.now() / 1000, lt = u.interval === 'lifetime';
+  const plans = Object.entries(u.plans_catalog), adds = Object.entries(u.addons_catalog || {});
+  const sec = (t, body) => `<div class="adsec"><h4>${t}</h4>${body}</div>`;
+  const kv = rows => `<div class="adkv">${rows.map(([k, v]) => `<span>${k}</span><b>${v}</b>`).join('')}</div>`;
+  const b = (act, label, tone = '', extra = '') => `<button class="btn sm ${tone}" data-ada="${act}" ${extra}>${label}</button>`;
+  const m = openModal(`<div class="adm-u">
+    <div class="adhead"><div><h3>${esc(u.email)}</h3><div class="adbadges">${u.banned ? '' : stPill(u)}${u.founding ? '<span class="tagx gold">founding</span>' : ''}${u.is_admin ? '<span class="tagx">admin</span>' : ''}${u.stripe ? '<span class="tagx">Stripe</span>' : '<span class="tagx">no Stripe</span>'}${u.banned ? `<span class="st bad">Blocked${u.ban_reason ? ': ' + esc(u.ban_reason) : ''}</span>` : ''}</div></div>
+      <span class="grow"></span><a class="btn sm" href="mailto:${esc(u.email)}">✉ Email</a><button class="btn sm ghost" onclick="resolveModal(null)">✕</button></div>
+    <div class="adgrid">
+      ${sec('Plan & access', kv([['Plan', `${esc(P(u.plan)?.name || '—')} ${ivlName(u.interval)}`], ['Status', STATUS[u.status]?.[0] || u.status], ['Ends', lt ? 'never' : dt(u.period_end) + (u.period_end ? ` (${Math.ceil((u.period_end - now) / 86400)} d)` : '')],
+          ['Paid in total', eur(u.paid || 0)], ['Paused until', u.paused_until > now ? dt(u.paused_until) : '—'], ['Joined', dt(u.created)]]) +
+        `<div class="adbtns">${b('plan', '⬆ Change plan', 'acc')}${b('extend7', '+7 days')}${b('extend30', '+30 days')}${b('extend', '+ days…')}${b('trial', 'Start trial')}${b('founding', u.founding ? 'Remove founding' : 'Make founding')}${u.stripe && !u.cancel_at_end ? b('cancel_stripe', 'Cancel at period end') : ''}${b('end', 'End access now', 'danger')}</div>`)}
+      ${sec('Account', kv([['Name', esc(u.name || '—')], ['Last seen (bridge)', ago(u.last_seen)], ['Referral code', esc(u.ref_code || '—')], ['Referred by', esc(u.referred_by_email || '—')]]) +
+        `<div class="adbtns">${b('rename', 'Rename')}${b('reset_password', 'Reset password')}${b(u.is_admin ? 'remove_admin' : 'make_admin', u.is_admin ? 'Remove admin' : 'Make admin')}${u.banned ? b('unban', 'Unblock', 'acc') : b('ban', '⛔ Block', 'danger')}${b('delete', '🗑 Delete', 'danger')}</div>`)}
+      ${sec(`License & PCs <small class="mut">(${Object.keys(u.machines_list).length})</small>`, `<div class="adlic"><code>${esc(u.license)}</code><button class="btn sm" data-adcopy="${esc(u.license)}">Copy</button>${b('new_license', 'New key')}</div>` +
+        (Object.entries(u.machines_list).map(([id, mm]) => `<div class="adrow"><span><b>${esc(mm.name || 'PC')}</b> <small class="mut">${esc(id.slice(0, 8))} · v${esc(mm.version || '?')} · ${ago(mm.last)}</small></span>${b('remove_pc', 'Remove', '', `data-k="${esc(id)}"`)}</div>`).join('') || '<div class="mut adempty">No PC linked yet.</div>'))}
+      ${sec('Add-ons', adds.map(([k, a]) => `<div class="adrow"><span><b>${esc(a.name)}</b> <small class="mut">${money2(a.price)}</small></span>${k in u.addons_full ? `<span class="st ok">✓ has it</span>${b('addon_remove', 'Remove', '', `data-k="${k}"`)}` : b('addon_grant', 'Give free', '', `data-k="${k}"`)}</div>`).join('') || '<div class="mut adempty">No add-ons configured.</div>')}
+      ${sec(`Payments <small class="mut">(${u.payments.length})</small>`, `<div class="adpay">${u.payments.map(p => `<div class="adrow"><span>${dt(p.ts)} · ${esc(p.descr)}</span><b class="${p.amount < 0 ? 'dn' : ''}">${eur(p.amount)}</b></div>`).join('') || '<div class="mut adempty">No payments.</div>'}</div>
+        <div class="adbtns">${b('payment', '+ Record payment')}${b('refund', '− Record refund')}</div>`)}
+      ${sec('Private note', `<textarea class="in adnote" id="adNote" placeholder="Only you see this. e.g. paid by bank, VIP, asked for a refund…">${esc(u.notes_text)}</textarea><div class="adbtns">${b('note', 'Save note', 'acc')}</div>`)}
+      ${u.referrals.length || u.lead ? sec('Referrals & lead', (u.referrals.length ? u.referrals.map(r => `<div class="adrow"><span>${esc(r.email)} <small class="mut">${dt(r.created)}</small></span>${r.ref_rewarded ? '<span class="st ok">paid</span>' : '<span class="st mute">not yet</span>'}</div>`).join('') : '') +
+        (u.lead ? `<div class="mut" style="margin-top:6px;font-size:12px">Came in as a lead (${esc(u.lead.source)}) on ${dt(u.lead.created)}</div>` : '')) : ''}
+      ${sec('History', `<div class="adlog">${u.log.map(l => `<div><small>${dt(l.ts)} ${new Date(l.ts * 1000).toTimeString().slice(0, 5)}</small> <b>${esc(l.action)}</b> ${esc(l.detail || '')} <span class="mut">by ${esc(l.admin)}</span></div>`).join('') || '<div class="mut">No admin actions yet.</div>'}</div>`)}
+    </div></div>`, true);
+  m.classList.add('admbox'); m.dataset.email = u.email;
+}
+async function admButton(a, el) {
+  const u = A.admU, email = u.email;
+  if (a === 'extend7' || a === 'extend30') return admAct(email, 'extend', { days: a === 'extend7' ? 7 : 30 });
+  if (a === 'delete') return admDelete(email);
+  if (a === 'note') return admAct(email, 'note', { text: $('#adNote').value });
+  if (a === 'remove_pc' || a === 'addon_grant' || a === 'addon_remove') return admAct(email, a, { key: el.dataset.k });
+  if (a === 'plan') {
+    const v = await formBox(`Change plan · ${email}`, [
+      { id: 'plan', label: 'Plan', type: 'select', value: u.plan || 'pro', options: Object.entries(u.plans_catalog) },
+      { id: 'interval', label: 'Billing', type: 'select', value: u.interval === 'year' ? 'year' : u.interval === 'lifetime' ? 'lifetime' : 'month', options: [['month', 'Monthly'], ['year', 'Yearly'], ['lifetime', 'Lifetime (never ends)']] },
+      { id: 'days', label: 'Access for how many days (empty = 30 / 365)', value: '', ph: 'e.g. 90' }], 'Set plan',
+      u.stripe ? '⚠ This customer pays through Stripe. This changes access here only: change or cancel their subscription in Stripe too.' : 'Manual change: nothing is charged. Record a payment below if they paid you another way.');
+    if (!v) return admUser(email);
+    return admAct(email, 'set_plan', { plan: v.plan, interval: v.interval, days: parseInt(v.days) || 0 });
+  }
+  if (a === 'extend' || a === 'trial') {
+    const v = await formBox(a === 'trial' ? 'Start a free trial' : 'Give extra days', [{ id: 'days', label: 'Days', value: a === 'trial' ? (A.plans?.trial_days || 7) : 14 }], a === 'trial' ? 'Start trial' : 'Add days');
+    if (!v) return admUser(email); return admAct(email, a, { days: parseInt(v.days) || 0 });
+  }
+  if (a === 'payment' || a === 'refund') {
+    const v = await formBox(a === 'refund' ? 'Record a refund' : 'Record a payment', [{ id: 'amount', label: 'Amount (EUR)', value: '' }, { id: 'text', label: 'What for', value: a === 'refund' ? 'Refund' : 'Bank transfer', text: true }],
+      'Save', a === 'refund' ? 'This only records it in your books. Do the actual refund in Stripe (or your bank).' : 'For money received outside Stripe (bank transfer, cash).');
+    if (!v) return admUser(email); const amt = Math.abs(parseFloat(String(v.amount).replace(',', '.')) || 0) * (a === 'refund' ? -1 : 1);
+    return admAct(email, 'payment', { amount: amt, text: v.text });
+  }
+  if (a === 'ban') {
+    const v = await formBox(`Block ${email}?`, [{ id: 'text', label: 'Reason (only you see it)', value: '', text: true, ph: 'e.g. chargeback, abuse, sharing the license' }], 'Block',
+      'They can\'t log in or sign up again with this email, and their bridge stops at its next check (within 30 minutes). Their history is kept; you can unblock any time.');
+    if (!v) return admUser(email); return admAct(email, 'ban', { text: v.text });
+  }
+  if (a === 'rename') { const v = await formBox('Name', [{ id: 'name', label: 'Name', value: u.name || '', text: true }], 'Save'); if (!v) return admUser(email); return admAct(email, 'rename', { name: v.name }) }
+  const confirmMap = {
+    end: ['End access now?', 'Their terminal locks right away. This does not cancel a Stripe subscription.', 'End access', 'danger'],
+    new_license: ['Make a new license key?', 'The old key stops working right away and every linked PC is removed. They need to download the bridge again.', 'New key', 'danger'],
+    reset_password: ['Reset the password?', 'You get a temporary password to send them. Their old password stops working.', 'Reset'],
+    make_admin: ['Give admin rights?', 'They will see the Admin page with all customers and money. Only for people you fully trust.', 'Make admin', 'danger'],
+    cancel_stripe: ['Cancel at the end of the period?', 'They keep access until the paid period ends, then it stops. Nothing is refunded.', 'Cancel at period end'],
+  };
+  return admAct(email, a, {}, confirmMap[a]);
+}
+async function admAdd() {
+  const v = await formBox('Add a customer by hand', [
+    { id: 'email', label: 'Email', value: '', text: true }, { id: 'name', label: 'Name (optional)', value: '', text: true },
+    { id: 'plan', label: 'Start with', type: 'select', value: '', options: [['', 'Free trial'], ...Object.entries(A.plans?.plans || {}).map(([k, p]) => [k, p.name + ' (active)'])] },
+    { id: 'days', label: 'Days of access', value: A.plans?.trial_days || 7 }], 'Create account', 'For someone who paid you another way, a partner or a tester. You get a temporary password to send them.');
+  if (!v) return;
+  try {
+    const j = await admApi('/api/admin/action', { email: v.email, action: 'create', plan: v.plan, days: parseInt(v.days) || 0, name: v.name });
+    await confirmBox('Account created', `<p>${esc(v.email)} can log in with this temporary password:</p><p style="margin-top:10px"><code class="pwbig">${esc(j.password)}</code></p><p class="mut" style="margin-top:8px">Copy it now: it is not shown again.</p>`, 'Copy & close');
+    navigator.clipboard?.writeText(j.password); admLoad();
+  } catch (e) { toast(e.message, 'err') }
+}
+async function admDownload(path, name) {
+  try { const r = await fetch(SRV + path, { headers: admHeaders() }); if (!r.ok) throw new Error('Download failed'); const u = URL.createObjectURL(await r.blob()), l = document.createElement('a'); l.href = u; l.download = name; l.click(); setTimeout(() => URL.revokeObjectURL(u), 2000) } catch (e) { toast(e.message, 'err') }
+}
+async function admTab(t) {
+  A.admTab = t; $$('[data-admtab]').forEach(b => b.classList.toggle('on', b.dataset.admtab === t));
+  $$('.admpane').forEach(p => p.style.display = p.dataset.pane === t ? '' : 'none');
+  if (t === 'customers') return;
+  const el = $(`.admpane[data-pane="${t}"]`); el.innerHTML = '<div class="empty">Loading…</div>';
+  let j; try { j = await admApi('/api/admin/activity') } catch (e) { el.innerHTML = `<div class="res on bad">${esc(e.message)}</div>`; return }
+  if (t === 'payments') {
+    const tot = j.payments.reduce((s, p) => s + p.amount, 0);
+    el.innerHTML = `<div class="mut" style="font-size:12.5px;margin-bottom:8px">Last ${j.payments.length} payments · ${eur(tot)}</div><table class="tbl2"><thead><tr><th>Date</th><th>Customer</th><th>What</th><th style="text-align:right">Amount</th></tr></thead><tbody>
+      ${j.payments.map(p => `<tr ${p.email ? `data-admu="${esc(p.email)}"` : ''}><td>${dt(p.ts)}</td><td>${esc(p.email || 'deleted')}</td><td>${esc(p.descr)}</td><td style="text-align:right;font-weight:800" class="${p.amount < 0 ? 'dn' : ''}">${eur(p.amount)}</td></tr>`).join('') || '<tr><td colspan="4" class="empty">No payments yet.</td></tr>'}</tbody></table>`;
+  } else if (t === 'leads') {
+    el.innerHTML = `<div class="adbtns" style="margin-bottom:10px"><button class="btn sm" data-act="admLeads">⤓ Leads CSV (for your email tool)</button></div><table class="tbl2"><thead><tr><th>Email</th><th>Came from</th><th>Their numbers</th><th>Became a customer</th><th>Date</th></tr></thead><tbody>
+      ${j.leads.map(l => { let d = {}; try { d = JSON.parse(l.data || '{}') } catch {} return `<tr ${l.customer ? `data-admu="${esc(l.email)}"` : ''}><td>${esc(l.email)}</td><td>${esc(l.source)}</td><td class="mut">${d.bal ? `$${Number(d.bal).toLocaleString()} · ${d.risk}% · limit ${d.dl}%` : '—'}</td><td>${l.customer ? '<span class="st ok">yes</span>' : '<span class="st mute">not yet</span>'}</td><td>${dt(l.created)}</td></tr>` }).join('') || '<tr><td colspan="5" class="empty">No leads yet.</td></tr>'}</tbody></table>`;
+  } else {
+    el.innerHTML = `<div class="adlog big">${j.log.map(l => `<div><small>${dt(l.ts)} ${new Date(l.ts * 1000).toTimeString().slice(0, 5)}</small> <b>${esc(l.action)}</b> <a href="#" data-admu="${esc(l.target)}">${esc(l.target)}</a> ${esc(l.detail || '')} <span class="mut">by ${esc(l.admin)}</span></div>`).join('') || '<div class="mut">Nothing yet. Every admin action is written here.</div>'}</div>`;
+  }
+}
+async function admLoad(quiet) {
   const tok = $('#admTok') ? $('#admTok').value.trim() : store.get('saasAdmin', ''); if ($('#admTok')) store.set('saasAdmin', tok);
   try {
     const r = await fetch(SRV + '/api/admin/overview', { headers: admHeaders(tok) }); const j = await r.json();
@@ -2208,16 +2772,36 @@ async function admLoad() {
         if (c.ok) { setMe(await srv('/api/me')); toast('Your account is now an admin account: log in anywhere to open Admin.', 'ok', 7000); return renderAdmin() }
       } catch {}
     }
+    A.adm = j;
+    if (quiet && $('#admT')) return admTable();
     const c = j.counts, conv = (c.active + c.past_due) / Math.max(1, j.customers.length) * 100;
     $('#adm').innerHTML = `<div class="g"><div class="g g4 kps">
       ${[['MRR', eur(j.mrr)], ['ARR', eur(j.arr)], ['Revenue 30 days', eur(j.revenue_30d)], ['Paying customers', c.active + c.past_due], ['In trial', c.trialing], ['Sign-ups 30 days', j.signups_30d], ['Trial → paid', conv.toFixed(0) + '%'], ['Churned / expired', c.expired + c.canceled]]
         .map(([k, v]) => `<div class="kp"><small>${k}</small><b>${v}</b></div>`).join('')}</div>
-      <div class="box"><h3>Customers <span class="grow"></span><span class="mut" style="font-size:12px" id="admN"></span></h3>
-        <div class="seg" id="admF" style="margin-bottom:12px;flex-wrap:wrap;width:max-content;max-width:100%">${ADMF.map(([k, t, fn]) => `<button data-admf="${k}" class="${A.admF === k ? 'on' : ''}">${t} <span class="mut">${j.customers.filter(fn).length}</span></button>`).join('')}</div>
-        <div class="tscroll" id="admT"></div></div></div>`;
-    A.adm = j; admTable(); renderNav('admin');
+      <div class="box"><h3>Funnel</h3>
+        <div class="g g4 kps">${[['Rulebook leads', j.leads ?? 0], ['Leads 30 days', j.leads_30d ?? 0], ['Lead → sign-up', j.leads ? Math.round(j.customers.length / Math.max(1, j.leads) * 100) + '%' : '—'],
+          ['Founding seats left', j.founding ? `${j.founding.left} / ${j.founding.seats}` : '—'], ['Lifetime left', j.founding ? `${j.founding.lifetime_left} / ${j.founding.lifetime_seats}` : '—'], ['Founding closes', j.founding?.ends || 'no date set']]
+          .map(([k, v]) => `<div class="kp"><small>${k}</small><b>${v}</b></div>`).join('')}</div></div>
+      <div class="box">
+        <div class="admtop"><div class="seg admtabs">${[['customers', '👥 Customers'], ['leads', '📄 Leads'], ['payments', '💶 Payments'], ['log', '🕑 Admin log']].map(([k, t]) => `<button data-admtab="${k}" class="${(A.admTab || 'customers') === k ? 'on' : ''}">${t}</button>`).join('')}</div><span class="grow"></span>
+          <button class="btn sm acc" data-act="admAdd">＋ Add customer</button><button class="btn sm" data-act="admCsv">⤓ Customers CSV</button></div>
+        <div class="admpane" data-pane="customers">
+          <div class="admbar"><input class="in" id="admQ" placeholder="Search email or name…" value="${esc(A.admQ || '')}"><span class="mut" style="font-size:12px" id="admN"></span></div>
+          <div class="seg" id="admF" style="margin-bottom:12px;flex-wrap:wrap;width:max-content;max-width:100%">${ADMF.map(([k, t, fn]) => `<button data-admf="${k}" class="${A.admF === k ? 'on' : ''}">${t} <span class="mut">${j.customers.filter(fn).length}</span></button>`).join('')}</div>
+          <p class="mut" style="font-size:12px;margin:-4px 0 8px">Click a customer to upgrade, extend, block, reset, record payments, add notes or delete.</p>
+          <div class="tscroll" id="admT"></div></div>
+        <div class="admpane" data-pane="leads" style="display:none"></div><div class="admpane" data-pane="payments" style="display:none"></div><div class="admpane" data-pane="log" style="display:none"></div>
+      </div></div>`;
+    admTable(); renderNav('admin'); if (A.admTab && A.admTab !== 'customers') admTab(A.admTab);
   } catch (e) { $('#adm').innerHTML = `<div class="res on bad">${esc(e.message)}</div>` }
 }
+document.addEventListener('input', e => { if (e.target.id === 'admQ') { A.admQ = e.target.value; admTable() } });
+document.addEventListener('click', e => {
+  const r = e.target.closest('[data-admu]'); if (r && $('#view').dataset.v === 'admin') { e.preventDefault(); return admUser(r.dataset.admu) }
+  const ad = e.target.closest('[data-ada]'); if (ad) return admButton(ad.dataset.ada, ad);
+  const tb = e.target.closest('[data-admtab]'); if (tb) return admTab(tb.dataset.admtab);
+  const cp = e.target.closest('[data-adcopy]'); if (cp) { navigator.clipboard?.writeText(cp.dataset.adcopy); return toast('Copied', 'ok') }
+});
 
 /* ---------------------------------------------------------------- legal placeholders */
 const LEGAL = {
@@ -2231,7 +2815,6 @@ document.addEventListener('click', async e => {
   const cta = e.target.closest('[data-cta]'); if (cta) track('cta_click', { id: cta.dataset.cta }); // analytics hook
   const of = e.target.closest('[data-offer]'); if (of) { if (of.dataset.offer === 'no') return resolveModal(null); return offerAction(of.dataset.offer) }
   const af = e.target.closest('[data-admf]'); if (af) { A.admF = af.dataset.admf; return admTable() }
-  const ad = e.target.closest('[data-admdel]'); if (ad) return admDelete(ad.dataset.admdel);
   const z = e.target.closest('[data-zoom]');
   const tr = e.target.closest('[data-tour]'); if (tr) { e.preventDefault(); return document.getElementById('tour' + tr.dataset.tour)?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }
   if (z) { const m = openModal(`<img src="${z.dataset.zoom}" alt="">`, true); m.classList.add('shotbox'); return }
@@ -2240,7 +2823,7 @@ document.addEventListener('click', async e => {
   if (t.dataset.buy) return buy(t.dataset.buy, t.dataset.bivl);
   if (t.dataset.acctrm) { if (!(await confirmBox('Remove this account?', '<p>It disappears from the terminal. You can add it again any time.</p>', 'Remove', 'danger'))) return; try { await bridge('/api/accounts/remove', { login: +t.dataset.acctrm }); toast('Account removed', 'ok'); loadAccts() } catch (err) { toast(err.message, 'err') } return }
   if (t.dataset.tstate) { try { setMe(await srv('/api/test/state', { state: t.dataset.tstate })); toast('Account is now: ' + t.textContent, 'ok'); $('#view').dataset.v = ''; route() } catch (err) { toast(err.message, 'err') } return }
-  if (t.dataset.ivl) { A.interval = t.dataset.ivl; store.set('saasIvl', A.interval); $$('[data-ivl]').forEach(b => b.classList.toggle('on', b.dataset.ivl === A.interval)); $('#plans').innerHTML = $('.lp') ? lpPlans() : ['starter', 'pro', 'elite'].map(k => priceCard(k)).join(''); return }
+  if (t.dataset.ivl) { A.interval = t.dataset.ivl; store.set('saasIvl', A.interval); $$('[data-ivl]').forEach(b => b.classList.toggle('on', b.dataset.ivl === A.interval)); $('#plans').innerHTML = $('.lp') ? lpPlans() : ['starter', 'pro', 'elite'].filter(k => !P(k)?.hidden || SUB().plan === k).map(k => priceCard(k)).join(''); return }
   if (t.dataset.sw) { resolveModal(null); location.hash = t.dataset.sw; return }
   if (t.dataset.themeSet) { CFG.theme = t.dataset.themeSet; saveCfg(); applyTheme(); $('#view').dataset.v = ''; return route() }
   if (t.dataset.copy) { navigator.clipboard?.writeText($('#cfgEx').textContent); return toast('Copied', 'ok') }
@@ -2269,13 +2852,17 @@ document.addEventListener('click', async e => {
   if (a === 'cancelSub') return downsellCancel();
   if (a === 'resume') { try { setMe(await srv('/api/billing/resume', {})); renderBilling(); toast('Subscription resumed', 'ok') } catch (err) { toast(err.message, 'err') } return }
   if (a === 'admLoad') return admLoad();
+  if (a === 'admAdd') return admAdd();
+  if (a === 'admCsv') return admDownload('/api/admin/customers.csv', 'goldmine-customers.csv');
+  if (a === 'admLeads') { try { const r = await fetch(SRV + '/api/admin/leads', { headers: admHeaders() }); if (!r.ok) throw new Error('Could not load leads'); const u = URL.createObjectURL(await r.blob()), l = document.createElement('a'); l.href = u; l.download = 'goldmine-leads.csv'; l.click(); setTimeout(() => URL.revokeObjectURL(u), 2000) } catch (err) { toast(err.message, 'err') } return }
 });
 
 // Same as PLANS in saas/license_server.py: used only when the server can't be reached, so visitors still see the full page.
-const OFFLINE_PLANS = { offline: true, trial_days: 7, trial_plan: 'pro', test_mode: false, currency: 'EUR', plans: {
-  starter: { name: 'Starter', month: 4.99, year: 49, regular: 29, accounts: 1, machines: 1, features: ['terminal', 'journal', 'alerts', 'drawings'], blurb: 'One MT5 account, the full terminal and the journal.' },
-  pro: { name: 'Pro', month: 9.99, year: 99, regular: 59, lifetime: 249, accounts: 5, machines: 2, features: ['terminal', 'journal', 'alerts', 'drawings', 'layers', 'basket', 'manage', 'paper', 'copy'], blurb: 'Five accounts, layers, basket BE, trade manager, paper accounts and copy trading.' },
-  elite: { name: 'Elite', month: 19.99, year: 199, regular: 119, accounts: 25, machines: 3, features: ['terminal', 'journal', 'alerts', 'drawings', 'layers', 'basket', 'manage', 'paper', 'copy', 'priority'], blurb: 'For prop traders and small teams: 25 accounts, 3 PCs, priority support.' } } };
+const OFFLINE_PLANS = { offline: true, trial_days: 7, trial_plan: 'pro', test_mode: false, currency: 'EUR', guarantee_days: 30, trial_card: false,
+  founding: { plan: 'pro', month: 19, year: 147, seats: 100, left: 100, open: true, ends: '', lifetime_left: 50, lifetime_seats: 50 }, plans: {
+  starter: { name: 'Starter', month: 9, year: 90, hidden: true, accounts: 1, machines: 1, features: ['terminal', 'journal', 'alerts', 'drawings'], blurb: 'One MT5 account, the full terminal and the journal.' },
+  pro: { name: 'Pro', month: 29, year: 197, lifetime: 497, accounts: 5, machines: 2, features: ['terminal', 'journal', 'alerts', 'drawings', 'layers', 'basket', 'manage', 'paper', 'copy'], blurb: 'Everything to size, manage and protect your trades. Five MT5 accounts.' },
+  elite: { name: 'Elite', month: 59, year: 590, accounts: 25, machines: 3, features: ['terminal', 'journal', 'alerts', 'drawings', 'layers', 'basket', 'manage', 'paper', 'copy', 'priority'], blurb: 'For many accounts and small teams: 25 accounts, 3 PCs, priority support.' } } };
 function noServer() { // nothing answered: say exactly what to start, instead of a vague error
   const mine = /^(127\.0\.0\.1|localhost)$/.test(location.hostname) || location.protocol === 'file:';
   if (!mine) return; // public visitors just see the page; sign-up explains itself

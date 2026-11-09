@@ -1,0 +1,1295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Goldmine Pro · Scale in, protect and exit MT5 trades in one click</title>
+<meta name="description" content="Web terminal for MetaTrader 5: layered entries sized by risk, basket break-even, close the worst positions, drag SL/TP on the chart and an automatic trading journal. Any MT5 broker. 7 days free, no card.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Goldmine Pro · Scale in. Protect. Exit. All in one click.">
+<meta property="og:description" content="The MT5 terminal for traders who stack positions: layers by risk, basket break-even, close the worst entries, automatic journal. 7 days free.">
+<meta property="og:image" content="lp-basket.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1e9a65">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Goldmine Pro","applicationCategory":"FinanceApplication","operatingSystem":"Windows, Web",
+"description":"Web terminal for MetaTrader 5 with layered entries sized by risk, basket break-even, trade manager and an automatic trading journal.",
+"offers":[{"@type":"Offer","name":"Starter","price":"4.99","priceCurrency":"EUR"},{"@type":"Offer","name":"Pro","price":"9.99","priceCurrency":"EUR"},{"@type":"Offer","name":"Elite","price":"19.99","priceCurrency":"EUR"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Which brokers work?","acceptedAnswer":{"@type":"Answer","text":"Any broker that offers MetaTrader 5. MetaTrader 4 is not supported."}},
+{"@type":"Question","name":"Is my account safe?","acceptedAnswer":{"@type":"Answer","text":"Your MT5 password stays on your own computer and is never sent to us. Goldmine never places a trade by itself."}},
+{"@type":"Question","name":"What happens after the free trial?","acceptedAnswer":{"@type":"Answer","text":"No card is asked for the trial, so nothing is charged automatically. Pick a plan to keep going."}}]}</script>
+<link rel="stylesheet" href="gp-theme.css?v=20261109e">
+<script src="gp-shared.js?v=20261109e"></script>
+<script>document.documentElement.dataset.theme = 'light' // the website is always light (it has its own dark section); the terminal keeps its own theme</script>
+<style>
+html,body{overflow:auto;height:auto}
+body{background:var(--bg);min-height:100vh}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.grow{flex:1}
+
+/* test-mode ribbon */
+#ribbon{display:none;background:repeating-linear-gradient(-45deg,#fff4dc,#fff4dc 12px,#ffefcc 12px,#ffefcc 24px);color:#8a5a00;font-size:12px;font-weight:700;text-align:center;padding:6px 12px;border-bottom:1px solid #f1d9a6}
+:root[data-theme=dark] #ribbon,:root[data-theme=midnight] #ribbon{background:#3b301a;color:#f0c46b;border-color:#5a4826}
+#ribbon.on{display:block}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:6px;height:62px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.02em;text-decoration:none;margin-right:14px;white-space:nowrap}
+.brand svg{width:28px;height:28px}
+.brand span{font-size:9.5px;font-weight:800;color:var(--acc);background:var(--accbg);padding:2px 6px;border-radius:5px;letter-spacing:.08em}
+.nl{height:34px;padding:0 12px;border-radius:9px;display:inline-flex;align-items:center;font-weight:700;font-size:13px;color:var(--mut);text-decoration:none;white-space:nowrap}
+.nl:hover,.nl.on{color:var(--text);background:var(--hover)}
+.btn.lg{height:44px;padding:0 20px;font-size:14px;border-radius:12px}
+.btn.md{height:36px;padding:0 15px;font-size:13px;border-radius:10px}
+#acctBtn{display:flex;align-items:center;gap:8px;height:36px;padding:0 6px 0 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);font-weight:700;font-size:12.5px}
+#acctBtn i{width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--acctx);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px}
+.burger{display:none}
+
+/* landing */
+.hero{padding:64px 0 28px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:-40% -10% auto;height:620px;background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,#f5b73b 22%,transparent),transparent 60%),radial-gradient(ellipse at 20% 60%,color-mix(in srgb,var(--acc) 16%,transparent),transparent 55%);pointer-events:none;z-index:-1}
+.pill{display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:2px 8px;min-height:30px;padding:5px 14px;max-width:100%;line-height:1.35;text-align:center;border-radius:30px;border:1px solid var(--line);background:var(--panel);font-size:12px;font-weight:700;color:var(--mut)}
+.pill b{color:var(--acc);white-space:nowrap}
+@media (max-width:560px){.hero .pill{border-radius:14px;padding:7px 14px;font-size:11.5px}.hero .pill b{flex-basis:100%}}
+.hero h1{font-size:clamp(34px,5.6vw,62px);line-height:1.04;letter-spacing:-.035em;font-weight:850;margin:18px auto 16px;max-width:880px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#e0960c,#f5b73b 40%,var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.sub{font-size:clamp(15px,1.8vw,18px);color:var(--mut);max-width:640px;margin:0 auto 26px;line-height:1.55}
+.cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.trust{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:18px;font-size:12.5px;color:var(--mut);font-weight:600}
+.trust span::before{content:'✓ ';color:var(--acc);font-weight:800}
+.shot{margin:42px auto 0;max-width:1120px;border-radius:16px;border:1px solid var(--line2);background:var(--panel);box-shadow:0 40px 90px -30px rgba(20,30,25,.35),var(--shadow);overflow:hidden;position:relative}
+.shot .bar{height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.shot .bar i{width:10px;height:10px;border-radius:50%;background:var(--line2)}
+.shot .bar i:nth-child(1){background:#ff6058}.shot .bar i:nth-child(2){background:#ffbd2e}.shot .bar i:nth-child(3){background:#28c941}
+.shot .bar span{margin:0 auto;font-size:11.5px;color:var(--mut);font-weight:600;background:var(--panel);border:1px solid var(--line);padding:3px 40px;border-radius:7px}
+.shot .vp{position:relative;overflow:hidden}
+.shot iframe{position:absolute;left:0;top:0;width:1440px;height:880px;border:0;transform-origin:0 0;pointer-events:none}
+.shot .live{position:absolute;right:14px;bottom:14px;z-index:2;background:var(--panel);border:1px solid var(--line);border-radius:30px;padding:6px 12px;font-size:11.5px;font-weight:800;box-shadow:var(--shadow)}
+.shot .live::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:#2fd08a;margin-right:6px;animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.shot .try{position:absolute;inset:34px 0 0;z-index:3;display:grid;place-items:center;background:rgba(0,0,0,0);transition:background .2s;cursor:pointer}
+.shot .try b{opacity:0;transform:translateY(6px);transition:.2s;background:var(--acc);color:var(--acctx);padding:12px 20px;border-radius:12px;font-size:14px;box-shadow:var(--shadow)}
+.shot .try:hover{background:rgba(10,14,12,.18)}.shot .try:hover b{opacity:1;transform:none}
+
+section.blk{padding:80px 0}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);text-align:center}
+h2.tt{font-size:clamp(26px,3.6vw,40px);letter-spacing:-.03em;font-weight:850;text-align:center;margin:10px auto 12px;max-width:760px;line-height:1.1}
+p.lead{color:var(--mut);text-align:center;max-width:640px;margin:0 auto 40px;font-size:15.5px;line-height:1.55}
+.feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.feat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;transition:transform .15s,border-color .15s}
+.feat:hover{transform:translateY(-2px);border-color:var(--line2)}
+.feat .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:19px;background:var(--accbg);margin-bottom:14px}
+.feat h4{font-size:15.5px;margin-bottom:6px;letter-spacing:-.01em}
+.feat p{color:var(--mut);font-size:13.5px;line-height:1.55}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;counter-reset:s}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;position:relative}
+.step::before{counter-increment:s;content:counter(s);position:absolute;right:18px;top:14px;font-size:44px;font-weight:900;color:var(--line)}
+.step h4{font-size:15.5px;margin:4px 0 6px}.step p{color:var(--mut);font-size:13.5px;line-height:1.55}
+.sec{display:grid;grid-template-columns:1.1fr 1fr;gap:30px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:34px}
+.sec h3{font-size:24px;letter-spacing:-.02em;margin-bottom:10px}
+.sec ul{list-style:none;display:grid;gap:10px;margin-top:14px}
+.sec li{font-size:14px;color:var(--text);display:flex;gap:10px}.sec li::before{content:'🔒'}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:13px}
+.flow div{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px}
+.flow div small{display:block;color:var(--mut);font-weight:600;font-size:11px;margin-top:3px}
+.flow s{text-decoration:none;color:var(--mut)}
+
+/* pricing */
+.ivl{display:flex;justify-content:center;margin:-16px 0 26px}
+.ivl .seg button{height:34px;padding:0 16px;font-size:13px}
+.ivl em{font-style:normal;color:var(--acc);font-size:11px;margin-left:4px}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
+.plan{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;position:relative}
+.plan.best{border:2px solid var(--acc);box-shadow:0 24px 60px -30px color-mix(in srgb,var(--acc) 60%,transparent)}
+.plan .tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--acc);color:var(--acctx);font-size:11px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:.04em;white-space:nowrap}
+.plan h4{font-size:17px}.plan .bl{color:var(--mut);font-size:13px;margin:6px 0 16px;min-height:38px;line-height:1.45}
+.plan .pr{display:flex;align-items:baseline;gap:4px;margin-bottom:4px}.plan .pr b{font-size:40px;letter-spacing:-.04em;font-weight:850}.plan .pr span{color:var(--mut);font-weight:600}
+.plan .eq{font-size:12px;color:var(--mut);min-height:18px;margin-bottom:16px}
+.plan ul{list-style:none;display:grid;gap:9px;margin:18px 0 0;font-size:13.5px}
+.plan li{display:flex;gap:9px}.plan li::before{content:'✓';color:var(--acc);font-weight:900}
+.plan li.no{color:var(--dim)}.plan li.no::before{content:'–';color:var(--dim)}
+.plan .btn{width:100%}
+.plan.cur{outline:2px dashed var(--accline);outline-offset:4px}
+.faq{max-width:780px;margin:0 auto;display:grid;gap:10px}
+.faq details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.faq summary{cursor:pointer;font-weight:800;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.faq summary::after{content:'+';color:var(--mut);font-size:18px;line-height:1}
+.faq details[open] summary::after{content:'–'}
+.faq p{color:var(--mut);font-size:13.5px;line-height:1.6;margin-top:10px}
+.final{background:linear-gradient(135deg,#1b2a22,#10141c);color:#fff;border-radius:22px;padding:48px 30px;text-align:center}
+.final h2{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.03em;margin-bottom:10px}
+.final p{color:#b8c2bd;margin-bottom:22px}
+footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--mut);font-size:12px;line-height:1.6}
+footer .row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+footer a{color:var(--mut);text-decoration:none;font-weight:600}footer a:hover{color:var(--text)}
+
+/* app pages */
+.page{padding:28px 0 60px}
+.ph{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.ph h1{font-size:26px;letter-spacing:-.03em}.ph p{color:var(--mut);font-size:13.5px;margin-top:4px}
+.g{display:grid;gap:14px}.g2{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;min-width:0}
+.box h3{font-size:14.5px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.box h3 .grow+*{font-weight:600}
+.st{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:20px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.st.ok{background:var(--upbg);color:var(--up)}.st.warn{background:#fff1d6;color:#a86a00}.st.bad{background:var(--dnbg);color:var(--dn)}.st.mute{background:var(--panel2);color:var(--mut)}
+:root[data-theme=dark] .st.warn,:root[data-theme=midnight] .st.warn{background:#4a3a1c;color:#f0c46b}
+.subhero{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.subhero .big{font-size:30px;font-weight:850;letter-spacing:-.03em}
+.bar2{height:8px;border-radius:8px;background:var(--panel2);overflow:hidden;margin-top:10px}.bar2 i{display:block;height:100%;background:var(--acc);border-radius:8px}
+.check{display:grid;gap:8px}
+.ck{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.ck i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:12px;border:2px solid var(--line2);color:var(--mut);flex:none}
+.ck.done i{background:var(--acc);border-color:var(--acc);color:var(--acctx)}
+.ck b{font-size:13.5px}.ck small{display:block;color:var(--mut);font-size:12px;font-weight:500}
+.ck .btn{margin-left:auto}
+.key{display:flex;gap:6px;align-items:center}
+.key code{flex:1;min-width:0;font:700 15px ui-monospace,Consolas,monospace;letter-spacing:.06em;background:var(--panel2);border:1px dashed var(--line2);border-radius:10px;padding:11px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mlist{display:grid;gap:6px;margin-top:10px}
+.mrow{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:9px 10px;border:1px solid var(--line);border-radius:10px}
+.mrow small{color:var(--mut)}
+.lim{display:grid;grid-template-columns:1fr auto;gap:8px 12px;font-size:13px}.lim span{color:var(--mut)}.lim b{text-align:right}
+.flist{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.flist span{font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);color:var(--mut)}
+.flist span.on{background:var(--accbg);color:var(--acc);border-color:transparent}
+.wz{display:grid;gap:12px}
+.wstep{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px}
+.wstep .n{width:36px;height:36px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font-weight:900;color:var(--mut)}
+.wstep.done .n{background:var(--acc);color:var(--acctx);border-color:transparent}
+.wstep h4{font-size:15px;margin-bottom:4px}.wstep p{color:var(--mut);font-size:13px;line-height:1.55}
+pre.code{background:#121815;color:#d5e3db;border-radius:12px;padding:14px;font:12px/1.55 ui-monospace,Consolas,monospace;overflow:auto;margin-top:10px;position:relative}
+pre.code .cp{position:absolute;right:8px;top:8px}
+.frm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.frm label{display:grid;gap:5px;font-size:11.5px;font-weight:700;color:var(--mut)}
+input.in{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);padding:0 12px;font-size:14px;color:var(--text);width:100%}
+input.in:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--accbg)}
+.res{margin-top:12px;font-size:13px;border-radius:10px;padding:10px 12px;display:none}
+.res.on{display:block}.res.ok{background:var(--upbg);color:var(--up)}.res.bad{background:var(--dnbg);color:var(--dn)}.res.warn{background:#fff1d6;color:#8a5a00}
+.tbl2{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl2 th{text-align:left;color:var(--mut);font-weight:700;font-size:11px;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl2 td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tscroll{overflow-x:auto}
+.empty{color:var(--mut);font-size:13px;padding:14px 0}
+.kp{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kp small{color:var(--mut);font-size:11.5px;font-weight:700}.kp b{display:block;font-size:24px;letter-spacing:-.03em;margin-top:4px;font-weight:850}
+
+/* terminal page */
+#termWrap{position:fixed;inset:0;z-index:40;display:none;flex-direction:column;background:var(--bg)}
+#termWrap.on{display:flex}
+#termBar{height:38px;display:flex;align-items:center;gap:10px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line);font-size:12px;font-weight:700}
+#termBar a{text-decoration:none}
+#termWrap iframe{flex:1;border:0;width:100%}
+.paywall{max-width:520px;margin:60px auto;text-align:center}
+.paywall .ic{font-size:44px}
+
+/* auth */
+.auth{width:min(420px,100%)}
+.auth h3{font-size:22px;letter-spacing:-.02em;margin-bottom:4px}
+.auth p{color:var(--mut);font-size:13px;margin-bottom:16px}
+.auth label{display:grid;gap:5px;font-size:11.5px;font-weight:700;color:var(--mut);margin-bottom:10px}
+.auth .btn{width:100%;margin-top:6px}
+.auth .sw{text-align:center;font-size:12.5px;color:var(--mut);margin-top:14px}.auth .sw a{color:var(--acc);font-weight:800;cursor:pointer}
+.auth .err{color:var(--dn);font-size:12.5px;font-weight:700;min-height:18px;margin-top:6px}
+.menu{position:absolute;right:0;top:44px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;min-width:220px;z-index:60;display:none}
+.menu.on{display:block}
+.menu button,.menu a{display:flex;width:100%;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;text-align:left}
+.menu button:hover,.menu a:hover{background:var(--hover)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:5px 0}
+.menu .who{padding:8px 10px;font-size:12px;color:var(--mut)}
+.menu .seg{margin:4px 6px}
+
+.wstep ol.sub{margin:8px 0 0 18px;display:grid;gap:7px;font-size:13.5px;line-height:1.55;color:var(--text)}
+.wstep ol.sub li::marker{color:var(--acc);font-weight:800}
+.wstep ol.sub small{color:var(--mut)}
+.wstep code,.faq code{font:12px ui-monospace,Consolas,monospace;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.term{margin-top:12px;background:#0c1220;border-radius:10px;padding:26px 14px 12px;position:relative;overflow:auto}
+.term i{position:absolute;top:9px;width:9px;height:9px;border-radius:50%;background:#ff6058}.term i:nth-child(1){left:12px}.term i:nth-child(2){left:26px;background:#ffbd2e}.term i:nth-child(3){left:40px;background:#28c941}
+.term pre{color:#c9d4e3;font:11.5px/1.6 ui-monospace,Consolas,monospace;margin:0;white-space:pre}.term pre b{color:#4ade80}
+.livechip{margin-top:12px;display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;font-size:12.5px;font-weight:700;background:#fff1d6;color:#8a5a00}
+.livechip.ok{background:var(--upbg);color:var(--up)}.livechip.bad{background:var(--dnbg);color:var(--dn)}
+:root[data-theme=dark] .livechip:not(.ok):not(.bad),:root[data-theme=midnight] .livechip:not(.ok):not(.bad){background:#4a3a1c;color:#f0c46b}
+.box.pre{margin-bottom:14px}.chk3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.chk3 div{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}.chk3 b{display:block;font-size:13px;margin-bottom:4px}.chk3 small{color:var(--mut);font-size:12px;line-height:1.5}
+.chk3 a,.faq a{color:var(--acc);font-weight:700}
+.livecard{border:2px solid var(--orange)}.livecard p{color:var(--mut);font-size:13.5px;line-height:1.55}
+.livecard .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.livecard .cols>div{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:6px;align-content:start}
+.livecard .cols small{color:var(--mut);font-size:12px;line-height:1.5}.livecard .cols .btn{justify-self:start;margin-top:4px}
+@media (max-width:700px){.chk3,.livecard .cols{grid-template-columns:minmax(0,1fr)}}/* conversion page sections */
+.announce{display:block;text-align:center;padding:9px 16px;font-size:13px;background:linear-gradient(90deg,#1b2a22,#24382d);color:#e9f5ee;text-decoration:none}
+.announce b{color:#f5c25b}.announce u{text-underline-offset:3px;color:#fff;font-weight:700}
+.hero h1 br{display:block}
+.facts{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel)}
+.facts .wrap{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0}
+.facts .wrap>div{padding:18px 14px;display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;border-left:1px solid var(--line)}
+.facts .wrap>div:first-child{border-left:0}
+.facts span{grid-row:1/3;font-size:22px}.facts b{font-size:13px}.facts small{color:var(--mut);font-size:11.5px}
+.pains{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.pain{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;border-top:3px solid var(--dn)}
+.pain span{font-size:24px}.pain h4{font-size:15px;margin:10px 0 6px}.pain p{color:var(--mut);font-size:13.5px;line-height:1.55}
+.punch{text-align:center;font-size:17px;margin-top:30px;color:var(--mut)}.punch b{color:var(--text)}
+.outgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:30px}
+.out{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px}
+.out>b{font-size:13px;color:var(--acc);letter-spacing:.1em}.out h4{font-size:19px;letter-spacing:-.02em;margin:10px 0 8px;line-height:1.25}.out p{color:var(--mut);font-size:14px;line-height:1.6}
+.cmpw{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.cmp{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+.cmp th,.cmp td{padding:13px 16px;border-bottom:1px solid var(--line);text-align:center}
+.cmp th{font-size:12.5px;color:var(--mut);font-weight:800}.cmp td:first-child,.cmp th:first-child{text-align:left}
+.cmp .us{background:color-mix(in srgb,var(--acc) 8%,transparent);color:var(--text);font-weight:800}
+.cmp th.us{color:var(--acc)}.cmp tr:last-child td{border-bottom:0}
+.cmp i{font-style:normal;font-weight:900;font-size:16px}.cmp i.y{color:var(--up)}.cmp i.n{color:var(--dn)}.cmp i.h{color:var(--orange)}
+.plan .was{font-size:13px;color:var(--mut);margin-bottom:2px}.plan .was s{font-weight:700}.plan .was span{color:var(--up);font-weight:800;font-size:11.5px;background:var(--upbg);padding:2px 7px;border-radius:20px;margin-left:4px}
+.rr{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px;margin-top:24px;font-size:13px;font-weight:700;color:var(--mut)}
+.show.noimg .shotf{display:none}.show.noimg{grid-template-columns:minmax(0,1fr)}
+.stickycta{display:none}
+@media (max-width:900px){.facts .wrap{grid-template-columns:repeat(2,minmax(0,1fr))}.facts .wrap>div{border-left:0;border-bottom:1px solid var(--line)}.pains,.outgrid{grid-template-columns:minmax(0,1fr)}
+  .stickycta{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;align-items:center;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line2);box-shadow:0 -10px 30px rgba(0,0,0,.08);transform:translateY(110%);transition:transform .25s}
+  .stickycta.on{transform:none}.stickycta div{flex:1;min-width:0}.stickycta b{display:block;font-size:14px}.stickycta small{color:var(--mut);font-size:11.5px}}
+@media (max-width:560px){.facts .wrap{grid-template-columns:minmax(0,1fr)}.hero h1 br{display:none}}
+/* feature showcase with real screenshots */
+.show{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:44px;align-items:center;margin:0 0 72px}
+.show.rev .shotf{order:2}
+.shotf{position:relative;border-radius:14px;border:1px solid var(--line2);background:var(--panel);overflow:hidden;box-shadow:0 30px 70px -30px rgba(20,30,25,.35),var(--shadow);cursor:zoom-in;transition:transform .2s}
+.shotf:hover{transform:translateY(-3px)}
+.shotf .bar{height:24px;display:flex;align-items:center;gap:6px;padding:0 10px;background:var(--panel2);border-bottom:1px solid var(--line)}
+.shotf .bar i{width:8px;height:8px;border-radius:50%;background:#ff6058}.shotf .bar i:nth-child(2){background:#ffbd2e}.shotf .bar i:nth-child(3){background:#28c941}
+.shotf img{display:block;width:100%;height:auto}
+.shotf .zoom{position:absolute;right:10px;bottom:10px;background:rgba(17,24,20,.75);color:#fff;font-size:11px;font-weight:700;padding:5px 9px;border-radius:8px;opacity:0;transition:opacity .2s}
+.shotf:hover .zoom{opacity:1}
+.show .txt .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:21px;background:var(--accbg);margin-bottom:14px}
+.show .txt h3{font-size:clamp(21px,2.4vw,27px);letter-spacing:-.025em;line-height:1.15;margin-bottom:10px}
+.show .txt p{color:var(--mut);font-size:15px;line-height:1.6}
+.show .txt ul{list-style:none;display:grid;gap:9px;margin-top:16px;font-size:14px}
+.show .txt li{display:flex;gap:10px}.show .txt li::before{content:'✓';color:var(--acc);font-weight:900}
+.modal.shotbox .mbox{width:min(1300px,96vw);max-height:94vh;overflow:auto;padding:8px}.modal.shotbox img{width:100%;display:block;border-radius:8px}
+@media (max-width:900px){.show{grid-template-columns:minmax(0,1fr);gap:22px;margin-bottom:52px}.show.rev .shotf{order:0}}
+.tchip{font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tchip.ok{background:var(--upbg);color:var(--up)}.tchip.warn{background:#fff1d6;color:#8a5a00}
+@media (max-width:560px){#termBar .hide-sm{display:none}}
+#tester{position:fixed;left:14px;bottom:14px;z-index:70;background:var(--panel);border:1px solid var(--line2);border-radius:14px;box-shadow:var(--shadow);max-width:min(380px,calc(100vw - 28px));font-size:12px}
+#tester .tg{padding:9px 12px;font-weight:800;font-size:12px;width:100%;text-align:left}
+#tester .tb{padding:0 12px 12px;display:grid;gap:8px}#tester small{color:var(--mut)}
+#tester .tg2{display:flex;flex-wrap:wrap;gap:5px}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-1px;margin-right:6px}@keyframes sp{to{transform:rotate(360deg)}}
+#termWrap.on~#tester{display:none}
+@media (max-width:900px){
+  .feats,.steps,.plans,.g3,.g4{grid-template-columns:minmax(0,1fr)}
+  .g2,.sec{grid-template-columns:minmax(0,1fr)}
+  .g4.kps{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nav .links{display:none}.burger{display:inline-flex}
+  .nav .links.open{display:flex;position:absolute;top:62px;left:0;right:0;flex-direction:column;align-items:stretch;background:var(--panel);border-bottom:1px solid var(--line);padding:8px 12px 12px;box-shadow:var(--shadow)}
+  .frm{grid-template-columns:minmax(0,1fr)}
+  .plan.best{order:-1}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  .hero{padding-top:40px}
+  .nav .hide-sm{display:none}
+  .wstep{grid-template-columns:minmax(0,1fr)}
+  section.blk{padding:56px 0}
+  .sec{padding:22px}
+  .ck{flex-wrap:wrap}.ck .btn{margin-left:36px}
+}
+
+/* ===================== landing v3: premium sections ===================== */
+/* hero: grid backdrop + floating stat cards */
+.hero{isolation:isolate}
+.hero::after{content:'';position:absolute;inset:0;z-index:-2;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 70%);mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 70%);opacity:.55}
+.hero .wrap{position:relative}
+.floaters{position:absolute;inset:0;pointer-events:none}
+.fl{position:absolute;display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:14px;padding:10px 14px;box-shadow:0 18px 40px -12px rgba(15,30,22,.28);animation:float 6s ease-in-out infinite;text-align:left}
+.fl i{font-style:normal;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--accbg);font-size:17px}
+.fl small{display:block;color:var(--mut);font-size:11px;font-weight:600}.fl b{font-size:14px;letter-spacing:-.01em}.fl b.up{color:var(--up)}
+.fl.f1{left:-6px;top:56%}.fl.f2{right:-8px;top:66%;animation-delay:-2s}.fl.f3{left:7%;bottom:-26px;animation-delay:-4s}
+@keyframes float{50%{transform:translateY(-10px)}}
+@media (max-width:1100px){.floaters{display:none}}
+@media (prefers-reduced-motion:reduce){.fl{animation:none}}
+
+/* product tour: dark band */
+.tour{position:relative;padding:96px 0 90px;margin:40px 0 0;background:radial-gradient(900px 500px at 15% 10%,rgba(30,154,101,.22),transparent 60%),radial-gradient(800px 500px at 90% 60%,rgba(245,183,59,.12),transparent 60%),#0b1310;color:#e8efe9}
+.tour .eyebrow{color:#5fd39c}.tour .tt{color:#fff}.tour .lead{color:#9fb0a6}
+.tourtabs{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:-10px 0 56px}
+.tourtabs a{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:30px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#dfe8e2;font-size:13px;font-weight:700;text-decoration:none;transition:.15s}
+.tourtabs a:hover{background:rgba(95,211,156,.14);border-color:rgba(95,211,156,.45);color:#fff}
+.tourtabs i{font-style:normal}
+.tour .show{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:56px;margin-bottom:96px}
+.tour .show.rev{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr)}
+.tour .shotf{border:1px solid rgba(255,255,255,.12);background:#111a16;border-radius:16px;box-shadow:0 0 0 1px rgba(255,255,255,.03),0 40px 120px -30px rgba(30,154,101,.55),0 30px 60px -30px rgba(0,0,0,.8)}
+.tour .shotf .bar{height:30px;background:#16221d;border-bottom:1px solid rgba(255,255,255,.07)}
+.tour .shotf .bar span{margin-left:10px;font-size:11px;color:#8ea398;font-weight:600}
+.tour .shotf img{transition:transform .5s ease}.tour .shotf:hover img{transform:scale(1.025)}
+.shotf.noimg img{display:none}
+.shotf.noimg::after{content:attr(data-ic);display:grid;place-items:center;aspect-ratio:4/3;font-size:84px;background:radial-gradient(circle at 50% 40%,rgba(30,154,101,.35),transparent 60%),#111a16}
+.tour .txt .num{font-size:13px;font-weight:800;color:#5fd39c;letter-spacing:.12em;margin-bottom:12px}.tour .txt .num span{color:#53655c}
+.tour .txt h3{color:#fff;font-size:clamp(24px,2.8vw,32px)}
+.tour .txt p{color:#a9b9b0;font-size:15.5px}
+.tour .txt ul{grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.tour .txt li{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:10px 12px;font-size:13px;color:#dfe8e2;line-height:1.4}
+.tour .txt li::before{content:'✓';color:#5fd39c}
+.tour .cta .btn.acc{box-shadow:0 12px 40px -10px rgba(30,154,101,.8)}
+.tour .shotf .bar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-width:900px){.tour{padding:64px 0}.tour .show,.tour .show.rev{grid-template-columns:minmax(0,1fr);gap:24px;margin-bottom:64px}.tour .txt ul{grid-template-columns:minmax(0,1fr)}.tourtabs{margin-bottom:36px}}
+
+/* outcomes: gradient band + live widgets */
+.outs{background:linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--acc) 9%,var(--bg)) 40%,var(--bg))}
+.outs .out{position:relative;overflow:hidden;padding:0 0 24px;border:1px solid var(--line2);box-shadow:0 24px 60px -36px rgba(15,30,22,.45);transition:transform .2s,box-shadow .2s}
+.outs .out:hover{transform:translateY(-4px);box-shadow:0 34px 70px -36px rgba(15,30,22,.55)}
+.outs .out h4,.outs .out p{padding:0 24px}.outs .out h4{margin-top:22px}
+.wd{margin:0;padding:20px;background:linear-gradient(135deg,#13201a,#1d3328);color:#e8efe9;display:grid;gap:9px;min-height:150px}
+.o2 .wd{background:linear-gradient(135deg,#1a1f2e,#24324a)}.o3 .wd{background:linear-gradient(135deg,#2a2116,#3b2d17)}
+.wdh{display:flex;justify-content:space-between;font-size:11.5px;color:#9fb0a6;font-weight:700}.wdh em{font-style:normal;background:rgba(255,255,255,.1);padding:2px 8px;border-radius:20px;color:#fff}
+.wdrow{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:#b8c6be}.wdrow b{font-size:19px;color:#fff;letter-spacing:-.02em}
+.wd .dn{color:#ff8a8f!important}.wd .up{color:#5fe0a5!important}
+.wdbar{height:7px;border-radius:7px;background:rgba(255,255,255,.12);overflow:hidden}.wdbar i{display:block;height:100%;background:linear-gradient(90deg,#5fe0a5,#f5b73b);border-radius:7px}
+.wdbtn{margin-top:2px;text-align:center;font-size:12.5px;font-weight:800;padding:8px;border-radius:9px;background:#1e9a65;color:#fff}
+.bars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:end;height:100px}
+.bars div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px}
+.bars i{width:100%;border-radius:6px 6px 2px 2px;display:block}.bars i.up{background:linear-gradient(180deg,#5fe0a5,#1e9a65)}.bars i.dn{background:linear-gradient(180deg,#ff8a8f,#b9383f)}
+.bars small{font-size:10.5px;color:#c9b99c;font-weight:700}
+
+/* how it works: timeline */
+.timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;position:relative;margin-top:10px}
+.timeline::before{content:'';position:absolute;left:16%;right:16%;top:31px;height:2px;background:repeating-linear-gradient(90deg,var(--accline) 0 8px,transparent 8px 16px)}
+.tl{position:relative;text-align:center;padding:0 10px}
+.tl .dot{width:62px;height:62px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:var(--panel);border:2px solid var(--accline);box-shadow:0 0 0 8px var(--bg),0 14px 30px -12px rgba(30,154,101,.5)}
+.tl small{color:var(--acc);font-weight:800;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+.tl h4{font-size:17px;margin:6px 0}.tl p{color:var(--mut);font-size:14px;line-height:1.55;max-width:300px;margin:0 auto}
+@media (max-width:900px){.timeline{grid-template-columns:minmax(0,1fr)}.timeline::before{left:30px;right:auto;top:20px;bottom:20px;width:2px;height:auto;background:repeating-linear-gradient(180deg,var(--accline) 0 8px,transparent 8px 16px)}
+  .tl{text-align:left;padding-left:84px;min-height:70px}.tl .dot{position:absolute;left:0;top:0;margin:0}.tl p{margin:0}}
+
+/* offers: upsell / downsell modals, lifetime card, trial offer */
+.offer{text-align:center;padding:8px 6px;max-width:460px;margin:0 auto}
+.offer h3{font-size:22px;letter-spacing:-.02em;margin:12px 0 8px;line-height:1.2}.offer p{color:var(--mut);font-size:14px;line-height:1.55}
+.obadge{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.12em;padding:4px 10px;border-radius:20px;background:var(--accbg);color:var(--acc)}
+.obadge.warn{background:#fff1d6;color:#8a5a00}
+.ocmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+.ocmp div{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:2px}.ocmp small{color:var(--mut);font-weight:700;font-size:11.5px}.ocmp b{font-size:22px}.ocmp span{font-size:12px;color:var(--mut)}
+.ocmp .win{border:2px solid var(--acc);background:color-mix(in srgb,var(--acc) 7%,var(--panel))}.ocmp .win span{color:var(--up);font-weight:800}
+.olist{display:grid;gap:8px;margin:18px 0 6px}
+.oopt{display:grid;text-align:left;gap:2px;padding:12px 14px;border:1.5px solid var(--line2);border-radius:12px;background:var(--panel)}.oopt:hover{border-color:var(--acc);background:var(--hover)}
+.oopt b{font-size:14px}.oopt small{color:var(--mut);font-size:12px}
+.oact{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.lifetime{margin-top:22px;display:grid;grid-template-columns:minmax(0,1.6fr) auto auto;gap:22px;align-items:center;padding:22px 26px;border-radius:18px;color:#f3efe6;background:radial-gradient(500px 200px at 0% 0%,rgba(245,183,59,.25),transparent 60%),linear-gradient(135deg,#1b1610,#2b2216);border:1px solid #5a4826;box-shadow:0 24px 60px -30px rgba(160,110,20,.6)}
+.lifetime .obadge{background:rgba(245,183,59,.18);color:#f5c25b}
+.lifetime h4{font-size:19px;margin:8px 0 4px;letter-spacing:-.01em}.lifetime p{color:#c7bba5;font-size:13.5px;line-height:1.5}
+.lifetime .lt2{display:grid;text-align:right}.lifetime .lt2 small{color:#a8987b}.lifetime .lt2 b{font-size:34px;letter-spacing:-.03em;color:#fff}.lifetime .lt2 span{font-size:12px;color:#c7bba5}
+.lifetime .btn.acc{background:linear-gradient(135deg,#f5b73b,#e0960c);color:#1a1203}
+@media (max-width:900px){.lifetime{grid-template-columns:minmax(0,1fr);text-align:center}.lifetime .lt2{text-align:center}}
+.toffer{margin-top:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:12px;border:1.5px dashed var(--accline);background:color-mix(in srgb,var(--acc) 6%,var(--panel))}
+.toffer.urgent{border-style:solid;border-color:var(--orange);background:color-mix(in srgb,var(--orange) 8%,var(--panel))}
+.toffer b{display:block;font-size:14px}.toffer small{color:var(--mut);font-size:12.5px}.toffer .tbtns{display:flex;flex-wrap:wrap;gap:6px}
+/* pricing: readable "most popular" tag, nothing clipped */
+.plans{padding-top:16px}
+.plan .tag{z-index:3;top:-14px;padding:5px 14px;font-size:11.5px;letter-spacing:.06em;background:#13201a;color:#fff;border:2px solid var(--acc);box-shadow:0 8px 20px -8px rgba(30,154,101,.6)}
+.plan.best{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 7%,var(--panel)),var(--panel) 40%)}
+</style>
+</head>
+<body>
+<div id="ribbon"></div>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#home">
+      <svg viewBox="0 0 32 32"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffdc91"/><stop offset="1" stop-color="#e0960c"/></linearGradient></defs><path d="M16 2.5 28.5 9.5v13L16 29.5 3.5 22.5v-13z" fill="url(#lgG)"/><path d="M9.5 19.5l4.2-5 3.3 3.2 5.5-6.7" fill="none" stroke="#1a1203" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Goldmine<span>PRO</span>
+    </a>
+    <nav class="links" id="links"></nav>
+    <span class="grow"></span>
+    <div id="right" style="display:flex;gap:8px;align-items:center;position:relative"></div>
+    <button class="btn md burger" data-act="burger" aria-label="Menu">☰</button>
+  </div>
+</header>
+<main id="view"></main>
+<div id="termWrap">
+  <div id="termBar"></div>
+  <iframe id="termFrame" title="Goldmine Pro terminal" allow="clipboard-write"></iframe>
+</div>
+
+<script>
+/* =========================================================================
+   Goldmine Pro · customer web app (subscription front-end)
+   Talks to:  the license server (same origin, /api/...)  and the customer's own bridge (CFG.base, X-Gomez-Key)
+   ========================================================================= */
+// ▼▼ When this page is hosted somewhere else than your license server (GitHub Pages, Netlify...), put the server address here.
+const SAAS_SERVER = ''; // e.g. 'https://api.goldminepro.com'   ('' = same address as this page)
+let SRV = (new URLSearchParams(location.search).get('server') || SAAS_SERVER || '').replace(/\/+$/, '');
+// Find the license server by itself: your setting, then this site, then the test website inside your own bridge (port 8765),
+// then the stand-alone test server (port 8800). The first one that answers wins.
+async function findServer() {
+  const here = location.protocol === 'file:' ? [] : [location.origin + location.pathname.replace(/\/[^/]*$/, ''), location.origin, location.origin + '/saas'];
+  const list = [...new Set([SRV, store.get('saasServer', ''), ...here, 'http://127.0.0.1:8765/saas', 'http://127.0.0.1:8800'].filter(Boolean).map(s => s.replace(/\/+$/, '')))];
+  for (const s of list) {
+    try {
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 2500);
+      const r = await fetch(s + '/api/plans', { signal: ctl.signal }); clearTimeout(t);
+      if (r.ok) { const j = await r.json(); if (j.plans) { SRV = s; store.set('saasServer', s); return j } }
+    } catch {}
+  }
+  SRV = list[0] || location.origin; return null;
+}
+const SITE = location.protocol === 'file:' ? SRV : location.origin + location.pathname; // the bridge opens this page after it starts
+const A = { token: store.get('saasToken', ''), me: null, plans: null, interval: store.get('saasIvl', 'month') };
+const LOGO = document.querySelector('.brand svg').outerHTML;
+
+async function srv(path, body, method) {
+  const opt = { method: method || (body ? 'POST' : 'GET'), headers: {} };
+  if (A.token) opt.headers.Authorization = 'Bearer ' + A.token;
+  if (body) { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body) }
+  let r; try { r = await fetch(SRV + path, opt) } catch { throw new Error('Cannot reach the Goldmine server. Check your internet connection.') }
+  let j = null; try { j = await r.json() } catch {}
+  if (r.status === 401 && A.token && !/auth\//.test(path)) { logout(true); throw new Error('Your session expired. Please log in again.') }
+  if (!r.ok) { const d = j?.detail; throw new Error(typeof d === 'string' ? d : Array.isArray(d) ? d.map(x => (x.loc?.slice(-1)[0] || '') + ': ' + x.msg).join(', ') : 'Server error ' + r.status) }
+  return j;
+}
+async function bridge(path, body) { // direct call to the customer's bridge (never demo mode)
+  const opt = { headers: { 'X-Gomez-Key': CFG.key || '' } };
+  if (body) { opt.method = 'POST'; opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body) }
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 12000); opt.signal = ctl.signal;
+  let r; try { r = await fetch(CFG.base.replace(/\/+$/, '') + path, opt) } catch { throw new Error(`No answer from ${CFG.base}. Is start_bridge.bat running on that PC, and is the address right?`) } finally { clearTimeout(t) }
+  let j = null; try { j = await r.json() } catch {}
+  if (r.status === 401) throw new Error('The bridge key is wrong. Use the api_key from config.json on your bridge PC.');
+  if (r.status === 404 && path.startsWith('/api/license')) throw new Error('This bridge is an older version without licensing. Download the bridge again from step 1.');
+  if (!r.ok) throw new Error(j?.detail || 'Bridge error ' + r.status);
+  return j;
+}
+const setMe = j => {
+  if (!j?.user) return;
+  A.me = { user: j.user, sub: j.sub, license: j.license, machines: j.machines, payments: j.payments, server: j.server, pubkey: j.pubkey, test_mode: j.test_mode, bridge_key: j.bridge_key };
+  // the downloaded bridge uses this key: the customer never has to type it.
+  // NOT when this page is served by a bridge (your own test setup): there the saved key is YOUR bridge key and must stay.
+  if (j.bridge_key && !BRIDGE_ORIGIN && !store.get('manualBridge', 0) && (CFG.key !== j.bridge_key || CFG.demo)) { CFG.key = j.bridge_key; CFG.base = CFG.base || 'http://127.0.0.1:8765'; CFG.demo = false; saveCfg() }
+  renderTester();
+};
+const SUB = () => A.me?.sub || {};
+const P = k => A.plans?.plans?.[k];
+const eur = v => '€' + Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 });
+const dt = t => t ? new Date(t * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+const ago = t => { if (!t) return 'never'; const s = Date.now() / 1000 - t; return s < 120 ? 'just now' : s < 3600 ? Math.round(s / 60) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' days ago' };
+const STATUS = { trialing: ['Free trial', 'ok'], active: ['Active', 'ok'], past_due: ['Payment failed', 'warn'], canceled: ['Cancelled', 'warn'], expired: ['Expired', 'bad'], none: ['No plan', 'mute'] };
+const stPill = s => { const [t, c] = STATUS[s.status] || STATUS.none; return `<span class="st ${c}">${t}</span>` };
+const FEAT = { terminal: 'Web terminal', journal: 'Trading journal', alerts: 'Price alerts', drawings: 'Drawing tools', layers: 'Layered entries', basket: 'Basket break-even', manage: 'Trade manager', paper: 'Paper accounts', copy: 'Copy trading', priority: 'Priority support' };
+const ALLF = Object.keys(FEAT);
+
+/* ---------------------------------------------------------------- routing */
+const PUBLIC = ['home', 'pricing', 'features', 'faq', 'login', 'signup'];
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; // a refresh starts at the top, not where the phone last was
+function route() {
+  const [r0, qs] = (location.hash.slice(1) || 'home').split('?'); const r = r0 || 'home';
+  closeMenus(); renderTester();
+  if (r !== 'terminal') { $('#termWrap').classList.remove('on'); document.body.style.overflow = '' }
+  if (['dashboard', 'setup', 'billing', 'terminal'].includes(r) && !A.me) { location.hash = 'login'; return }
+  renderNav(r);
+  if (r === 'login' || r === 'signup') { renderLanding(); return authBox(r) }
+  if (['home', 'pricing', 'features', 'faq'].includes(r)) {
+    renderLanding();
+    // section links scroll once, then the address goes back to #home: a refresh starts at the top instead of jumping to the prices again
+    if (r !== 'home') { setTimeout(() => document.getElementById(r)?.scrollIntoView({ behavior: 'smooth' }), 30); history.replaceState(null, '', location.pathname + location.search + '#home') }
+    else scrollTo(0, 0);
+    return
+  }
+  scrollTo(0, 0);
+  if (r === 'dashboard') { if (new URLSearchParams(qs).get('paid')) afterPayment(); return renderDashboard() }
+  if (r === 'setup') return renderSetup();
+  if (r === 'billing') return renderBilling();
+  if (r === 'terminal') return renderTerminal();
+  if (r === 'admin') return renderAdmin();
+  location.hash = 'home';
+}
+addEventListener('hashchange', route);
+// closing the sign-up / log-in box sets the address back to #home: "Start free trial" opens it again, and a refresh no longer pops it up by itself
+new MutationObserver(() => { if (!modalEl().classList.contains('on') && /^#(signup|login)$/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#home') })
+  .observe(modalEl(), { attributes: true, attributeFilter: ['class'] });
+// a link to the page you are already on (same #hash) still works
+document.addEventListener('click', e => { const a = e.target.closest('a[href^="#"]'); if (a && a.getAttribute('href') === location.hash && a.getAttribute('href').length > 1) { e.preventDefault(); route() } }, true);
+
+function renderNav(r) {
+  const L = A.me
+    ? [['dashboard', 'Dashboard'], ['setup', 'Setup'], ['billing', 'Billing'], ['terminal', 'Open terminal']]
+    : [['features', 'Features'], ['pricing', 'Pricing'], ['faq', 'FAQ']];
+  // the owner sees Admin when a token is saved, or always when the site runs on this PC (your own bridge); visitors never see it
+  // Admin shows for admin accounts (any device), when a token is saved, or on your own PC; customers never see it
+  if (isAdmin() || store.get('saasAdmin', '') || /^(127\.0\.0\.1|localhost)$/.test(location.hostname)) L.push(['admin', 'Admin']);
+  $('#links').innerHTML = L.map(([k, t]) => `<a class="nl ${r === k ? 'on' : ''}" href="#${k}">${t}</a>`).join('');
+  $('#right').innerHTML = A.me
+    ? `<button id="acctBtn" data-act="menu"><span class="hide-sm">${esc(A.me.user.name || A.me.user.email.split('@')[0])}</span><i>${esc((A.me.user.name || A.me.user.email)[0].toUpperCase())}</i></button>
+       <div class="menu" id="menu"><div class="who">${esc(A.me.user.email)}<br>${stPill(SUB())} ${esc(P(SUB().plan)?.name || '')}</div><hr>
+       <a href="#dashboard">🏠 Dashboard</a><a href="#billing">💳 Billing</a><a href="journal.html" target="_blank">📒 Journal</a><hr>
+       <button data-act="logout">↩ Log out</button></div>`
+    : `<a class="nl hide-sm" href="#login">Log in</a><a class="btn acc md" href="#signup">Start free trial</a>`;
+  const tm = A.me?.test_mode ?? A.plans?.test_mode;
+  if (!A.plans || (A.plans.offline && !A.me)) return; // keep the "server not running" bar
+  $('#ribbon').className = tm ? 'on' : '';
+  $('#ribbon').innerHTML = tm ? '🧪 TEST MODE · payments are simulated, nobody is charged. Add your Stripe keys on the server to take real payments.' : '';
+}
+function closeMenus() { $('#menu')?.classList.remove('on'); $('#links').classList.remove('open') }
+
+/* ---------------------------------------------------------------- landing */
+/* ---------------------------------------------------------------- landing (conversion page)
+   Analytics: every CTA has data-cta="<where>". Hook your pixel/analytics into track() below. */
+function track(name, data) { /* e.g. gtag('event', name, data); fbq('trackCustom', name, data); plausible(name, { props: data }) */ }
+const money2 = v => '€' + (Number.isInteger(+v) ? v : (+v).toFixed(2));
+function priceCard(k) {
+  const p = P(k), yr = A.interval === 'year', cur = A.me && SUB().plan === k && SUB().status === 'active' && SUB().interval === A.interval;
+  const price = yr ? Math.round(p.year / 12 * 100) / 100 : p.month, reg0 = p.regular ?? OFFLINE_PLANS.plans[k]?.regular, reg = reg0 > price ? reg0 : 0;
+  const items = [`${p.accounts === 1 ? '1 MT5 account' : p.accounts + ' MT5 accounts'}`, `${p.machines} PC${p.machines > 1 ? 's' : ''} / VPS`]
+    .map(t => `<li>${t}</li>`).join('') + ALLF.map(f => `<li class="${p.features.includes(f) ? '' : 'no'}">${FEAT[f]}</li>`).join('');
+  let btn;
+  if (!A.me) btn = `<a class="btn ${k === 'pro' ? 'acc' : ''} lg" href="#signup" data-cta="price-${k}">Start free · ${A.plans.trial_days} days</a>`;
+  else if (cur) btn = `<button class="btn lg" disabled>Your current plan</button>`;
+  else btn = `<button class="btn ${k === 'pro' ? 'acc' : ''} lg" data-buy="${k}" data-cta="buy-${k}">${SUB().status === 'active' ? 'Switch to ' + p.name : 'Get ' + p.name}</button>`;
+  return `<div class="plan ${k === 'pro' ? 'best' : ''} ${cur ? 'cur' : ''}">${k === 'pro' ? '<div class="tag">MOST POPULAR</div>' : ''}
+    <h4>${p.name}</h4><div class="bl">${p.blurb}</div>
+    ${reg ? `<div class="was"><s>${money2(reg)}</s> <span>founding price −${Math.round((1 - price / reg) * 100)}%</span></div>` : ''}
+    <div class="pr"><b>${money2(price)}</b><span>/ month</span></div>
+    <div class="eq">${yr ? `${money2(p.year)} billed yearly · 2 months free` : 'billed monthly · cancel anytime'}</div>
+    ${btn}<ul>${items}</ul></div>`;
+}
+const ivlSeg = () => `<div class="ivl"><div class="seg"><button data-ivl="month" class="${A.interval === 'month' ? 'on' : ''}">Monthly</button><button data-ivl="year" class="${A.interval === 'year' ? 'on' : ''}">Yearly<em>2 months free</em></button></div></div>`;
+const minPrice = () => { const ps = Object.values(A.plans?.plans || {}).map(p => p.month); return ps.length ? money2(Math.min(...ps)) : '€4.99' };
+
+function renderLanding() {
+  if ($('#view').dataset.v === 'landing') { $('#plans').innerHTML = A.plans ? ['starter', 'pro', 'elite'].map(k => priceCard(k)).join('') : ''; return }
+  $('#view').dataset.v = 'landing';
+  const td = A.plans?.trial_days || 7, pro0 = P('pro') || OFFLINE_PLANS.plans.pro, pro = { month: pro0.month, regular: pro0.regular ?? OFFLINE_PLANS.plans.pro.regular };
+  const ck = '<i class="y">✓</i>', no = '<i class="n">✕</i>', half = '<i class="h">~</i>';
+  $('#view').innerHTML = `
+  <a class="announce" href="#pricing" data-cta="announce">🚀 <b>Founding-member launch:</b> ${pro.regular > pro.month ? `Pro for ${money2(pro.month)}/month instead of <s>${money2(pro.regular)}</s>, ` : `Pro from ${money2(pro.month)}/month, `}locked in for as long as you stay subscribed. <u>See prices</u></a>
+
+  <section class="hero"><div class="wrap">
+    <span class="pill"><b>FOR MT5 TRADERS</b> who scale in, stack positions and manage risk</span>
+    <h1>Scale in. Protect. Exit. <br><em>All in one click.</em></h1>
+    <p class="sub">Goldmine Pro is a web terminal for MetaTrader 5. Layer entries sized by your risk, move a whole basket to break-even, close your worst entries, and see in a real journal what actually makes you money. Works with any MT5 broker, on any device.</p>
+    <div class="cta"><a class="btn acc lg" href="#signup" data-cta="hero-trial">Start my free ${td}-day trial</a><button class="btn lg" data-act="demo" data-cta="hero-demo">▶ Try the live demo · no sign-up</button></div>
+    <div class="trust"><span>No card needed</span><span>Cancel in 2 clicks</span><span>Then from ${minPrice()}/month</span></div>
+    <div class="shot"><div class="bar"><i></i><i></i><i></i><span>Goldmine Pro · live demo</span></div><div class="vp" id="vp"><iframe id="heroFrame" src="terminal_pro.html?demo=1&theme=light" tabindex="-1" loading="lazy" title="Live demo of the Goldmine Pro terminal"></iframe></div>
+      <div class="live">Live demo · simulated prices</div><div class="try" data-act="demo" data-cta="hero-shot"><b>Open the live demo →</b></div></div>
+    <div class="floaters" aria-hidden="true">
+      <div class="fl f1"><i>🪜</i><div><small>5 buy limits placed</small><b>Risk −$110 · 1.00%</b></div></div>
+      <div class="fl f2"><i>🎯</i><div><small>Basket exit · 4 positions</small><b class="up">+$120.50</b></div></div>
+      <div class="fl f3"><i>🛡</i><div><small>Moved to break-even</small><b>3 positions · 1 click</b></div></div>
+    </div>
+  </div></section>
+
+  <div class="facts"><div class="wrap">
+    ${[['🏦', 'Any MT5 broker', 'Forex, gold, indices, crypto CFDs'], ['🔒', 'Your password stays home', 'never leaves your PC'], ['⚡', 'Set up in ~5 minutes', 'one download, one double-click'], ['📱', 'Desktop · tablet · phone', 'the same terminal everywhere'], ['🏷️', 'Founding price for life', 'while you stay subscribed']]
+      .map(([i, t, d]) => `<div><span>${i}</span><b>${t}</b><small>${d}</small></div>`).join('')}
+  </div></div>
+
+  <section class="blk prob"><div class="wrap">
+    <div class="eyebrow">The problem</div>
+    <h2 class="tt">MetaTrader 5 wasn't built for the way you trade</h2>
+    <p class="lead">You scale in, you manage several positions at once, you care about risk. MT5 makes all of that slow, manual and error-prone, usually right when price is moving.</p>
+    <div class="pains">
+      ${[['🧮', 'Lots by calculator', 'Five limit orders means five lot calculations, a stop loss each and hoping the total risk is right.'],
+         ['🐢', 'Closing 8 positions one by one', 'While you click through tiny windows, price runs and a winning basket turns into a loss.'],
+         ['🎯', 'SL / TP in dialog boxes', 'Typing prices into forms instead of setting them where you can see the chart.'],
+         ['📉', 'No idea what works', 'MT5 history is a list of numbers. Which setup, session or habit is costing you money?']]
+        .map(([i, t, d]) => `<div class="pain"><span>${i}</span><h4>${t}</h4><p>${d}</p></div>`).join('')}
+    </div>
+    <p class="punch">So you hesitate, over-risk, or give back winners. <b>Goldmine Pro fixes the workflow, not your strategy.</b></p>
+  </div></section>
+
+  <section class="tour" id="features"><div class="wrap">
+    <div class="eyebrow">Product tour</div>
+    <h2 class="tt">The tools your MT5 terminal never had</h2>
+    <p class="lead">Real screenshots of the terminal. Every number is calculated for you: lots, risk in money, R-multiples, exit levels.</p>
+    <nav class="tourtabs">${SHOWCASE.map(([, ic, t], i) => `<a href="#" data-tour="${i}"><i>${ic}</i>${t.split(/[,&]/)[0].trim()}</a>`).join('')}</nav>
+    ${SHOWCASE.map(([img, ic, t, d, pts], i) => `<article class="show ${i % 2 ? 'rev' : ''}" id="tour${i}">
+        <div class="shotf" data-zoom="${img}" data-ic="${ic}"><div class="bar"><i></i><i></i><i></i><span>${esc(t)}</span></div><img src="${img}" alt="${esc(t)}: screenshot of the Goldmine Pro terminal" loading="lazy" width="880" height="660" onerror="this.parentNode.classList.add('noimg')"><span class="zoom">⤢ Enlarge</span></div>
+        <div class="txt"><div class="num">0${i + 1}<span> / 0${SHOWCASE.length}</span></div><h3>${t}</h3><p>${d}</p><ul>${pts.map(p => `<li>${p}</li>`).join('')}</ul></div></article>`).join('')}
+    <div class="cta"><a class="btn acc lg" href="#signup" data-cta="features-trial">Try every feature free for ${td} days</a></div>
+  </div></section>
+
+  <section class="blk outs"><div class="wrap">
+    <div class="eyebrow">What changes</div>
+    <h2 class="tt">Trade with a plan, not with a calculator</h2>
+    <p class="lead">Three things you will notice in your first week.</p>
+    <div class="outgrid">
+      <div class="out o1"><div class="wd"><div class="wdh"><span>Layer entries · XAUUSD</span><em>5 orders</em></div><div class="wdrow"><span>Max risk</span><b class="dn">−$110.00</b></div><div class="wdrow"><span>of balance</span><b>1.00 %</b></div><div class="wdbar"><i style="width:34%"></i></div></div>
+        <h4>Know your risk before you click</h4><p>Every order shows its risk in money and as % of your balance. Layers are sized so the total is exactly what you chose. No more accidental 5 % losses.</p></div>
+      <div class="out o2"><div class="wd"><div class="wdh"><span>Basket exit · 4 positions</span><em>1 click</em></div><div class="wdrow"><span>Exit level</span><b>2,650.54</b></div><div class="wdrow"><span>When it closes</span><b class="up">+$120.50</b></div><div class="wdbtn">Apply to 4 positions</div></div>
+        <h4>Exit the whole basket at your price</h4><p>One target for all positions. Break-even, +$50 or +$500: Goldmine finds the exit price and sets it everywhere. Winners stop turning into losers.</p></div>
+      <div class="out o3"><div class="wd"><div class="wdh"><span>Journal · by session</span><em>90 days</em></div><div class="bars">${[['Asia', 22, 'dn'], ['London', 92, 'up'], ['New York', 48, 'up'], ['Late', 14, 'dn']].map(([n, h, c]) => `<div><i class="${c}" style="height:${h}%"></i><small>${n}</small></div>`).join('')}</div></div>
+        <h4>See what actually makes you money</h4><p>Your journal builds itself from MT5: best sessions, setups, average R and mistakes. Do more of what works, cut what doesn't.</p></div>
+    </div>
+  </div></section>
+
+  <section class="blk" style="padding-top:0"><div class="wrap">
+    <div class="eyebrow">Up and running in ~5 minutes</div>
+    <h2 class="tt">How it works</h2>
+    <p class="lead">A small app runs next to MetaTrader 5 on your own PC or VPS. The website talks to that app, so your broker login never leaves your computer.</p>
+    <div class="timeline">
+      ${[['✍️', 'Start your free trial', `Email and password. No card. Every Pro feature for ${td} days.`, '30 seconds'],
+         ['⬇️', 'Download and double-click', 'One zip with everything filled in. Open MT5, double-click START GOLDMINE. It finds your account by itself.', '3 minutes'],
+         ['📈', 'Trade', 'The website connects on its own. Want your phone too? Add the optional secure tunnel.', 'from then on']]
+        .map(([ic, t, d, tm], i) => `<div class="tl"><div class="dot">${ic}</div><small>Step ${i + 1} · ${tm}</small><h4>${t}</h4><p>${d}</p></div>`).join('')}
+    </div>
+  </div></section>
+
+  <section class="blk" style="padding-top:0"><div class="wrap">
+    <div class="eyebrow">Compare</div>
+    <h2 class="tt">Why not just use MT5, or an EA?</h2>
+    <div class="cmpw"><table class="cmp">
+      <thead><tr><th></th><th class="us">Goldmine Pro</th><th>MT5 on its own</th><th>Trade-manager EA + spreadsheet</th></tr></thead>
+      <tbody>
+        ${[['Drag SL / TP out of an entry, live P/L on the label', ck, half, half],
+           ['Layered limit orders, lots sized by total risk', ck, no, half],
+           ['Basket break-even / exit at a target, one click', ck, no, half],
+           ['Close the 1–5 worst positions, keep a runner', ck, no, half],
+           ['Journal: R-multiples, MAE/MFE, sessions, calendar', ck, no, no],
+           ['Same terminal on desktop, tablet and phone', ck, half, no],
+           ['Set-up', '~5 min', '—', 'hours'],
+           ['Price', `from ${minPrice()}/mo`, 'free', '€50–300 + your time']]
+          .map(r => `<tr><td>${r[0]}</td><td class="us">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}
+      </tbody></table></div>
+  </div></section>
+
+  <section class="blk" id="pricing" style="padding-top:0"><div class="wrap">
+    <div class="eyebrow">Founding-member pricing</div>
+    <h2 class="tt">Less than one spread a day</h2>
+    <p class="lead">Launch prices for our first members, <b>locked in for as long as you stay subscribed</b>. Every plan starts with ${td} days of Pro, free.</p>
+    ${ivlSeg()}<div class="plans" id="plans">${A.plans ? ['starter', 'pro', 'elite'].map(k => priceCard(k)).join('') : ''}</div>${A.plans ? lifetimeCard() : ''}
+    <div class="rr">${['🎁 ' + td + '-day free trial, no card', '↩ Cancel anytime in 2 clicks', '🔒 Your MT5 account is never touched by us', '🏷️ Founding price stays yours'].map(x => `<span>${x}</span>`).join('')}</div>
+  </div></section>
+
+  <section class="blk" id="faq" style="padding-top:0"><div class="wrap">
+    <h2 class="tt">Questions, answered</h2><p class="lead"></p>
+    <div class="faq">${FAQS.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>
+  </div></section>
+
+  <section class="blk" style="padding-top:0"><div class="wrap"><div class="final">
+    <h2>Stop managing positions one by one.</h2>
+    <p>Layers sized by risk · basket break-even · close the worst · a journal that writes itself.<br>${td} days free, no card. Then from ${minPrice()}/month, founding price for life.</p>
+    <div class="cta"><a class="btn acc lg" href="#signup" data-cta="final-trial">Start my free trial</a><button class="btn lg" data-act="demo" data-cta="final-demo" style="background:transparent;color:#fff;border-color:#3d4a44">Try the demo first</button></div>
+  </div></div></section>
+
+  <footer><div class="wrap">
+    <div class="row"><a class="brand" href="#home" style="font-size:14px">${LOGO}Goldmine<span>PRO</span></a><span class="grow"></span>
+      <a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="#" data-act="legal" data-k="terms">Terms</a><a href="#" data-act="legal" data-k="privacy">Privacy</a><a href="#" data-act="legal" data-k="risk">Risk disclosure</a><a href="mailto:support@yourdomain.com">Support</a></div>
+    <p><b>Risk warning:</b> CFDs and forex are complex instruments and come with a high risk of losing money rapidly due to leverage. Goldmine Pro is software only and does not provide investment advice, signals or brokerage services. MetaTrader is a trademark of MetaQuotes Ltd; Goldmine Pro is not affiliated with MetaQuotes.</p>
+    <p>© ${new Date().getFullYear()} Goldmine Pro</p>
+  </div></footer>
+  <div class="stickycta" id="stickyCta"><div><b>${td} days free</b><small>then from ${minPrice()}/mo · no card</small></div><a class="btn acc md" href="#signup" data-cta="sticky-trial">Start free trial</a></div>`;
+  fitHero();
+}
+const SHOWCASE = [
+  ['lp-layers.jpg', '🪜', 'Layered entries, sized by your risk', 'Pick a zone, a stop and how much you want to risk. Goldmine spreads 2–10 limit orders over the zone and calculates every lot size, so the total risk is exactly what you chose.',
+    ['Risk in % of balance or a fixed amount', 'Equal lots, or more lots deeper in the zone', 'Average entry, max risk and R:R before you send', 'Every layer on the chart, drag to adjust']],
+  ['lp-basket.jpg', '🎯', 'Basket break-even & basket exit', 'Scaled into a move? Choose the profit you want when everything closes. Goldmine finds the one exit price where the whole basket makes that amount, and sets it on every position in one click.',
+    ['Break-even, +$25, +$50, +$100 or any target', 'TP on winners, SL on losers, or close the whole basket', 'Exit line on the chart: drag it to change the target', 'Per-position preview before anything changes']],
+  ['lp-manage.jpg', '⚙', 'Close the worst entries, keep a runner', 'Manage a stack of positions like one trade. Cut the 1–5 worst entries, close every loser or every winner, take partials, or keep only your best position as a runner with its stop at break-even.',
+    ['Close the 1–5 worst positions, biggest losers first', 'Close 25 / 50 / 75 % of every position', 'One SL / TP for all positions at once', 'Keep a runner, its stop moved to break-even']],
+  ['lp-drag.jpg', '✋', 'Drag your stop loss and take profit', 'Hover an entry and pull a stop loss or take profit straight out of it. The label shows the money at risk while you drag. Works for positions and for limit orders before they fill.',
+    ['＋SL / ＋TP handles on every entry and limit', 'Live P/L on each label, red or green', 'Break-even and close from the label', 'Clean labels, even with 10+ positions']],
+  ['lp-journal.jpg', '📒', 'A trading journal that writes itself', 'Every trade from MT5, analysed: equity curve, drawdown, R-multiples, MAE / MFE, best sessions and setups, a P/L calendar, and insights about what to stop doing.',
+    ['Win rate, profit factor, expectancy, SQN', 'Calendar with daily P/L', 'Notes, setups and mistakes per trade', 'CSV export and a printable report']],
+];
+const FAQS = [
+  ['Why is it so cheap?', 'We are launching. The first members get the founding price, and it stays yours for as long as you stay subscribed, even when the regular price applies to new members.'],
+  ['Which brokers work?', 'Any broker that offers MetaTrader 5: forex, gold, indices and crypto CFDs. Goldmine uses the official MetaTrader 5 connection on your own PC, so whatever your MT5 can trade, Goldmine can trade. MetaTrader 4 is not supported.'],
+  ['Is my account safe?', 'Your MT5 password stays on your own computer and is never sent to us. Every request to the app on your PC needs your private key. Goldmine never places a trade by itself: you decide every order.'],
+  ['Do I need to keep my PC on?', 'Yes, while you trade, just like MetaTrader itself. For 24/7 access, run MT5 and Goldmine on a small Windows VPS (from about €10/month) and open the terminal from anywhere.'],
+  ['Can I use it on my phone?', 'Yes. The terminal is fully responsive. Add the free secure tunnel (two commands, explained in the setup) and trade from your phone on any network.'],
+  ['Does it work with prop-firm and real-money accounts?', 'Yes, demo and real accounts both work. Real-money trading is switched on with one click and a confirmation. Many prop firms allow trade-management tools; check your firm\'s rules to be sure.'],
+  ['What happens after the free trial?', 'Nothing is charged automatically: no card is asked for the trial. Pick a plan to keep going. If you don\'t, the terminal stops and your MT5 account and trades are not affected.'],
+  ['Is this a signal service or financial advice?', 'No. Goldmine Pro is trading software. You make every trading decision yourself. Trading leveraged products carries a high risk of losing money.'],
+];
+
+function fitHero() { const vp = $('#vp'), f = $('#heroFrame'); if (!vp || !f) return; const s = vp.clientWidth / 1440; f.style.transform = `scale(${s})`; vp.style.height = Math.round(880 * s) + 'px' }
+addEventListener('resize', fitHero);
+addEventListener('scroll', () => { // sticky trial button on phones: after the hero, hidden near the final call to action
+  const s = $('#stickyCta'), h = $('.hero'), f = $('.final'); if (!s || !h) return;
+  const past = h.getBoundingClientRect().bottom < 0, nearEnd = f && f.getBoundingClientRect().top < innerHeight;
+  s.classList.toggle('on', past && !nearEnd && !A.me);
+}, { passive: true });
+
+/* ---------------------------------------------------------------- auth */
+function authBox(mode) {
+  const su = mode === 'signup';
+  openModal(`<form class="auth" id="authF" autocomplete="on">
+    <h3>${su ? 'Start your free trial' : 'Welcome back'}</h3>
+    <p>${su ? `${A.plans?.trial_days || 7} days of every Pro feature, free. No card, nothing to cancel.` : 'Log in to your Goldmine Pro account.'}</p>
+    <label>Email<input class="in" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+    <label>Password<input class="in" name="password" type="password" autocomplete="${su ? 'new-password' : 'current-password'}" required minlength="8" placeholder="${su ? 'At least 8 characters' : ''}"></label>
+    <div class="err" id="authErr"></div>
+    <button class="btn acc lg" type="submit">${su ? 'Start my free trial →' : 'Log in'}</button>
+    ${su ? '<p style="font-size:11.5px;margin:10px 0 0;text-align:center">By signing up you agree to the Terms and the Risk disclosure.</p>' : ''}
+    <div class="sw">${su ? 'Already have an account? <a data-sw="login">Log in</a>' : 'New here? <a data-sw="signup">Start a free trial</a>'}</div>
+  </form>`);
+  setTimeout(() => $('#authF input')?.focus(), 50);
+  $('#authF').addEventListener('submit', async e => {
+    e.preventDefault(); const f = new FormData(e.target), b = e.target.querySelector('button[type=submit]');
+    b.disabled = true; b.textContent = 'One moment…'; $('#authErr').textContent = '';
+    try {
+      const j = await srv('/api/auth/' + mode, Object.fromEntries(f));
+      A.token = j.token; store.set('saasToken', j.token); setMe(j); resolveModal(null);
+      toast(su ? `🎉 Welcome! Your ${A.plans?.trial_days || 7}-day Pro trial has started.` : 'Logged in', 'ok');
+      location.hash = su ? 'setup' : 'dashboard'; route();
+    } catch (err) { $('#authErr').textContent = err.message; b.disabled = false; b.textContent = su ? 'Start my free trial →' : 'Log in' }
+  });
+}
+function logout(quiet) { A.token = ''; A.me = null; store.set('saasToken', ''); if (!quiet) toast('Logged out'); location.hash = 'home'; $('#view').dataset.v = ''; route() }
+
+/* ---------------------------------------------------------------- dashboard */
+function subSummary() {
+  const s = SUB(), p = P(s.plan);
+  const line = {
+    trialing: `<b>${s.days_left} day${s.days_left === 1 ? '' : 's'}</b> left in your free ${esc(p?.name || '')} trial (until ${dt(s.period_end)}).`,
+    active: s.cancel_at_end ? `Cancelled. You keep access until <b>${dt(s.period_end)}</b>.` : `Renews on <b>${dt(s.period_end)}</b> · ${s.interval === 'year' ? eur(p.year) + ' / year' : eur(p.month) + ' / month'}.`,
+    past_due: 'Your last payment failed. Update your card to keep trading.',
+    canceled: `Cancelled. Access until <b>${dt(s.period_end)}</b>.`,
+    expired: 'Your access has ended. Choose a plan to continue trading.',
+  }[s.status] || 'Choose a plan to start.';
+  const trialPct = s.status === 'trialing' ? clamp(100 - s.days_left / (A.plans?.trial_days || 7) * 100, 4, 100) : 0;
+  const cta = s.status === 'trialing' || !s.valid ? `<a class="btn acc md" href="#billing">Choose a plan</a>` : s.status === 'past_due' ? `<button class="btn acc md" data-act="portal">Update card</button>` : `<a class="btn md" href="#billing">Manage plan</a>`;
+  return `<div class="box"><div class="subhero"><div><div style="display:flex;gap:8px;align-items:center">${stPill(s)}<span class="mut" style="font-size:12px;font-weight:700">${esc(p?.name || 'No')} plan</span></div>
+    <div class="big" style="margin-top:6px">${s.valid ? 'You are good to trade' : 'Trading is paused'}</div><p style="color:var(--mut);font-size:13.5px;margin-top:4px">${line}</p></div><span class="grow"></span>${cta}</div>
+    ${trialPct ? `<div class="bar2"><i style="width:${trialPct}%"></i></div>` : ''}
+    ${trialOffer()}</div>`;
+}
+// trial ending / expired: lock the founding price (main), Starter (downsell), Lifetime (upsell)
+function trialOffer() {
+  const s = SUB(); if (!(s.status === 'trialing' || s.status === 'expired' || (s.status === 'canceled' && !s.valid))) return '';
+  const pro = P('pro'), st = P('starter'); if (!pro) return '';
+  const urgent = s.status !== 'trialing' || s.days_left <= 3;
+  return `<div class="toffer ${urgent ? 'urgent' : ''}"><div><b>${s.status === 'trialing' ? (urgent ? `⏳ ${s.days_left} day${s.days_left === 1 ? '' : 's'} left: lock your founding price now` : '🏷️ Founding price is still open') : 'Pick up where you left off'}</b>
+      <small>Pro ${money2(pro.month)}/month${pro.regular ? ` instead of ${money2(pro.regular)}` : ''}, locked for as long as you stay. Or yearly ${money2(pro.year)} (2 months free).</small></div>
+    <div class="tbtns"><button class="btn acc md" data-buy="pro" data-bivl="month" data-cta="trial-pro">Keep Pro · ${money2(pro.month)}/mo</button><button class="btn md" data-buy="pro" data-bivl="year" data-cta="trial-pro-year">Yearly · ${money2(pro.year)}</button>
+      ${st ? `<button class="btn ghost md" data-buy="starter" data-bivl="month" data-cta="trial-starter">Just Starter · ${money2(st.month)}</button>` : ''}</div></div>`;
+}
+function renderDashboard() {
+  $('#view').dataset.v = 'dash';
+  const s = SUB(), me = A.me, nm = Object.keys(me.machines || {}).length, conn = store.get('bridgeOk', 0);
+  const steps = [
+    [true, 'Account created', me.user.email],
+    [s.valid, 'Plan active', s.valid ? (STATUS[s.status]?.[0] + ' · ' + (P(s.plan)?.name || '')) : 'Choose a plan', s.valid ? '' : `<a class="btn sm acc" href="#billing">Choose</a>`],
+    [!!store.get('dlBridge', 0) || nm > 0, 'Bridge downloaded', 'One zip with your license key inside', `<a class="btn sm" href="#setup">Setup</a>`],
+    [nm > 0 && !!conn, 'Bridge connected', nm ? `${nm} PC${nm > 1 ? 's' : ''} linked to your license` : 'Open MT5 and double-click START GOLDMINE', `<a class="btn sm" href="#setup">Connect</a>`],
+  ];
+  const done = steps.filter(x => x[0]).length;
+  $('#view').innerHTML = `<div class="page"><div class="wrap">
+    <div class="ph"><div><h1>Hi ${esc(me.user.name || me.user.email.split('@')[0])} 👋</h1><p>Everything about your subscription, license and setup.</p></div><span class="grow"></span>
+      <a class="btn acc md" href="#terminal">Open terminal →</a></div>
+    <div class="g">${subSummary()}
+    <div class="g g2">
+      <div class="box"><h3>Getting started <span class="grow"></span><span class="mut" style="font-size:12px">${done}/4</span></h3>
+        <div class="check">${steps.map(([ok, t, d, b]) => `<div class="ck ${ok ? 'done' : ''}"><i>${ok ? '✓' : ''}</i><div><b>${t}</b><small>${esc(d)}</small></div>${ok ? '' : (b || '')}</div>`).join('')}</div></div>
+      <div class="box"><h3>Your plan</h3>
+        <div class="lim"><span>MT5 accounts</span><b>${s.limits?.accounts ?? 0}</b><span>Bridge PCs</span><b>${nm} / ${s.limits?.machines ?? 0}</b><span>Billing</span><b>${s.interval === 'year' ? 'Yearly' : 'Monthly'}</b></div>
+        <div class="flist">${ALLF.map(f => `<span class="${s.features?.includes(f) ? 'on' : ''}">${s.features?.includes(f) ? '✓' : '–'} ${FEAT[f]}</span>`).join('')}</div>
+        ${s.plan === 'starter' && s.valid && P('pro') ? `<div class="toffer" style="margin-top:14px"><div><b>Unlock Layers, Basket BE & the Trade manager</b><small>Pro is only ${money2(Math.round((P('pro').month - P('starter').month) * 100) / 100)} more per month, plus 5 accounts and paper trading.</small></div><div class="tbtns"><button class="btn acc md" data-buy="pro" data-bivl="${s.interval === 'year' ? 'year' : 'month'}" data-cta="upsell-starter-pro">Upgrade to Pro</button></div></div>` : ''}
+        ${s.plan !== 'elite' ? `<a class="btn md" style="margin-top:14px;width:100%" href="#billing">Compare plans</a>` : ''}</div>
+    </div>
+    ${accountsBox()}
+    ${licenseBox()}
+    </div></div></div>`;
+  startBridgeWatch(); loadAccts();
+}
+/* ---------------------------------------------------------------- API key + MT5 accounts on the customer's own bridge */
+function accountsBox() {
+  const k = A.me.bridge_key || '', lim = SUB().limits?.accounts || 0;
+  return `<div class="box" id="acctBox"><h3>📈 Your MT5 accounts <span class="grow"></span><span class="mut" style="font-size:12px" id="acctCount">${lim ? 'plan: up to ' + lim : ''}</span></h3>
+    <p class="mut" style="font-size:12.5px;margin:-4px 0 12px">Every account here appears in the terminal's account switcher (top right). The account MetaTrader 5 is logged in to is added automatically.</p>
+    <div id="acctList"><div class="empty">Loading…</div></div>
+    <details id="acctAdd" style="margin-top:12px"><summary class="btn md" style="list-style:none;display:inline-flex">＋ Add an MT5 account</summary>
+      <div class="frm" style="margin-top:12px">
+        <label>Login (account number)<input class="in" id="naLogin" inputmode="numeric" autocomplete="off" placeholder="e.g. 36499545"></label>
+        <label>Password<input class="in" id="naPass" type="password" autocomplete="new-password" placeholder="MT5 trading password"></label>
+        <label>Server<input class="in" id="naServer" autocomplete="off" placeholder="exact name, e.g. VantageMarkets-Live 10"></label>
+        <label>Name in the terminal (optional)<input class="in" id="naLabel" autocomplete="off" placeholder="e.g. Prop account 100K"></label>
+      </div>
+      <p class="mut" style="font-size:12px;margin-top:8px">🔒 Your password goes straight from this browser to Goldmine on your own PC and is stored only there. It is never sent to our servers. Use the <b>trading</b> password, not the investor (read-only) password. The server name must match MT5 exactly (MT5: File → Login to Trade Account).</p>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn acc md" data-act="acctAdd">Test login & add</button><span class="mut" style="font-size:12px" id="acctMsg"></span></div>
+    </details>
+    <h3 style="margin-top:20px">🔐 Your bridge API key</h3>
+    <div class="key"><code id="bkey" data-k="${esc(k)}">${k ? esc(k.slice(0, 6)) + '••••••••••••••••••••' : 'Download the bridge first (Setup, step 1)'}</code>${k ? '<button class="btn md" data-act="revealBk">Show</button><button class="btn md acc" data-act="copyBk">Copy</button>' : ''}</div>
+    <p class="mut" style="font-size:12px;margin-top:8px">This website uses it automatically to talk to Goldmine on your PC; it is also in <b>config.json</b> as <code>api_key</code>. You only need it for <i>Trade from anywhere</i> (phone / other PC). Keep it private.</p>
+  </div>`;
+}
+async function loadAccts() {
+  const el = $('#acctList'); if (!el) return;
+  if (!['ok', 'live', 'nomt5'].includes(BR.state)) { await checkBridge().catch(() => {}) }
+  if (!['ok', 'live', 'nomt5'].includes(BR.state)) { el.innerHTML = `<div class="empty">Start Goldmine on your PC (double-click START GOLDMINE) to see and add your accounts. <a href="#setup" style="color:var(--acc);font-weight:700">Setup →</a></div>`; return }
+  try {
+    const list = (await bridge('/api/accounts')).accounts || [], real = list.filter(a => !a.paper), lim = SUB().limits?.accounts || 0;
+    if ($('#acctCount')) $('#acctCount').textContent = `${real.length}${lim ? ' of ' + lim : ''} used`;
+    const tag = a => a.source === 'auto' ? '<span class="st ok">logged in to MT5</span>' : a.source === 'app' ? '<span class="st mute">added</span>' : '<span class="st mute">config.json</span>';
+    el.innerHTML = real.length ? `<div class="mlist">${real.map(a => `<div class="mrow"><b>${esc(a.name)}</b><small>#${a.login} · ${esc(a.server)}</small>${tag(a)}<span class="grow"></span>${a.source === 'app' ? `<button class="btn sm" data-acctrm="${a.login}">Remove</button>` : ''}</div>`).join('')}</div>`
+      : '<div class="empty">No account yet: log in to MetaTrader 5, or add one below.</div>';
+  } catch (e) { el.innerHTML = `<div class="empty">${esc(e.message)}</div>` }
+}
+async function acctAdd() {
+  const login = parseInt($('#naLogin').value), password = $('#naPass').value, server = $('#naServer').value.trim(), label = $('#naLabel').value.trim();
+  if (!login || !password || !server) return toast('Fill in login, password and server.', 'err');
+  const b = $('[data-act=acctAdd]'), msg = $('#acctMsg'); b.disabled = true; b.textContent = 'Testing login…'; msg.textContent = 'MetaTrader 5 switches to this account for a moment to check it.';
+  try {
+    const r = await bridge('/api/accounts/add', { login, password, server, label });
+    toast(`✓ ${r.account.name} added · balance ${r.account.balance} ${r.account.currency}`, 'ok');
+    ['naLogin', 'naPass', 'naServer', 'naLabel'].forEach(i => { $('#' + i).value = '' }); $('#acctAdd').open = false; msg.textContent = ''; loadAccts();
+  } catch (e) {
+    msg.textContent = '';
+    toast(/real-money/i.test(e.message) ? 'This is a real-money account. In Setup, click “Allow real-money trading” first, then add it again.' : e.message, 'err', 9000);
+  } finally { b.disabled = false; b.textContent = 'Test login & add' }
+}
+function licenseBox() {
+  const me = A.me, ms = Object.entries(me.machines || {}).sort((a, b) => (b[1].last || 0) - (a[1].last || 0));
+  return `<div class="box"><h3>🔑 License key <span class="grow"></span><button class="btn sm ghost" data-act="rotate">Generate new key</button></h3>
+    <div class="key"><code id="lic" data-k="${esc(me.license)}">${esc(me.license.slice(0, 8))}•••••-•••••-•••••</code><button class="btn md" data-act="reveal">Show</button><button class="btn md acc" data-act="copyKey">Copy</button></div>
+    <p style="color:var(--mut);font-size:12px;margin-top:8px">The bridge download already contains this key. Keep it private: it works on ${SUB().limits?.machines || 1} PC${(SUB().limits?.machines || 1) > 1 ? 's' : ''} at a time.</p>
+    <h3 style="margin-top:16px">🖥 Linked bridge PCs</h3>
+    ${ms.length ? `<div class="mlist">${ms.map(([id, m]) => `<div class="mrow"><b>${esc(m.name || 'PC')}</b><small>id ${esc(id.slice(0, 8))} · v${esc(m.version || '?')} · last check ${ago(m.last)}</small><span class="grow"></span><button class="btn sm" data-unlink="${esc(id)}">Remove</button></div>`).join('')}</div>` : `<div class="empty">No bridge has checked in yet. Finish the <a href="#setup" style="color:var(--acc);font-weight:700">setup</a>.</div>`}</div>`;
+}
+
+/* ---------------------------------------------------------------- setup: guided tutorial, connects by itself */
+const BR = { state: 'idle', msg: '', acc: null, h: null, timer: null, busy: false }; // live bridge detection
+// states: idle/wait (no bridge yet) · nomt5 (bridge ok, MT5 not logged in) · live (real-money account blocked) · lic (license problem) · ok
+function renderSetup() {
+  $('#view').dataset.v = 'setup';
+  const s = BR.state, dl = !!store.get('dlBridge', 0) || Object.keys(A.me.machines || {}).length > 0;
+  const bridgeUp = ['nomt5', 'live', 'ok'].includes(s), mt5Up = ['live', 'ok'].includes(s), ok = s === 'ok';
+  const algo = BR.h?.mt5?.algo_trading, manual = !!store.get('manualBridge', 0);
+  const done = [dl, bridgeUp, mt5Up && algo !== false, ok].filter(Boolean).length;
+  const step = (n, isDone, title, body, open = true) => `<div class="wstep ${isDone ? 'done' : ''}"><div class="n">${isDone ? '✓' : n}</div><div><h4>${title}</h4>${open ? body : ''}</div></div>`;
+  const sub = items => `<ol class="sub">${items.map(x => `<li>${x}</li>`).join('')}</ol>`;
+  $('#view').innerHTML = `<div class="page"><div class="wrap" style="max-width:880px">
+    <div class="ph"><div><h1>Set up Goldmine Pro</h1><p>About 5 minutes, only once. This page follows along and shows what to do next.</p></div><span class="grow"></span><span class="st ${done === 4 ? 'ok' : 'mute'}">${done}/4 done</span></div>
+    <div class="bar2" style="margin:-8px 0 18px"><i style="width:${done * 25}%"></i></div>
+
+    <div class="box pre"><h3>Before you start</h3>
+      <div class="chk3"><div><b>🪟 A Windows PC or Windows VPS</b><small>Windows 10 or 11. The PC (or VPS) must be on while you trade, just like MetaTrader.</small></div>
+      <div><b>📈 MetaTrader 5 installed</b><small>Download it from your broker's website (or <a href="https://www.metatrader5.com/en/download" target="_blank" rel="noopener">metatrader5.com</a>). MetaTrader 4 does not work.</small></div>
+      <div><b>🔑 Your MT5 login details</b><small>Account number, password and server name. Your broker sent them by email when you opened the account.</small></div></div></div>
+
+    <div class="wz">
+    ${step(1, dl, 'Download Goldmine for Windows', `
+      <p>One zip file with everything already filled in: your license and a private security key. You never have to type them.</p>
+      <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn acc lg" data-act="download">⬇ Download GoldmineBridge.zip</button><small class="mut">Saved in your <b>Downloads</b> folder · about 140 KB</small></div>`)}
+
+    ${step(2, bridgeUp, 'Unzip it and start Goldmine', `
+      ${sub(['Open your <b>Downloads</b> folder. Right-click <b>GoldmineBridge.zip</b> → <b>Extract All…</b> → <b>Extract</b>.<br><small>Tip: move the extracted folder to your <b>Desktop</b> or <b>Documents</b>, so you find it again tomorrow.</small>',
+        'Open the <b>GoldmineBridge</b> folder and double-click <b>START GOLDMINE</b>.',
+        'The first time, Windows may show <b>“Windows protected your PC”</b>. Click <b>More info</b> → <b>Run anyway</b>. This only happens once.',
+        'A window opens. The first start installs what it needs (Python included), which takes 1–3 minutes. It is ready when you see <b>Application startup complete</b>.',
+        '<b>Leave that window open</b> (you may minimise it). Closing it stops Goldmine.'])}
+      <div class="term"><i></i><i></i><i></i><pre>Starting bridge on port 8765.
+Make sure MetaTrader 5 is open and logged in to your account.
+[setup] Using the MT5 account that is logged in: 12345678 on YourBroker-Live
+[license] licensed mode - server ${esc(A.me.server)}
+INFO:     Application startup complete.   <b>← ready</b></pre></div>
+      <div class="livechip ${bridgeUp ? 'ok' : ''}">${bridgeUp ? '✓ Goldmine is running on this PC' : '<span class="spin"></span> Waiting for Goldmine to start on this PC…'}</div>`)}
+
+    ${step(3, mt5Up && algo !== false, 'Log in to MetaTrader 5 and allow trading', `
+      ${sub(['Open <b>MetaTrader 5</b>.',
+        'Click <b>File</b> → <b>Login to Trade Account</b>.',
+        'Fill in your <b>Login</b> (account number) and <b>Password</b>, and pick the exact <b>Server</b> from your broker email (for example <i>VantageMarkets-Live 10</i> or <i>ICMarketsSC-Demo</i>). Tick <b>Save password</b> → <b>OK</b>.',
+        'Check the bottom-right corner of MT5: it shows a speed like <b>42.3 ms</b>. If it says <i>Invalid account</i> or <i>No connection</i>, the login, password or server is wrong.',
+        'Click <b>Algo Trading</b> in the MT5 toolbar so the icon turns <b style="color:var(--up)">green ▶</b>. Without it, MT5 refuses every order from Goldmine.'])}
+      <div class="livechip ${mt5Up ? 'ok' : ''}">${mt5Up ? `✓ MetaTrader 5 is logged in: account ${esc(BR.h?.mt5?.login || BR.acc?.login || '')} on ${esc(BR.h?.mt5?.server || '')}` : bridgeUp ? '<span class="spin"></span> Waiting for you to log in to MetaTrader 5…' : 'Start Goldmine first (step 2)'}</div>
+      ${mt5Up && algo === false ? '<div class="livechip bad">✗ Algo Trading is OFF in MetaTrader 5: click the <b>Algo Trading</b> button so it turns green.</div>' : mt5Up && algo ? '<div class="livechip ok">✓ Algo Trading is on</div>' : ''}`)}
+
+    ${s === 'live' ? liveCard() : ''}
+
+    ${step(4, ok, 'Trade', ok ? `
+      <div class="res on ok">✓ ${esc(BR.msg)}</div>
+      <p style="margin-top:8px">The terminal now shows <b>your own MetaTrader 5 account</b> (${BR.h?.mt5?.real ? 'real money' : 'demo'}): balance, positions, history and live prices from your broker. Nothing to add to config.json.</p>
+      ${BR.h?.mt5?.real ? `<p style="margin-top:8px">⚠ You are trading a <b>real-money</b> account. <a href="#" data-act="liveOff" style="color:var(--mut)">Switch back to demo-only</a></p>` : ''}
+      <div style="margin-top:12px"><a class="btn acc lg" href="#terminal">Open the terminal →</a></div>`
+      : `<div id="brLive">${bridgeLive()}</div>`)}
+    </div>
+
+    <h2 style="font-size:19px;margin:30px 0 12px">Questions & fixes</h2>
+    <div class="faq" style="max-width:none">
+      ${[['I only see demo data (“Demo mode”) instead of my own account', 'Your own account appears automatically once Goldmine is connected. <b>You do not add anything to config.json</b>: Goldmine uses the account that is logged in to MetaTrader 5.<br>Check the 4 steps above: they must all be green. Then open the terminal from this site; the bar at the top says <b>● REAL account 12345678</b> (or DEMO account) instead of <i>Showing DEMO data</i>.<br>Still demo? MetaTrader 5 is probably logged in to a <b>real-money</b> account that is not allowed yet: click <b>Allow real-money trading</b> in the orange card above.'],
+         ['Where do I see which MT5 account is used?', 'In the terminal: the bar at the very top, and the account box in the top-right corner (click it to see balance, equity and margin). It is always the account that MetaTrader 5 is logged in to. To use another one, log in to it in MT5 and restart START GOLDMINE.'],
+         ['It keeps saying “Waiting for Goldmine to start”', 'Is the START GOLDMINE window open, and does it say <b>Application startup complete</b>? This page must be opened <b>on the same PC</b> as Goldmine (for another PC, phone or VPS see <i>Trade from anywhere</i> below). Some antivirus programs block it the first time: allow <b>python.exe</b> and start again.'],
+         ['How do I use my real-money (live) account?', 'Log in to it in MetaTrader 5 (step 3). Goldmine starts in <b>demo-only</b> mode for safety, so this page then shows a button <b>Allow real-money trading</b>. Click it and confirm. No files to edit and no restart needed. You can switch back to demo-only at any time.'],
+         ['Orders are rejected: “AutoTrading disabled” / “Algo trading is disabled”', 'Click the <b>Algo Trading</b> button in the MetaTrader 5 toolbar so it turns green. If it still fails: in MT5 open <b>Tools → Options → Expert Advisors</b>, tick <b>Allow algorithmic trading</b> → OK.'],
+         ['How do I switch to another MT5 account?', 'Log in to the other account in MetaTrader 5 (<b>File → Login to Trade Account</b>), then close the START GOLDMINE window and double-click it again. Goldmine always uses the account that is logged in.'],
+         ['The window closes immediately, or says Python could not be installed', 'Install Python from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a> and tick <b>“Add python.exe to PATH”</b> on the first screen of the installer. Then double-click START GOLDMINE again.'],
+         ['Start Goldmine automatically with Windows', 'Press <b>Win + R</b>, type <b>shell:startup</b>, Enter. Right-click START GOLDMINE → <b>Create shortcut</b> and move the shortcut into that folder. Also let MetaTrader 5 start with Windows and stay logged in.'],
+         ['Can I use a VPS?', 'Yes, that is the best way to keep it running 24/7. Install MetaTrader 5 and Goldmine on the Windows VPS exactly as above, then use <i>Trade from anywhere</i> to open the terminal from your own computer or phone.']]
+        .map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}
+      <details ${manual ? 'open' : ''}><summary>📱 Trade from anywhere (phone, other PC, VPS)</summary>
+        <p>${sub(['On the PC where Goldmine runs, press <b>Win + R</b>, type <b>powershell</b>, Enter.',
+          'Install the free secure tunnel once: <code>winget install Cloudflare.cloudflared</code>',
+          'Start it: <code>cloudflared tunnel --url http://localhost:8765</code> and keep that window open. It prints an address like <b>https://word-word-word.trycloudflare.com</b>.',
+          'Paste that address below, with the <b>api_key</b> from <b>config.json</b> in the GoldmineBridge folder (open it with Notepad).'])}</p>
+        <div class="frm"><label>Bridge address<input class="in" id="bBase" value="${esc(CFG.base || 'http://127.0.0.1:8765')}" placeholder="https://xxxx.trycloudflare.com"></label>
+          <label>Bridge key (api_key)<input class="in" id="bKey" type="password" value="${esc(CFG.key || '')}"></label></div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn acc md" data-act="saveManual">Connect</button><button class="btn md" data-act="resetManual">Back to automatic (this PC)</button></div>
+      </details>
+    </div>
+  </div></div>`;
+  startBridgeWatch();
+}
+function liveCard() {
+  const m = BR.h?.mt5 || {};
+  return `<div class="box livecard"><h3>💰 Real-money account found <span class="st warn">demo-only mode</span></h3>
+    <p>MetaTrader 5 is logged in to <b>${esc(m.login || BR.acc?.login || '')}</b> on <b>${esc(m.server || '')}</b>, a <b>real-money</b> account. For your safety Goldmine starts in demo-only mode, so it does not trade this account yet.</p>
+    <div class="cols">
+      <div><b>Trade this real account</b><small>Orders from the terminal go to your broker with real money.</small>
+        ${BR.h?.simple_config === false ? '<small class="mut">This bridge uses a hand-written config.json: set <code>"live_trading": true</code> there.</small>' : '<button class="btn acc md" data-act="liveOn">Allow real-money trading</button>'}</div>
+      <div><b>Or practise first</b><small>Log in to a <b>demo</b> account in MetaTrader 5 (File → Login to Trade Account), then restart START GOLDMINE. Works right away.</small></div>
+    </div></div>`;
+}
+function bridgeLive() {
+  const s = BR.state, m = esc(BR.msg);
+  if (s === 'lic') return `<div class="res on bad">${m}</div>`;
+  if (s === 'live') return `<div class="res on warn">See “Real-money account found” above.</div>`;
+  if (s === 'nomt5') return `<div class="res on warn">Goldmine is running ✓ · now log in to MetaTrader 5 (step 3).</div>`;
+  return `<div class="res on warn"><span class="spin"></span> Waiting for Goldmine… ${m ? '<br><small>' + m + '</small>' : 'follow steps 1–3 above'}</div>`;
+}
+async function setLive(on) {
+  if (on && !(await confirmBox('Allow real-money trading?', `<p>Orders you place in Goldmine will be sent to <b>${esc(BR.h?.mt5?.server || 'your broker')}</b> with <b>real money</b>.</p><p style="margin-top:8px">Trading leveraged products carries a high risk of losing money. You can switch back to demo-only at any time.</p>`, 'Yes, allow real money', 'danger'))) return;
+  try { await bridge('/api/settings/live', { enable: on }); toast(on ? 'Real-money trading allowed' : 'Back to demo-only', 'ok'); BR.state = ''; await checkBridge(); renderSetup() }
+  catch (e) {
+    if (/not found|404|older version/i.test(e.message)) toast('This bridge is an older version: download it again (step 1), or set "live_trading": true in its config.json and restart it.', 'err', 9000);
+    else toast(e.message, 'err', 8000);
+  }
+}
+async function findBridge() { // look for THIS customer's bridge on 8765-8769 (another bridge on the PC answers 401 and is skipped)
+  if (store.get('manualBridge', 0) || BRIDGE_ORIGIN || !A.me?.bridge_key) return;
+  const key = A.me.bridge_key, ports = [8765, 8766, 8767, 8768, 8769].map(p => 'http://127.0.0.1:' + p);
+  for (const b of [...new Set([CFG.base, ...ports].filter(Boolean))]) {
+    try {
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 1500);
+      const r = await fetch(b.replace(/\/+$/, '') + '/api/health', { headers: { 'X-Gomez-Key': key }, signal: ctl.signal }); clearTimeout(t);
+      if (r.ok) { if (CFG.base !== b || CFG.key !== key || CFG.demo) { CFG.base = b; CFG.key = key; CFG.demo = false; saveCfg() } return }
+    } catch {}
+  }
+}
+async function checkBridge() {
+  if (BR.busy || !A.me) return; BR.busy = true;
+  const prev = JSON.stringify([BR.state, BR.msg, BR.h?.mt5]);
+  try {
+    await findBridge();
+    const h = BR.h = await bridge('/api/health');
+    let L = h.license || {};
+    if (L.enabled && !L.ok && !BR.activating) { // first start of a downloaded bridge: it activates itself, this only speeds it up
+      BR.activating = true; L = await bridge('/api/license/activate', { key: A.me.license, server: A.me.server }).catch(() => L);
+    }
+    if (L.enabled && !L.ok) { BR.state = /already used|ended|failed|cancel|Unknown|subscription/i.test(L.reason || '') ? 'lic' : 'nomt5'; BR.msg = L.reason || 'checking your license…' }
+    else {
+      const a = await bridge('/api/accounts');
+      const real = (a.accounts || []).filter(x => !x.paper);
+      if (!real.length) { BR.state = 'nomt5'; BR.msg = '' }
+      else if (await bridge('/api/account?login=' + real[0].login).then(() => false, e => /real-money|Live\/non-demo/i.test(e.message))) { BR.state = 'live'; BR.acc = real[0]; BR.msg = '' }
+      else { BR.state = 'ok'; BR.acc = real[0]; BR.msg = `Connected to ${real[0].name || 'MT5'} (account ${real[0].login})${L.enabled ? ' · license active' : ''}.`; store.set('bridgeOk', Date.now()) }
+    }
+  } catch (e) {
+    BR.state = 'wait'; BR.h = null; store.set('bridgeOk', 0);
+    BR.msg = /key is wrong/.test(e.message) && store.get('manualBridge', 0) ? 'The bridge key is wrong: use the api_key from config.json on that PC.' : '';
+  } finally { BR.busy = false }
+  if (JSON.stringify([BR.state, BR.msg, BR.h?.mt5]) !== prev) {
+    if (location.hash.startsWith('#setup')) renderSetup();
+    else if (location.hash.startsWith('#dashboard')) renderDashboard();
+    if (BR.state === 'ok' && !prev.startsWith('["ok"')) { toast('✓ Goldmine is connected', 'ok'); srv('/api/me').then(setMe).catch(() => {}) }
+  }
+}
+function startBridgeWatch() {
+  if (BR.timer) return;
+  checkBridge();
+  BR.timer = setInterval(() => { if (!location.hash.startsWith('#setup') && !location.hash.startsWith('#dashboard')) { clearInterval(BR.timer); BR.timer = null; return } if (document.visibilityState === 'visible') checkBridge() }, 3000);
+}
+function saveManual() {
+  const b = $('#bBase').value.trim().replace(/\/+$/, ''), k = $('#bKey').value.trim();
+  if (!/^https?:\/\//.test(b)) return toast('The address must start with https://', 'err');
+  if (location.protocol === 'https:' && b.startsWith('http://') && !/127\.0\.0\.1|localhost/.test(b)) return toast('Use the https:// tunnel address.', 'err');
+  CFG.base = b; CFG.key = k; CFG.demo = false; saveCfg(); store.set('manualBridge', 1); BR.state = 'wait'; BR.msg = ''; checkBridge(); toast('Connecting…');
+}
+function resetManual() { store.set('manualBridge', 0); CFG.base = 'http://127.0.0.1:8765'; CFG.key = A.me.bridge_key || CFG.key; saveCfg(); BR.state = 'wait'; renderSetup() }
+async function downloadBridge() {
+  try {
+    const r = await fetch(SRV + '/api/download/bridge?site=' + encodeURIComponent(SITE), { headers: { Authorization: 'Bearer ' + A.token } });
+    if (!r.ok) { let d = ''; try { d = (await r.json()).detail } catch {} throw new Error(d || 'Download failed (' + r.status + ')') }
+    const url = URL.createObjectURL(await r.blob()), a = document.createElement('a');
+    a.href = url; a.download = 'GoldmineBridge.zip'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 5000);
+    store.set('dlBridge', Date.now()); toast('Downloading · next: open MT5 and double-click START GOLDMINE', 'ok');
+    if (A.token) srv('/api/me').then(setMe).catch(() => {}); // the bridge key now exists
+    if (location.hash.startsWith('#setup')) renderSetup();
+  } catch (e) { toast(e.message, 'err') }
+}
+
+/* ---------------------------------------------------------------- tester panel (TEST MODE only, for you) */
+function renderTester() {
+  let el = $('#tester');
+  // only for YOU (the owner): a browser where you used the Admin tab, or opened the page once with ?tester=1
+  const q = new URLSearchParams(location.search).get('tester'); if (q != null) store.set('tester', q !== '0' ? 1 : 0);
+  const on = (A.me?.test_mode ?? A.plans?.test_mode) && (store.get('tester', 0) || store.get('saasAdmin', ''));
+  if (!on) { el?.remove(); return }
+  if (!el) { el = document.createElement('div'); el.id = 'tester'; document.body.appendChild(el) }
+  const open = store.get('testerOpen', innerWidth > 900 ? 1 : 0);
+  el.className = open ? 'open' : '';
+  el.innerHTML = `<button class="tg" data-act="testerToggle">🧪 Test tools ${open ? '▾' : '▸'}</button>${open ? `<div class="tb">
+    ${A.me ? `<small>Logged in as ${esc(A.me.user.email)} · ${esc(STATUS[SUB().status]?.[0] || '')}</small>
+      <div class="tg2">${[['trial', 'Trial (7 days)'], ['trial_last_day', 'Trial last day'], ['trial_expired', 'Trial expired'], ['active', 'Paying'], ['canceling', 'Cancelled, still active'], ['past_due', 'Payment failed'], ['ended', 'Subscription ended'], ['unlink_pcs', 'Unlink all PCs']]
+        .map(([k, t]) => `<button class="btn sm" data-tstate="${k}">${t}</button>`).join('')}</div>
+      <div class="tg2"><button class="btn sm" data-act="quickAccount">+ New test customer</button><a class="btn sm" href="#admin">Admin</a><button class="btn sm" data-act="checkNow">Check bridge now</button></div>`
+      : `<small>Try the customer journey in one click.</small><div class="tg2"><button class="btn sm acc" data-act="quickAccount">Create a test customer</button><a class="btn sm" href="#admin">Admin</a></div>`}
+    <small style="opacity:.75">Only you see this (test mode). <a href="?tester=0" style="color:inherit">Hide</a></small></div>` : ''}`;
+}
+async function quickAccount() {
+  const email = 'test' + Date.now().toString(36) + '@example.com';
+  try {
+    const j = await srv('/api/auth/signup', { email, password: 'testpass123' });
+    A.token = j.token; store.set('saasToken', j.token); store.set('dlBridge', 0); store.set('bridgeOk', 0); setMe(j);
+    toast('Test customer created: ' + email + ' / testpass123', 'ok'); location.hash = 'setup'; route();
+  } catch (e) { toast(e.message, 'err') }
+}
+
+/* ---------------------------------------------------------------- billing */
+function renderBilling() {
+  $('#view').dataset.v = 'billing';
+  const s = SUB(), pays = A.me.payments || [];
+  $('#view').innerHTML = `<div class="page"><div class="wrap">
+    <div class="ph"><div><h1>Plan & billing</h1><p>Change plan, switch to yearly billing, update your card or cancel.</p></div><span class="grow"></span>
+      ${A.me.test_mode ? (s.status === 'active' ? (s.cancel_at_end ? '<button class="btn md" data-act="resume">Resume subscription</button>' : '<button class="btn md" data-act="cancelSub">Cancel subscription</button>') : '') : '<button class="btn md" data-act="portal">Manage billing & invoices</button>' + (s.status === 'active' && s.interval !== 'lifetime' && !s.cancel_at_end ? '<button class="btn ghost md" data-act="cancelSub">Cancel</button>' : '')}</div>
+    <div class="g">${subSummary()}
+      ${ivlSeg()}<div class="plans" id="plans">${['starter', 'pro', 'elite'].map(k => priceCard(k)).join('')}</div>${lifetimeCard()}
+      <div class="box"><h3>Payment history</h3>${pays.length ? `<div class="tscroll"><table class="tbl2"><thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead><tbody>
+        ${pays.map(p => `<tr><td>${dt(p.ts)}</td><td>${esc(p.descr)}</td><td style="text-align:right;font-weight:800">${eur(p.amount)}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No payments yet.</div>'}</div>
+    </div></div></div>`;
+}
+async function buy(plan, ivl) {
+  ivl = ivl || A.interval;
+  try {
+    track('checkout_start', { plan, interval: ivl });
+    const j = await srv('/api/billing/checkout', { plan, interval: ivl });
+    if (j.url) { toast('Opening secure checkout…'); location.href = j.url; return }
+    setMe(j); track('purchase', { plan, interval: ivl });
+    toast(`✓ ${P(plan).name}${ivl === 'lifetime' ? ' Lifetime' : ''} activated${j.test ? ' (test payment)' : ''}`, 'ok'); route();
+    upsellYearly();
+  } catch (e) { toast(e.message, 'err') }
+}
+async function afterPayment() {
+  toast('Payment received · activating your plan…', 'ok');
+  for (let i = 0; i < 8; i++) { await sleep(1500); try { const j = await srv('/api/me'); setMe(j); if (SUB().status === 'active') { toast('✓ Your plan is active', 'ok'); history.replaceState(null, '', '#dashboard'); route(); return upsellYearly() } } catch {} }
+}
+
+/* ---------------------------------------------------------------- upsells & downsells (all one click, all honest) */
+// 1. Right after a MONTHLY purchase: offer yearly (2 months free). Shown once per plan.
+function upsellYearly() {
+  const s = SUB(), p = P(s.plan); if (s.interval !== 'month' || !p?.year || store.get('upY_' + s.plan, 0)) return;
+  store.set('upY_' + s.plan, 1);
+  const save = Math.round((p.month * 12 - p.year) * 100) / 100;
+  setTimeout(() => openModal(`<div class="offer"><span class="obadge">ONE-TIME OFFER</span><h3>Make it ${money2(p.year)} a year and save ${money2(save)}</h3>
+    <p>You just started ${esc(p.name)} monthly. Switch to yearly now: 2 months free, and your founding price is locked for the whole year.</p>
+    <div class="ocmp"><div><small>Monthly</small><b>${money2(p.month * 12)}</b><span>per year</span></div><div class="win"><small>Yearly</small><b>${money2(p.year)}</b><span>save ${money2(save)}</span></div></div>
+    <div class="oact"><button class="btn acc lg" data-offer="yearly" data-cta="upsell-yearly">Yes, switch to yearly</button><button class="btn ghost md" data-offer="no">No thanks, keep monthly</button></div></div>`), 700);
+}
+// 2. Trying to cancel: offer a cheaper way to stay before cancelling.
+function downsellCancel() {
+  const s = SUB(), p = P(s.plan), st = P('starter'), opts = [];
+  if (s.plan !== 'starter' && st) opts.push(['starter', `Switch to Starter · ${money2(st.month)}/month`, 'Keep the terminal and your journal for less.']);
+  if (s.interval === 'month' && p?.year) opts.push(['yearly', `Switch to yearly · ${money2(Math.round(p.year / 12 * 100) / 100)}/month`, `Same ${esc(p.name)}, 2 months free.`]);
+  openModal(`<div class="offer"><span class="obadge warn">BEFORE YOU GO</span><h3>Keep your founding price for less?</h3>
+    <p>If you cancel, your founding price is gone: coming back later means the regular price${p?.regular ? ` (${money2(p.regular)}/month for ${esc(p.name)})` : ''}.</p>
+    <div class="olist">${opts.map(([k, t, d]) => `<button class="oopt" data-offer="${k}" data-cta="downsell-${k}"><b>${t}</b><small>${d}</small></button>`).join('')}</div>
+    <div class="oact"><button class="btn ghost md" data-offer="cancel">No, cancel my subscription</button><button class="btn md" data-offer="no">Keep my plan</button></div></div>`);
+}
+async function offerAction(k) {
+  const s = SUB(); resolveModal(null);
+  if (k === 'yearly') return buy(s.plan, 'year');
+  if (k === 'starter') return buy('starter', s.interval === 'year' ? 'year' : 'month');
+  if (k === 'lifetime') return buy('pro', 'lifetime');
+  if (k === 'demo') { window.open('terminal_pro.html?demo=1', '_blank'); return }
+  if (k === 'trial') { location.hash = 'signup'; return }
+  if (k === 'cancel') {
+    track('cancel', { plan: s.plan });
+    if (!A.me.test_mode) { const j = await srv('/api/billing/portal', {}).catch(() => ({})); if (j.url) location.href = j.url; return }
+    try { setMe(await srv('/api/billing/cancel', {})); renderBilling(); toast(`Cancelled. You keep access until ${dt(SUB().period_end)}.`, 'ok') } catch (err) { toast(err.message, 'err') }
+  }
+}
+// 3. Exit intent (desktop, landing, logged out, once per visit): show the product instead of losing the visitor.
+document.addEventListener('mouseout', e => {
+  if (e.relatedTarget || e.clientY > 8 || A.me || modalOpen() || $('#view').dataset.v !== 'landing' || innerWidth < 900 || sessionStorage.getItem('gpExit')) return;
+  sessionStorage.setItem('gpExit', 1); track('exit_intent');
+  openModal(`<div class="offer"><span class="obadge">WAIT, 30 SECONDS</span><h3>See it working before you go</h3>
+    <p>Open the live demo: a full terminal with simulated prices. No sign-up, no download. Drag a stop loss, place layers, try Basket BE.</p>
+    <div class="oact"><button class="btn acc lg" data-offer="demo" data-cta="exit-demo">▶ Open the live demo</button><button class="btn md" data-offer="trial" data-cta="exit-trial">Start the ${A.plans?.trial_days || 7}-day free trial</button></div>
+    <small class="mut" style="display:block;margin-top:12px">Founding price from ${minPrice()}/month · no card for the trial</small></div>`);
+});
+// 4. Lifetime deal card (top upsell, shown under the plans)
+function lifetimeCard() {
+  const p = P('pro'); if (!p?.lifetime) return '';
+  const owned = A.me && SUB().interval === 'lifetime';
+  return `<div class="lifetime"><div class="lt1"><span class="obadge">FOUNDING LAUNCH ONLY</span><h4>Pro Lifetime: pay once, keep it forever</h4>
+    <p>Every Pro feature and every future Pro update, for life. No subscription, nothing to renew.</p></div>
+    <div class="lt2"><small><s>${money2(p.regular * 12)}/year</s></small><b>${money2(p.lifetime)}</b><span>one-time · about ${Math.round(p.lifetime / p.month)} months of Pro</span></div>
+    ${owned ? '<button class="btn lg" disabled>You own Lifetime ✓</button>' : A.me ? `<button class="btn acc lg" data-buy="pro" data-bivl="lifetime" data-cta="buy-lifetime">Get Lifetime</button>` : `<a class="btn acc lg" href="#signup" data-cta="lifetime-trial">Try free first</a>`}</div>`;
+}
+
+/* ---------------------------------------------------------------- terminal */
+function renderTerminal() {
+  const s = SUB();
+  if (!s.valid) {
+    $('#view').dataset.v = 'pay';
+    $('#view').innerHTML = `<div class="page"><div class="wrap"><div class="box paywall"><div class="ic">🔒</div><h1 style="font-size:24px;margin:8px 0">Your access has ended</h1>
+      <p style="color:var(--mut);margin-bottom:18px">Choose a plan to continue. Your MT5 account and open trades are not affected.</p><a class="btn acc lg" href="#billing">See plans</a>
+      <button class="btn lg" data-act="demo" style="margin-left:6px">Use the demo</button></div></div></div>`;
+    return;
+  }
+  const w = $('#termWrap'), f = $('#termFrame');
+  w.classList.add('on'); document.body.style.overflow = 'hidden';
+  // Real account when this customer's bridge answers; otherwise clearly-labelled demo data. Checked every time the terminal opens,
+  // and switched over by itself as soon as the bridge connects (before, the first choice stuck forever).
+  const show = () => {
+    const live = BR.state === 'ok', m = BR.h?.mt5 || {};
+    const src = 'terminal_pro.html?demo=' + (live ? '0' : '1');
+    if (!f.src.endsWith(src)) f.src = src;
+    $('#termBar').innerHTML = `<a class="btn sm" href="#dashboard">← Dashboard</a>${stPill(s)}<span class="mut hide-sm">${esc(P(s.plan)?.name || '')}${s.status === 'trialing' ? ` · ${s.days_left} days left` : ''}</span><span class="grow"></span>
+      ${live ? `<span class="tchip ok">● ${m.real ? 'REAL' : 'DEMO'} account ${esc(m.login || BR.acc?.login || '')}${m.server ? ' · ' + esc(m.server) : ''}</span>`
+        : BR.state === 'live' ? `<a class="tchip warn" href="#setup">💰 Your real account needs one click to allow → Setup</a>`
+        : `<a class="tchip warn" href="#setup">Showing DEMO data · connect your MT5 →</a>`}
+      <a class="btn sm hide-sm" href="journal.html" target="_blank">📒 Journal</a>`;
+  };
+  show();
+  checkBridge().then(show);
+  clearInterval(BR.tTimer);
+  BR.tTimer = setInterval(() => { if (!location.hash.startsWith('#terminal')) return clearInterval(BR.tTimer); if (BR.state !== 'ok') checkBridge().then(show) }, 4000);
+}
+
+/* ---------------------------------------------------------------- admin (you) */
+// Admin = an account marked as admin on the server (works on every device), or the admin token.
+function isAdmin() { return !!A.me?.user?.is_admin }
+function admHeaders(tok = store.get('saasAdmin', '')) { const h = { 'Content-Type': 'application/json' }; if (tok) h['X-Admin-Token'] = tok; if (A.token) h.Authorization = 'Bearer ' + A.token; return h }
+async function renderAdmin() {
+  $('#view').dataset.v = 'admin';
+  const tok = store.get('saasAdmin', ''), local = /^(127\.0\.0\.1|localhost)$/.test(location.hostname);
+  $('#view').innerHTML = `<div class="page"><div class="wrap"><div class="ph"><div><h1>Admin</h1><p>${isAdmin() ? `Your business at a glance. Signed in as admin (<b>${esc(A.me.user.email)}</b>): this works on every device where you log in.`
+      : `Enter the admin token once${local ? ' (on your own bridge: the <b>api_key</b> in your config.json)' : ''}. ${A.me ? 'Your account then becomes an admin account: next time, on any device, just log in.' : '<b>Log in first</b> and your account becomes an admin account, so you never need the token again.'}`}</p></div><span class="grow"></span>
+    ${isAdmin() ? '' : `<input class="in" id="admTok" type="password" placeholder="Admin token" value="${esc(tok)}" style="width:220px"><button class="btn acc md" data-act="admLoad">Load</button>`}</div><div id="adm"></div></div></div>`;
+  if (isAdmin() || tok) admLoad();
+}
+const ADMF = [['all', 'Everyone', () => true], ['trialing', 'Free trial', u => u.status === 'trialing'], ['paying', 'Paying', u => ['active', 'past_due'].includes(u.status) || (u.status === 'canceled' && u.period_end > Date.now() / 1000)],
+  ['past_due', 'Payment failed', u => u.status === 'past_due'], ['ending', 'Cancelled, ending', u => u.cancel_at_end || u.status === 'canceled'], ['expired', 'Ended / expired', u => u.status === 'expired']];
+function admTable() {
+  const j = A.adm; if (!j) return; A.admF = A.admF || 'all';
+  const fn = (ADMF.find(x => x[0] === A.admF) || ADMF[0])[2], rows = j.customers.filter(fn), now = Date.now() / 1000;
+  const left = u => { if (!u.period_end) return '—'; const d = Math.ceil((u.period_end - now) / 86400); return d < 0 ? `<span class="dn">${-d} d ago</span>` : d <= 2 ? `<b style="color:var(--orange)">${d} d</b>` : d + ' d' };
+  $('#admN').textContent = `${rows.length} shown`;
+  $$('[data-admf]').forEach(b => b.classList.toggle('on', b.dataset.admf === A.admF));
+  $('#admT').innerHTML = `<table class="tbl2"><thead><tr><th>Email</th><th>Status</th><th>Plan</th><th>${A.admF === 'trialing' ? 'Trial ends' : 'Renews / ends'}</th><th>Left</th><th>PCs</th><th>Bridge last seen</th><th>Joined</th><th></th></tr></thead><tbody>
+    ${rows.map(u => `<tr><td><a href="mailto:${esc(u.email)}" style="color:var(--acc);font-weight:700;text-decoration:none">${esc(u.email)}</a></td><td>${stPill(u)}</td><td>${esc(P(u.plan)?.name || '—')} ${u.interval === 'year' ? '<span class="mut">yearly</span>' : ''}</td><td>${dt(u.period_end)}${u.cancel_at_end ? ' <span class="st warn">ends</span>' : ''}</td><td>${left(u)}</td><td>${u.machines}</td><td>${ago(u.last_seen)}</td><td>${dt(u.created)}</td><td><button class="btn sm danger" data-admdel="${esc(u.email)}" title="Delete this user for good">🗑 Delete</button></td></tr>`).join('') || '<tr><td colspan="9" class="empty">Nobody in this group.</td></tr>'}
+    </tbody></table>`;
+}
+async function admDelete(email, force) {
+  const u = A.adm?.customers.find(x => x.email === email), paying = u && ['active', 'past_due'].includes(u.status);
+  if (!force && !(await confirmBox(`Delete ${email}?`, `<p>The account, its license key and payment records are removed for good. Their bridge stops working within 30 minutes.</p>${paying ? '<p style="margin-top:8px"><b>This is a paying customer.</b> Their Stripe subscription is cancelled right away (no refund is made automatically).</p>' : ''}<p style="margin-top:8px">This cannot be undone.</p>`, 'Delete for good', 'danger'))) return;
+  try {
+    const r = await fetch(SRV + '/api/admin/delete_user', { method: 'POST', headers: admHeaders(), body: JSON.stringify({ email, force: !!force }) });
+    const j = await r.json(); if (!r.ok) throw Object.assign(new Error(j.detail), { code: r.status });
+    toast(j.message, 'ok'); admLoad();
+  } catch (e) {
+    if (e.code === 502 && await confirmBox('Stripe did not answer', `<p>${esc(e.message)}</p>`, 'Delete anyway', 'danger')) return admDelete(email, true);
+    toast(e.message, 'err');
+  }
+}
+async function admLoad() {
+  const tok = $('#admTok') ? $('#admTok').value.trim() : store.get('saasAdmin', ''); if ($('#admTok')) store.set('saasAdmin', tok);
+  try {
+    const r = await fetch(SRV + '/api/admin/overview', { headers: admHeaders(tok) }); const j = await r.json();
+    if (!r.ok) throw new Error(j.detail);
+    // token worked while logged in: mark this account as admin on the server, so every device works with just a login
+    if (tok && A.me && !isAdmin()) {
+      try {
+        const c = await fetch(SRV + '/api/admin/claim', { method: 'POST', headers: admHeaders(tok) });
+        if (c.ok) { setMe(await srv('/api/me')); toast('Your account is now an admin account: log in anywhere to open Admin.', 'ok', 7000); return renderAdmin() }
+      } catch {}
+    }
+    const c = j.counts, conv = (c.active + c.past_due) / Math.max(1, j.customers.length) * 100;
+    $('#adm').innerHTML = `<div class="g"><div class="g g4 kps">
+      ${[['MRR', eur(j.mrr)], ['ARR', eur(j.arr)], ['Revenue 30 days', eur(j.revenue_30d)], ['Paying customers', c.active + c.past_due], ['In trial', c.trialing], ['Sign-ups 30 days', j.signups_30d], ['Trial → paid', conv.toFixed(0) + '%'], ['Churned / expired', c.expired + c.canceled]]
+        .map(([k, v]) => `<div class="kp"><small>${k}</small><b>${v}</b></div>`).join('')}</div>
+      <div class="box"><h3>Customers <span class="grow"></span><span class="mut" style="font-size:12px" id="admN"></span></h3>
+        <div class="seg" id="admF" style="margin-bottom:12px;flex-wrap:wrap;width:max-content;max-width:100%">${ADMF.map(([k, t, fn]) => `<button data-admf="${k}" class="${A.admF === k ? 'on' : ''}">${t} <span class="mut">${j.customers.filter(fn).length}</span></button>`).join('')}</div>
+        <div class="tscroll" id="admT"></div></div></div>`;
+    A.adm = j; admTable(); renderNav('admin');
+  } catch (e) { $('#adm').innerHTML = `<div class="res on bad">${esc(e.message)}</div>` }
+}
+
+/* ---------------------------------------------------------------- legal placeholders */
+const LEGAL = {
+  terms: ['Terms of service', 'Replace this with your own terms (use a lawyer or a generator such as Termly / iubenda). Cover: subscription & renewal, refunds, acceptable use, license limits (number of PCs), no investment advice, limitation of liability, governing law.'],
+  privacy: ['Privacy policy', 'Replace with your GDPR privacy policy. You store: email, name, hashed password, subscription status and bridge PC identifiers. Payments are processed by Stripe. Customers\' MT5 passwords are never sent to you.'],
+  risk: ['Risk disclosure', 'Trading forex, CFDs and other leveraged products carries a high risk of losing money. Goldmine Pro is software only. It does not give advice, manage money or execute trades on its own initiative. Past performance shown in the journal is not indicative of future results.'],
+};
+
+/* ---------------------------------------------------------------- events */
+document.addEventListener('click', async e => {
+  const cta = e.target.closest('[data-cta]'); if (cta) track('cta_click', { id: cta.dataset.cta }); // analytics hook
+  const of = e.target.closest('[data-offer]'); if (of) { if (of.dataset.offer === 'no') return resolveModal(null); return offerAction(of.dataset.offer) }
+  const af = e.target.closest('[data-admf]'); if (af) { A.admF = af.dataset.admf; return admTable() }
+  const ad = e.target.closest('[data-admdel]'); if (ad) return admDelete(ad.dataset.admdel);
+  const z = e.target.closest('[data-zoom]');
+  const tr = e.target.closest('[data-tour]'); if (tr) { e.preventDefault(); return document.getElementById('tour' + tr.dataset.tour)?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }
+  if (z) { const m = openModal(`<img src="${z.dataset.zoom}" alt="">`, true); m.classList.add('shotbox'); return }
+  const t = e.target.closest('[data-act],[data-buy],[data-ivl],[data-sw],[data-unlink],[data-theme-set],[data-copy],[data-tstate],[data-acctrm]');
+  if (!t) { if (!e.target.closest('#menu')) closeMenus(); return }
+  if (t.dataset.buy) return buy(t.dataset.buy, t.dataset.bivl);
+  if (t.dataset.acctrm) { if (!(await confirmBox('Remove this account?', '<p>It disappears from the terminal. You can add it again any time.</p>', 'Remove', 'danger'))) return; try { await bridge('/api/accounts/remove', { login: +t.dataset.acctrm }); toast('Account removed', 'ok'); loadAccts() } catch (err) { toast(err.message, 'err') } return }
+  if (t.dataset.tstate) { try { setMe(await srv('/api/test/state', { state: t.dataset.tstate })); toast('Account is now: ' + t.textContent, 'ok'); $('#view').dataset.v = ''; route() } catch (err) { toast(err.message, 'err') } return }
+  if (t.dataset.ivl) { A.interval = t.dataset.ivl; store.set('saasIvl', A.interval); $$('[data-ivl]').forEach(b => b.classList.toggle('on', b.dataset.ivl === A.interval)); $('#plans').innerHTML = ['starter', 'pro', 'elite'].map(k => priceCard(k)).join(''); return }
+  if (t.dataset.sw) { resolveModal(null); location.hash = t.dataset.sw; return }
+  if (t.dataset.themeSet) { CFG.theme = t.dataset.themeSet; saveCfg(); applyTheme(); $('#view').dataset.v = ''; return route() }
+  if (t.dataset.copy) { navigator.clipboard?.writeText($('#cfgEx').textContent); return toast('Copied', 'ok') }
+  if (t.dataset.unlink) { if (!(await confirmBox('Remove this PC?', 'Its bridge stops working until it is activated again.', 'Remove', 'danger'))) return; try { setMe(await srv('/api/license/machines/remove', { machine: t.dataset.unlink })); renderDashboard(); toast('PC removed', 'ok') } catch (err) { toast(err.message, 'err') } return }
+  const a = t.dataset.act;
+  if (a === 'burger') return $('#links').classList.toggle('open');
+  if (a === 'menu') { e.stopPropagation(); return $('#menu').classList.toggle('on') }
+  if (a === 'logout') return logout();
+  if (a === 'demo') { window.open('terminal_pro.html?demo=1', '_blank'); return }
+  if (a === 'legal') { e.preventDefault(); const [h, b] = LEGAL[t.dataset.k]; openModal(`<h3 style="margin-bottom:10px">${h}</h3><p style="color:var(--mut);line-height:1.6;font-size:13.5px">${b}</p><div style="text-align:right;margin-top:16px"><button class="btn md" onclick="resolveModal(null)">Close</button></div>`); return }
+  if (a === 'reveal') { const c = $('#lic'); const on = c.textContent.includes('•'); c.textContent = on ? c.dataset.k : c.dataset.k.slice(0, 8) + '•••••-•••••-•••••'; t.textContent = on ? 'Hide' : 'Show'; return }
+  if (a === 'copyKey') { navigator.clipboard?.writeText(A.me.license); return toast('License key copied', 'ok') }
+  if (a === 'rotate') { if (!(await confirmBox('Generate a new license key?', 'The old key stops working right away and every linked PC is removed. Download the bridge again or activate it with the new key.', 'Generate new key', 'danger'))) return; try { setMe(await srv('/api/license/rotate', {})); store.set('bridgeOk', 0); renderDashboard(); toast('New key generated', 'ok') } catch (err) { toast(err.message, 'err') } return }
+  if (a === 'download') return downloadBridge();
+  if (a === 'acctAdd') return acctAdd();
+  if (a === 'revealBk') { const c = $('#bkey'), on = c.textContent.includes('•'); c.textContent = on ? c.dataset.k : c.dataset.k.slice(0, 6) + '••••••••••••••••••••'; t.textContent = on ? 'Hide' : 'Show'; return }
+  if (a === 'copyBk') { navigator.clipboard?.writeText(A.me.bridge_key); return toast('API key copied', 'ok') }
+  if (a === 'saveManual') return saveManual();
+  if (a === 'liveOn') return setLive(true);
+  if (a === 'liveOff') { e.preventDefault(); return setLive(false) }
+  if (a === 'resetManual') return resetManual();
+  if (a === 'testerToggle') { store.set('testerOpen', store.get('testerOpen', 1) ? 0 : 1); return renderTester() }
+  if (a === 'quickAccount') { if (A.me) { A.token = ''; A.me = null } return quickAccount() }
+  if (a === 'checkNow') { BR.state = ''; return checkBridge().then(() => toast(BR.msg || 'Waiting for the bridge…')) }
+  if (a === 'portal') { try { const j = await srv('/api/billing/portal', {}); if (j.url) location.href = j.url; else toast('Billing portal is available once Stripe is connected (test mode now).', 'warn') } catch (err) { toast(err.message, 'err') } return }
+  if (a === 'cancelSub') return downsellCancel();
+  if (a === 'resume') { try { setMe(await srv('/api/billing/resume', {})); renderBilling(); toast('Subscription resumed', 'ok') } catch (err) { toast(err.message, 'err') } return }
+  if (a === 'admLoad') return admLoad();
+});
+
+// Same as PLANS in saas/license_server.py: used only when the server can't be reached, so visitors still see the full page.
+const OFFLINE_PLANS = { offline: true, trial_days: 7, trial_plan: 'pro', test_mode: false, currency: 'EUR', plans: {
+  starter: { name: 'Starter', month: 4.99, year: 49, regular: 29, accounts: 1, machines: 1, features: ['terminal', 'journal', 'alerts', 'drawings'], blurb: 'One MT5 account, the full terminal and the journal.' },
+  pro: { name: 'Pro', month: 9.99, year: 99, regular: 59, lifetime: 249, accounts: 5, machines: 2, features: ['terminal', 'journal', 'alerts', 'drawings', 'layers', 'basket', 'manage', 'paper', 'copy'], blurb: 'Five accounts, layers, basket BE, trade manager, paper accounts and copy trading.' },
+  elite: { name: 'Elite', month: 19.99, year: 199, regular: 119, accounts: 25, machines: 3, features: ['terminal', 'journal', 'alerts', 'drawings', 'layers', 'basket', 'manage', 'paper', 'copy', 'priority'], blurb: 'For prop traders and small teams: 25 accounts, 3 PCs, priority support.' } } };
+function noServer() { // nothing answered: say exactly what to start, instead of a vague error
+  const mine = /^(127\.0\.0\.1|localhost)$/.test(location.hostname) || location.protocol === 'file:';
+  if (!mine) return; // public visitors just see the page; sign-up explains itself
+  $('#ribbon').className = 'on';
+  $('#ribbon').innerHTML = '⚠ The subscription server is not running on this PC. Start <b>start_bridge.bat</b> (the test website is built in) or <b>saas\\TEST_EVERYTHING.bat</b>, then reload.';
+}
+document.addEventListener('submit', e => {
+  if (A.plans?.offline && e.target.id === 'authF') {
+    e.preventDefault(); e.stopImmediatePropagation();
+    $('#authErr').innerHTML = /github\.io$/.test(location.hostname)
+      ? 'Sign-ups are not open yet. Please try again soon.<br><small style="color:var(--mut);font-weight:600">Owner: start your bridge or TEST_EVERYTHING.bat on your PC to test sign-up from this page.</small>'
+      : 'The subscription server is not running. See the yellow bar at the top.';
+  }
+}, true);
+
+/* ---------------------------------------------------------------- boot */
+(async () => {
+  A.plans = await findServer();
+  if (!A.plans) { A.plans = OFFLINE_PLANS; noServer() } // the landing page and prices always show; only sign-up needs the server
+  if (A.token) { try { setMe(await srv('/api/me')) } catch { A.token = ''; store.set('saasToken', '') } }
+  if (!location.hash && A.me) location.hash = 'dashboard';
+  route();
+  setInterval(() => { if (A.me && document.visibilityState === 'visible') srv('/api/me').then(setMe).catch(() => {}) }, 60000);
+})();
+</script>
+</body>
+</html>
