@@ -20,6 +20,7 @@
 {"@type":"Question","name":"What happens after the free trial?","acceptedAnswer":{"@type":"Answer","text":"No card is asked for the trial, so nothing is charged automatically. Pick a plan to keep going."}}]}</script>
 <link rel="stylesheet" href="gp-theme.css?v=20261109c">
 <script src="gp-shared.js?v=20261109c"></script>
+<script>document.documentElement.dataset.theme = 'light' // the website is always light (it has its own dark section); the terminal keeps its own theme</script>
 <style>
 html,body{overflow:auto;height:auto}
 body{background:var(--bg);min-height:100vh}
@@ -472,6 +473,7 @@ const ALLF = Object.keys(FEAT);
 
 /* ---------------------------------------------------------------- routing */
 const PUBLIC = ['home', 'pricing', 'features', 'faq', 'login', 'signup'];
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; // a refresh starts at the top, not where the phone last was
 function route() {
   const [r0, qs] = (location.hash.slice(1) || 'home').split('?'); const r = r0 || 'home';
   closeMenus(); renderTester();
@@ -479,7 +481,13 @@ function route() {
   if (['dashboard', 'setup', 'billing', 'terminal'].includes(r) && !A.me) { location.hash = 'login'; return }
   renderNav(r);
   if (r === 'login' || r === 'signup') { renderLanding(); return authBox(r) }
-  if (['home', 'pricing', 'features', 'faq'].includes(r)) { renderLanding(); if (r !== 'home') setTimeout(() => document.getElementById(r)?.scrollIntoView({ behavior: 'smooth' }), 30); else scrollTo(0, 0); return }
+  if (['home', 'pricing', 'features', 'faq'].includes(r)) {
+    renderLanding();
+    // section links scroll once, then the address goes back to #home: a refresh starts at the top instead of jumping to the prices again
+    if (r !== 'home') { setTimeout(() => document.getElementById(r)?.scrollIntoView({ behavior: 'smooth' }), 30); history.replaceState(null, '', location.pathname + location.search + '#home') }
+    else scrollTo(0, 0);
+    return
+  }
   scrollTo(0, 0);
   if (r === 'dashboard') { if (new URLSearchParams(qs).get('paid')) afterPayment(); return renderDashboard() }
   if (r === 'setup') return renderSetup();
@@ -505,7 +513,6 @@ function renderNav(r) {
     ? `<button id="acctBtn" data-act="menu"><span class="hide-sm">${esc(A.me.user.name || A.me.user.email.split('@')[0])}</span><i>${esc((A.me.user.name || A.me.user.email)[0].toUpperCase())}</i></button>
        <div class="menu" id="menu"><div class="who">${esc(A.me.user.email)}<br>${stPill(SUB())} ${esc(P(SUB().plan)?.name || '')}</div><hr>
        <a href="#dashboard">🏠 Dashboard</a><a href="#billing">💳 Billing</a><a href="journal.html" target="_blank">📒 Journal</a><hr>
-       <div class="seg">${['light', 'dark', 'midnight'].map(t => `<button data-theme-set="${t}" class="${CFG.theme === t ? 'on' : ''}">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}</div><hr>
        <button data-act="logout">↩ Log out</button></div>`
     : `<a class="nl hide-sm" href="#login">Log in</a><a class="btn acc md" href="#signup">Start free trial</a>`;
   const tm = A.me?.test_mode ?? A.plans?.test_mode;
@@ -553,7 +560,7 @@ function renderLanding() {
     <p class="sub">Goldmine Pro is a web terminal for MetaTrader 5. Layer entries sized by your risk, move a whole basket to break-even, close your worst entries, and see in a real journal what actually makes you money. Works with any MT5 broker, on any device.</p>
     <div class="cta"><a class="btn acc lg" href="#signup" data-cta="hero-trial">Start my free ${td}-day trial</a><button class="btn lg" data-act="demo" data-cta="hero-demo">▶ Try the live demo · no sign-up</button></div>
     <div class="trust"><span>No card needed</span><span>Cancel in 2 clicks</span><span>Then from ${minPrice()}/month</span></div>
-    <div class="shot"><div class="bar"><i></i><i></i><i></i><span>Goldmine Pro · live demo</span></div><div class="vp" id="vp"><iframe id="heroFrame" src="terminal_pro.html?demo=1&theme=${CFG.theme}" tabindex="-1" loading="lazy" title="Live demo of the Goldmine Pro terminal"></iframe></div>
+    <div class="shot"><div class="bar"><i></i><i></i><i></i><span>Goldmine Pro · live demo</span></div><div class="vp" id="vp"><iframe id="heroFrame" src="terminal_pro.html?demo=1&theme=light" tabindex="-1" loading="lazy" title="Live demo of the Goldmine Pro terminal"></iframe></div>
       <div class="live">Live demo · simulated prices</div><div class="try" data-act="demo" data-cta="hero-shot"><b>Open the live demo →</b></div></div>
     <div class="floaters" aria-hidden="true">
       <div class="fl f1"><i>🪜</i><div><small>5 buy limits placed</small><b>Risk −$110 · 1.00%</b></div></div>
