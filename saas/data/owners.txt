@@ -1,0 +1,3 @@
+# Owner accounts: these emails get the Admin page automatically when they log in.
+# This file stays on this PC only (saas/data is never uploaded or put in the bridge zip).
+nicolas.gomez.colchero@gmail.com

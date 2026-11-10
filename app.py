@@ -31,6 +31,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Literal, Optional
 from urllib.parse import urlparse
+import urllib.request
 
 import MetaTrader5 as mt5
 from fastapi import FastAPI, Header, HTTPException, Query, Request
@@ -43,12 +44,15 @@ BASE = Path(__file__).resolve().parent
 CONFIG_PATH = BASE / "config.json"
 
 if not CONFIG_PATH.exists():
-    raise RuntimeError(
-        "Missing config.json. Copy config.example.json to config.json "
-        "and configure a demo terminal."
-    )
+    # zero-setup: create a config with a strong random key; accounts are detected from the running MT5 (below)
+    CONFIG_PATH.write_text(json.dumps({
+        "mode": "demo", "live_trading": False, "api_key": secrets.token_hex(24), "allowed_origins": [], "terminals": [],
+    }, indent=2), encoding="utf-8")
+    print("Created config.json with a new random api_key.")
 
 CONFIG = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+if CONFIG.get("live_trading") is True:  # one simple switch for customers: allow real-money accounts
+    CONFIG["mode"] = "mixed"
 
 if CONFIG.get("mode") not in ("demo", "mixed"):
     raise RuntimeError(
@@ -66,10 +70,47 @@ if len(API_KEY) < 32 or API_KEY == "REPLACE_WITH_A_LONG_RANDOM_SECRET":
         "of at least 32 characters."
     )
 
+SIMPLE_CONFIG = not CONFIG.get("terminals")  # no accounts written in config.json (customer bridge, auto-detected)
 TERMINALS = CONFIG.get("terminals", [])
 
-if not TERMINALS:
-    raise RuntimeError("Configure at least one demo terminal in config.json.")
+# Accounts added from the app ("Add MT5 account") live in accounts_extra.json,
+# so config.json is never rewritten. Only demo accounts can be added this way.
+ACCOUNTS_FILE = Path(os.getenv("GOMEZ_ACCOUNTS_FILE") or BASE / "accounts_extra.json")
+try:
+    TERMINALS += [t for t in json.loads(ACCOUNTS_FILE.read_text(encoding="utf-8"))
+                  if int(t["login"]) not in {int(x["login"]) for x in TERMINALS}]
+except Exception:
+    pass
+
+def autodetect_terminal() -> bool:
+    """No accounts in config.json: use the account that is logged in to the running MetaTrader 5.
+    The terminal keeps its own saved password, so the customer never types it anywhere."""
+    if TERMINALS:
+        return True
+    try:
+        if not mt5.initialize():
+            print("[setup] MetaTrader 5 not found or not logged in yet:", mt5.last_error())
+            return False
+        info, term = mt5.account_info(), mt5.terminal_info()
+        if info is None:
+            print("[setup] MetaTrader 5 is open but not logged in to an account.")
+            return False
+        t = {"label": f"{info.name or 'MT5'} · {info.server}", "login": int(info.login), "server": info.server,
+             "auto": True, "allow_live": CONFIG.get("live_trading") is True}
+        if term is not None and getattr(term, "path", ""):
+            t["path"] = str(Path(term.path) / "terminal64.exe")
+        TERMINALS.append(t)
+        STATE_AUTO["login"] = t["login"]
+        print(f"[setup] Using the MT5 account that is logged in: {t['login']} on {t['server']}")
+        return True
+    except Exception as e:
+        print("[setup] Could not detect MetaTrader 5:", e)
+        return False
+
+
+STATE_AUTO = {"login": None}
+if not TERMINALS and not autodetect_terminal():
+    print("[setup] No account yet. Open MetaTrader 5, log in, and the bridge picks it up automatically.")
 
 
 def clean_origin(o: str) -> str:
@@ -92,13 +133,76 @@ print("Allowed browser origins:", ORIGINS)
 
 app = FastAPI(title="Gomez Trading MT5 Demo Bridge", version="0.5.0")
 
+# ---- subscription license (OFF unless license.json / GOMEZ_LICENSE_SERVER is present: your own bridge is unaffected)
+from fastapi.responses import JSONResponse as _JSON  # noqa: E402
+from licensing import License  # noqa: E402
+
+LICENSE = License(BASE, CONFIG)
+_LICENSE_FREE = {"/api/health", "/api/license/status", "/api/license/activate", "/api/license/refresh"}
+_PLAN_FEATURE = {"/api/copy": "copy", "/api/paper": "paper"}  # parts of the app that need a higher plan
+
+
+async def _license_recheck():
+    """Ask the license server again before refusing (at most every 20 s): an upgrade, a renewal or a new
+    trial must work right away, not after the next 30-minute check."""
+    if time.time() - LICENSE.checked > 20:
+        import asyncio
+        await asyncio.to_thread(LICENSE.refresh)
+
+
+@app.middleware("http")
+async def license_gate(request: Request, call_next):
+    """Registered BEFORE the CORS middleware, so CORS wraps it and the browser can read the 402 message."""
+    p = request.url.path
+    if LICENSE.enabled and request.method != "OPTIONS" and p.startswith("/api/") and p not in _LICENSE_FREE:
+        if not LICENSE.ok():
+            await _license_recheck()
+            if not LICENSE.ok():
+                return _JSON({"detail": "Goldmine Pro license: " + LICENSE.reason()}, status_code=402)
+        for pre, feat in _PLAN_FEATURE.items():
+            if p.startswith(pre) and not LICENSE.feature(feat):
+                await _license_recheck()
+                if not LICENSE.feature(feat):
+                    return _JSON({"detail": f"Your plan ({LICENSE.data.get('plan', '?')}) does not include this. Upgrade in your dashboard."}, status_code=402)
+    return await call_next(request)
+
+
+@app.post("/api/license/refresh")
+def license_refresh(x_gomez_key: Optional[str] = Header(default=None)):
+    """The website calls this after a plan change, so the bridge picks it up at once."""
+    if not x_gomez_key or not secrets.compare_digest(x_gomez_key, API_KEY):
+        raise HTTPException(401, "Wrong key.")
+    return LICENSE.refresh() if LICENSE.enabled else LICENSE.status()
+
+
+def plan_terminals():
+    """The MT5 accounts this license may use (first N of config.json); all of them when licensing is off."""
+    if not LICENSE.enabled:
+        return TERMINALS
+    return TERMINALS[: int((LICENSE.data.get("limits") or {}).get("accounts") or 0)]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ORIGINS,
+    allow_origin_regex=r"https://[A-Za-z0-9.-]+|http://(127\.0\.0\.1|localhost)(:\d+)?",  # hosted site + local test site
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "X-Gomez-Key"],
+    # any request header is fine: access is decided by the X-Gomez-Key value (and the origin above), not by header names.
+    # (Browser extensions and some Chrome versions add extra headers; a fixed list made those checks fail with 400.)
+    allow_headers=["*"],
 )
+
+# ---- YOUR test copy of the subscription website, built into your own bridge:
+#      http://127.0.0.1:8765/saas/  (also via your Cloudflare link). Only on your PC: customer zips have no saas/ folder.
+#      Turn off with "saas_test": false in config.json. Admin tab token = your api_key.
+if (BASE / "saas" / "license_server.py").exists() and CONFIG.get("saas_test", True) is not False:
+    try:
+        os.environ.setdefault("GP_ADMIN_TOKEN", API_KEY)
+        from saas.license_server import app as _saas_app  # noqa: E402
+        app.mount("/saas", _saas_app)
+        print("Subscription test website: http://127.0.0.1:8765/saas/")
+    except Exception as _e:
+        print("[saas] test website not started:", _e)
 
 
 @app.middleware("http")
@@ -109,6 +213,11 @@ async def private_network_access(request: Request, call_next):
         "access-control-request-private-network", ""
     ).lower() == "true":
         response.headers["Access-Control-Allow-Private-Network"] = "true"
+
+    if request.method == "OPTIONS" and response.status_code == 400:  # say WHICH website was refused, instead of a bare "400"
+        print(f"[cors] refused a browser check from origin {request.headers.get('origin', '?')!r} "
+              f"(headers: {request.headers.get('access-control-request-headers', '-')}). "
+              "If that is your website, add it to allowed_origins in config.json.")
 
     return response
 
@@ -128,20 +237,36 @@ async def _log_http_errors(request: Request, exc):
 
 @app.get("/", include_in_schema=False)
 def dashboard():
-    return FileResponse(BASE / "terminal.html")
+    return FileResponse(
+        BASE / "terminal_pro.html",  # the terminal
+        media_type="text/html; charset=utf-8",
+        headers={"Cache-Control": "no-cache"},  # always load the newest terminal page
+    )
 
 
-# Site files the tunnel link may serve (login, terminal, shared js/css). config.json is NOT in this list.
+# Site files the tunnel link may serve (login, dashboards, terminal, shared js/css).
+# config.json, app.py, secret_*.txt and everything else are NOT in this list, so they can never be downloaded.
 SITE_FILES = {
-    "index.html", "login.html", "terminal.html", "admin.html",
-    "trader.html", "investor.html", "gm.js", "gm.css",
+    "terminal_pro.html", "journal.html", "terminal_test.html", "rulebook.html",
+    "gp-shared.js", "gp-theme.css",
+}
+_MIME = {
+    ".html": "text/html; charset=utf-8",
+    ".js": "text/javascript; charset=utf-8",   # set explicitly: Windows can map .js to text/plain, which browsers refuse for modules
+    ".css": "text/css; charset=utf-8",
+    ".jpg": "image/jpeg",
 }
 
 
 @app.get("/{fname}", include_in_schema=False)
 def site_file(fname: str):
-    if fname in SITE_FILES and (BASE / fname).is_file():
-        return FileResponse(BASE / fname)
+    path = BASE / fname
+    if (fname in SITE_FILES or re.fullmatch(r"lp-[a-z0-9-]+\.jpg", fname)) and path.is_file():  # lp-*.jpg = landing page screenshots
+        return FileResponse(
+            path,
+            media_type=_MIME.get(path.suffix.lower()),
+            headers={"Cache-Control": "no-cache"},  # always pick up the newest page after you update a file
+        )
     raise HTTPException(404, "Not found.")
 
 
@@ -201,9 +326,14 @@ def authorized(k: Optional[str]):
 
 
 def terminal_cfg(login: int):
-    for cfg in TERMINALS:
+    if not TERMINALS:
+        with LOCK:
+            autodetect_terminal()
+    for cfg in plan_terminals():
         if int(cfg.get("login", -1)) == int(login):
             return cfg
+    if LICENSE.enabled and any(int(c.get("login", -1)) == int(login) for c in TERMINALS):
+        raise HTTPException(402, "Your plan allows fewer MT5 accounts. Upgrade in your dashboard to use this one.")
 
     raise HTTPException(
         404, "That account is not configured in the bridge."
@@ -212,6 +342,8 @@ def terminal_cfg(login: int):
 
 LOCK = threading.RLock()
 STATE = {"login": None, "path": None}
+if STATE_AUTO["login"]:  # auto-detected at start: MT5 is already connected to this account
+    STATE.update(login=STATE_AUTO["login"], path=TERMINALS[0].get("path"))
 
 
 def _fast_switch(cfg, login):
@@ -310,8 +442,8 @@ def ensure(login: int):
         STATE["login"] = None
         raise HTTPException(
             403,
-            "Live/non-demo account blocked. To allow it, set config mode "
-            "to 'mixed' and add \"allow_live\": true to this account."
+            "Real-money account blocked (demo only). To allow it, open config.json in the bridge folder, "
+            "set \"live_trading\": true and start the bridge again."
         )
 
     if int(info.login) != int(login):
@@ -331,6 +463,60 @@ def ensure(login: int):
 def session(login: int):
     with LOCK:
         yield ensure(login)
+
+
+# ------------------------------------------------------------
+# PAPER ACCOUNTS (paper.py): demo accounts created from the app,
+# simulated in the bridge on live prices from your MT5 terminal.
+# ------------------------------------------------------------
+from paper import Paper, PaperError  # noqa: E402
+from fastapi.responses import JSONResponse  # noqa: E402
+
+
+_FEED_SWITCH = {}
+
+
+def paper_feed(feed_login: int, background: bool = False):
+    """Make sure MT5 is connected to the broker that feeds a paper account.
+    Reuses the current login when it is on the same server (no switching).
+    background=True (the SL/TP checker): switch accounts at most every 15 s, so MT5 is not
+    flipped between accounts every second while you use another account. Returns None = skip now."""
+    cur = STATE["login"]
+    if cur is not None:
+        srv = {int(t["login"]): t.get("server") for t in TERMINALS}
+        if int(cur) == int(feed_login) or (srv.get(int(cur)) and srv.get(int(cur)) == srv.get(int(feed_login))):
+            return mt5.account_info()
+    if background:
+        now = time.time()
+        if now - _FEED_SWITCH.get(int(feed_login), 0) < 15:
+            return None
+        _FEED_SWITCH[int(feed_login)] = now
+    ensure(feed_login)
+    return mt5.account_info()
+
+
+PAPER = Paper(os.getenv("GOMEZ_PAPER_FILE") or BASE / "paper_accounts.json", mt5, LOCK, paper_feed)
+
+
+def is_paper(login) -> bool:
+    return PAPER.is_paper(login)
+
+
+def real_login(login: int) -> int:
+    """Market data for a paper account comes from its feed account."""
+    return PAPER.feed_of(login) if PAPER.is_paper(login) else login
+
+
+@contextmanager
+def paper_session(login: int):
+    with LOCK:
+        paper_feed(PAPER.feed_of(login))
+        yield
+
+
+@app.exception_handler(PaperError)
+async def _paper_error(request: Request, exc: PaperError):
+    return JSONResponse({"detail": exc.msg}, status_code=exc.status)
 
 
 @app.on_event("shutdown")
@@ -445,26 +631,95 @@ def health(x_gomez_key: Optional[str] = Header(default=None)):
         "bridge": "Gomez Trading MT5 Bridge",
         "version": "0.5.0",
         "live_trading_enabled": LIVE_ALLOWED,
+        "license": LICENSE.status(),
+        "mt5": mt5_status(),
+        "simple_config": SIMPLE_CONFIG,  # customer bridge: settings can be changed from the website
     }
+
+
+def mt5_status() -> dict:
+    """What the setup page needs to guide the customer: is MT5 logged in, real or demo, is Algo Trading on."""
+    try:
+        with LOCK:
+            ti, ai = mt5.terminal_info(), mt5.account_info()
+        return {"connected": ai is not None, "login": int(ai.login) if ai else None, "server": getattr(ai, "server", None),
+                "real": bool(ai) and int(ai.trade_mode) != int(mt5.ACCOUNT_TRADE_MODE_DEMO),
+                "algo_trading": getattr(ti, "trade_allowed", None) if ti else None}
+    except Exception:
+        return {"connected": False}
+
+
+class LiveIn(BaseModel):
+    enable: bool
+
+
+@app.post("/api/settings/live")
+def settings_live(b: LiveIn, x_gomez_key: Optional[str] = Header(default=None)):
+    """Turn real-money trading on/off from the website (customer bridges with an automatic config only).
+    Saves "live_trading" in config.json and applies it immediately, no restart needed."""
+    global LIVE_ALLOWED
+    authorized(x_gomez_key)
+    if not SIMPLE_CONFIG:
+        raise HTTPException(400, "This bridge has accounts written in config.json: set \"live_trading\" there by hand.")
+    cfg = json.loads(CONFIG_PATH.read_text(encoding="utf-8-sig"))
+    cfg["live_trading"] = bool(b.enable)
+    CONFIG_PATH.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
+    CONFIG["live_trading"] = bool(b.enable)
+    CONFIG["mode"] = "mixed" if b.enable else cfg.get("mode", "demo")
+    LIVE_ALLOWED = CONFIG["mode"] == "mixed"
+    for t in TERMINALS:
+        if t.get("auto"):
+            t["allow_live"] = bool(b.enable)
+    print(f"[setup] Real-money trading {'ENABLED' if b.enable else 'disabled'} from the website.")
+    return {"ok": True, "live_trading": bool(b.enable)}
+
+
+@app.get("/api/license/status")
+def license_status(x_gomez_key: Optional[str] = Header(default=None)):
+    authorized(x_gomez_key)
+    return LICENSE.status()
+
+
+class LicenseIn(BaseModel):
+    key: str = Field(min_length=10, max_length=64)
+    server: str = Field(default="", max_length=200)
+
+
+@app.post("/api/license/activate")
+def license_activate(b: LicenseIn, x_gomez_key: Optional[str] = Header(default=None)):
+    """Paste-and-go from the web app: stores the key in license.json and checks it with the license server."""
+    authorized(x_gomez_key)
+    if b.server and not b.server.startswith(("https://", "http://127.0.0.1", "http://localhost")):
+        raise HTTPException(400, "The license server must use https://")
+    return LICENSE.activate(b.key, b.server)
 
 
 @app.get("/api/accounts")
 def accounts(x_gomez_key: Optional[str] = Header(default=None)):
     authorized(x_gomez_key)
     out = []
+    if not TERMINALS:  # customer opened MT5 after starting the bridge: pick the account up now
+        with LOCK:
+            autodetect_terminal()
+
+    try:
+        extra = {int(t["login"]) for t in json.loads(ACCOUNTS_FILE.read_text(encoding="utf-8"))}
+    except Exception:
+        extra = set()
 
     # Just list what is in config.json. Do NOT log in to every account here:
     # that was slow and made the whole list fail if one account had no password.
     # The real login happens when you pick an account and the page uses it.
-    for c in TERMINALS:
+    for c in plan_terminals():
         out.append({
             "login": int(c["login"]),
             "name": c.get("label", "MT5 Demo"),
             "server": c.get("server", ""),
             "is_demo": not (LIVE_ALLOWED and c.get("allow_live") is True),
+            "source": "auto" if c.get("auto") else ("app" if int(c["login"]) in extra else "config"),  # app = removable from the website
         })
 
-    return {"accounts": out}
+    return {"accounts": out + PAPER.list()}
 
 
 @app.get("/api/account")
@@ -473,6 +728,10 @@ def account(
     x_gomez_key: Optional[str] = Header(default=None),
 ):
     authorized(x_gomez_key)
+
+    if is_paper(login):
+        with paper_session(login):
+            return PAPER.account(PAPER.acc(login))
 
     with session(login) as (c, a):
         return account_dict(c, a)
@@ -484,6 +743,11 @@ def get_positions(
     x_gomez_key: Optional[str] = Header(default=None),
 ):
     authorized(x_gomez_key)
+
+    if is_paper(login):
+        with paper_session(login):
+            a = PAPER.acc(login)
+            return {"positions": PAPER.positions(a), "pending": PAPER.pending_list(a)}
 
     with session(login):
         out = []
@@ -530,7 +794,7 @@ def symbols(
 ):
     authorized(x_gomez_key)
 
-    with session(login):
+    with session(real_login(login)):
         all_symbols = mt5.symbols_get() or []
         if all:
             # every symbol the broker offers (not just Market Watch)
@@ -574,14 +838,26 @@ def symbols(
 
 TF = {
     "M1": (mt5.TIMEFRAME_M1, 60),
+    "M2": (mt5.TIMEFRAME_M2, 120),
     "M3": (mt5.TIMEFRAME_M3, 180),
+    "M4": (mt5.TIMEFRAME_M4, 240),
     "M5": (mt5.TIMEFRAME_M5, 300),
+    "M6": (mt5.TIMEFRAME_M6, 360),
+    "M10": (mt5.TIMEFRAME_M10, 600),
     "M12": (mt5.TIMEFRAME_M12, 720),
     "M15": (mt5.TIMEFRAME_M15, 900),
+    "M20": (mt5.TIMEFRAME_M20, 1200),
     "M30": (mt5.TIMEFRAME_M30, 1800),
     "H1": (mt5.TIMEFRAME_H1, 3600),
+    "H2": (mt5.TIMEFRAME_H2, 7200),
+    "H3": (mt5.TIMEFRAME_H3, 10800),
     "H4": (mt5.TIMEFRAME_H4, 14400),
+    "H6": (mt5.TIMEFRAME_H6, 21600),
+    "H8": (mt5.TIMEFRAME_H8, 28800),
+    "H12": (mt5.TIMEFRAME_H12, 43200),
     "D1": (mt5.TIMEFRAME_D1, 86400),
+    "W1": (mt5.TIMEFRAME_W1, 604800),
+    "MN1": (mt5.TIMEFRAME_MN1, 2592000),
 }
 
 
@@ -590,7 +866,7 @@ def candles(
     login: int = Query(...),
     symbol: str = Query(..., min_length=1, max_length=32),
     timeframe: str = Query("M15"),
-    count: int = Query(500, ge=1, le=3000),
+    count: int = Query(500, ge=1, le=20000),
     x_gomez_key: Optional[str] = Header(default=None),
 ):
     authorized(x_gomez_key)
@@ -598,7 +874,7 @@ def candles(
     if timeframe not in TF:
         raise HTTPException(400, "Unknown timeframe.")
 
-    with session(login):
+    with session(real_login(login)):
         if not mt5.symbol_select(symbol, True):
             raise HTTPException(
                 400, f"Broker symbol unavailable: {symbol}"
@@ -650,6 +926,7 @@ def pos_list():
             "sl": p.sl,
             "tp": p.tp,
             "profit": p.profit + p.swap,
+            "price_current": p.price_current,
             "time_epoch": int(p.time),
         })
 
@@ -677,6 +954,8 @@ def pend_list():
             "price": o.price_open,
             "sl": o.sl,
             "tp": o.tp,
+            "price_current": o.price_current,
+            "time_epoch": int(o.time_setup),
         })
 
     return out
@@ -696,7 +975,9 @@ def live(
     if timeframe not in TF:
         raise HTTPException(400, "Unknown timeframe.")
 
-    with session(login) as (c, a):
+    paper = is_paper(login)
+
+    with (paper_session(login) if paper else session(login)):
         mt5.symbol_select(symbol, True)
         tick = mt5.symbol_info_tick(symbol)
         si = mt5.symbol_info(symbol)
@@ -718,18 +999,15 @@ def live(
         ]
 
         acc = mt5.account_info()
+        if not paper:
+            _tg_check(login)
+            tgs, evs = targets_of(login)
 
-        return {
-            "symbol": symbol,
-            "bid": tick.bid,
-            "ask": tick.ask,
-            "time": int(tick.time),
-            "digits": int(si.digits),
-            "point": si.point,
-            "contract": si.trade_contract_size,
-            "bars": bars,
+        own = PAPER.state(login) if paper else {
             "positions": pos_list(),
             "pending": pend_list(),
+            "targets": tgs,
+            "events": evs,
             "account": {
                 "balance": acc.balance,
                 "equity": acc.equity,
@@ -740,6 +1018,24 @@ def live(
             },
         }
 
+        return {
+            **own,
+            "symbol": symbol,
+            "bid": tick.bid,
+            "ask": tick.ask,
+            "time": int(tick.time),
+            "digits": int(si.digits),
+            "point": si.point,
+            "contract": si.trade_contract_size,
+            # exact money-per-tick for risk sizing (account currency, 1 lot)
+            "tick_size": si.trade_tick_size,
+            "tick_value": si.trade_tick_value,
+            "volume_min": si.volume_min,
+            "volume_step": si.volume_step,
+            "volume_max": si.volume_max,
+            "bars": bars,
+        }
+
 
 @app.get("/api/history")
 def history(
@@ -748,6 +1044,9 @@ def history(
     x_gomez_key: Optional[str] = Header(default=None),
 ):
     authorized(x_gomez_key)
+
+    if is_paper(login):
+        return {"deals": PAPER.history(login, limit)}
 
     with session(login):
         now = time.time() + 86400
@@ -789,6 +1088,162 @@ def history(
 
 
 # ------------------------------------------------------------
+# JOURNAL: complete closed trades (entry + exits paired by position),
+# initial / final SL-TP, costs, R-multiple inputs, MAE / MFE, cash flow
+# ------------------------------------------------------------
+
+DEAL_TRADE_TYPES = (mt5.DEAL_TYPE_BUY, mt5.DEAL_TYPE_SELL)
+DEAL_CASH_NAMES = {
+    getattr(mt5, "DEAL_TYPE_BALANCE", 2): "balance",
+    getattr(mt5, "DEAL_TYPE_CREDIT", 3): "credit",
+    getattr(mt5, "DEAL_TYPE_CHARGE", 4): "charge",
+    getattr(mt5, "DEAL_TYPE_CORRECTION", 5): "correction",
+    getattr(mt5, "DEAL_TYPE_BONUS", 6): "bonus",
+    getattr(mt5, "DEAL_TYPE_COMMISSION", 7): "commission",
+}
+
+
+def _excursion(t):
+    """Max favourable / adverse move (price units) while the trade was open."""
+    span = t["close_time"] - t["open_time"]
+    tf = (
+        mt5.TIMEFRAME_M1 if span <= 3 * 86400 else
+        mt5.TIMEFRAME_M15 if span <= 30 * 86400 else
+        mt5.TIMEFRAME_H1
+    )
+    rates = mt5.copy_rates_range(
+        t["symbol"], tf, int(t["open_time"]) - 60, int(t["close_time"]) + 60
+    )
+    if rates is None or len(rates) == 0:
+        return None, None
+    hi = max(float(r["high"]) for r in rates)
+    lo = min(float(r["low"]) for r in rates)
+    if t["side"] == "BUY":
+        return hi - t["open_price"], t["open_price"] - lo
+    return t["open_price"] - lo, hi - t["open_price"]
+
+
+@app.get("/api/journal")
+def journal(
+    login: int = Query(...),
+    days: int = Query(365, ge=1, le=3650),
+    excursion: int = Query(1),
+    x_gomez_key: Optional[str] = Header(default=None),
+):
+    authorized(x_gomez_key)
+
+    if is_paper(login):
+        with paper_session(login):
+            return PAPER.journal(login, days)
+
+    with session(login) as (c, a):
+        now = time.time() + 86400
+        frm = now - days * 86400
+        deals = sorted(mt5.history_deals_get(frm, now) or [], key=lambda d: d.time_msc)
+        orders = sorted(
+            mt5.history_orders_get(frm, now) or [],
+            key=lambda o: o.time_setup_msc,
+        )
+
+        trades, cash = {}, []
+
+        for d in deals:
+            if d.type not in DEAL_TRADE_TYPES:
+                cash.append({
+                    "time": int(d.time),
+                    "type": DEAL_CASH_NAMES.get(d.type, str(d.type)),
+                    "amount": float(d.profit),
+                    "comment": d.comment,
+                })
+                continue
+
+            t = trades.setdefault(int(d.position_id), {
+                "position": int(d.position_id), "symbol": d.symbol, "side": None,
+                "volume": 0.0, "open_time": None, "open_price": 0.0,
+                "close_time": None, "close_price": 0.0, "closed_volume": 0.0,
+                "profit": 0.0, "swap": 0.0, "commission": 0.0, "fee": 0.0,
+                "exits": 0, "magic": int(d.magic), "comment": "",
+                "close_comment": "", "sl": 0.0, "tp": 0.0,
+                "sl_initial": 0.0, "tp_initial": 0.0, "reason": None,
+            })
+            t["swap"] += float(d.swap)
+            t["commission"] += float(d.commission)
+            t["fee"] += float(getattr(d, "fee", 0) or 0)
+            t["profit"] += float(d.profit)
+            vol, px = float(d.volume), float(d.price)
+
+            if d.entry == mt5.DEAL_ENTRY_IN:
+                tot = t["volume"] + vol
+                t["open_price"] = (t["open_price"] * t["volume"] + px * vol) / tot
+                t["volume"] = tot
+                t["side"] = "BUY" if d.type == mt5.DEAL_TYPE_BUY else "SELL"
+                t["open_time"] = t["open_time"] or int(d.time)
+                t["comment"] = t["comment"] or d.comment
+            else:  # OUT, OUT_BY, INOUT
+                tot = t["closed_volume"] + vol
+                t["close_price"] = (t["close_price"] * t["closed_volume"] + px * vol) / tot
+                t["closed_volume"] = tot
+                t["close_time"] = int(d.time)
+                t["exits"] += 1
+                t["close_comment"] = d.comment
+                t["reason"] = int(getattr(d, "reason", -1))
+                if t["side"] is None:  # opened before the requested window
+                    t["side"] = "SELL" if d.type == mt5.DEAL_TYPE_BUY else "BUY"
+
+        for o in orders:
+            t = trades.get(int(o.position_id))
+            if not t:
+                continue
+            if not t["sl_initial"] and o.sl:
+                t["sl_initial"] = float(o.sl)
+            if not t["tp_initial"] and o.tp:
+                t["tp_initial"] = float(o.tp)
+            if o.sl:
+                t["sl"] = float(o.sl)
+            if o.tp:
+                t["tp"] = float(o.tp)
+
+        out = []
+        specs = {}
+        for t in trades.values():
+            if not t["closed_volume"] or not t["open_time"]:
+                continue  # still open, or its entry is outside the window
+            if t["symbol"] not in specs:
+                si = mt5.symbol_info(t["symbol"])
+                specs[t["symbol"]] = (
+                    (float(si.trade_tick_value) / float(si.trade_tick_size or 1), int(si.digits), float(si.point))
+                    if si else (0.0, 2, 0.01)
+                )
+            t["money_per_unit"], t["digits"], t["point"] = specs[t["symbol"]]
+            t["net"] = t["profit"] + t["swap"] + t["commission"] + t["fee"]
+            out.append(t)
+
+        out.sort(key=lambda t: t["close_time"])
+
+        if excursion:
+            for t in out[-400:]:
+                try:
+                    t["mfe"], t["mae"] = _excursion(t)
+                except Exception:
+                    t["mfe"], t["mae"] = None, None
+
+        acc = mt5.account_info()
+        return {
+            "account": {
+                "login": int(acc.login), "name": c.get("label", acc.name),
+                "owner": acc.name, "server": acc.server, "company": acc.company,
+                "currency": acc.currency, "leverage": int(acc.leverage),
+                "balance": acc.balance, "equity": acc.equity, "profit": acc.profit,
+                "is_demo": int(acc.trade_mode) == int(mt5.ACCOUNT_TRADE_MODE_DEMO),
+            },
+            "trades": out,
+            "cash": cash,
+            "open": pos_list(),
+            "now": int(time.time()),
+        }
+
+
+# ------------------------------------------------------------
 # OPEN MARKET ORDER
 # ------------------------------------------------------------
 
@@ -801,6 +1256,10 @@ def order(
 
     if body.side.lower() not in ("buy", "sell"):
         raise HTTPException(400, "Side must be buy or sell.")
+
+    if is_paper(body.login):
+        with paper_session(body.login):
+            return PAPER.order(body)
 
     with session(body.login):
         symbol = body.symbol.strip()
@@ -943,6 +1402,10 @@ def pending(
     if kind not in ("auto", "limit", "stop"):
         raise HTTPException(400, "Kind must be limit, stop or auto.")
 
+    if is_paper(body.login):
+        with paper_session(body.login):
+            return PAPER.pending(body)
+
     with session(body.login):
         symbol = body.symbol.strip()
 
@@ -1058,6 +1521,10 @@ def pending_modify(
 ):
     authorized(x_gomez_key)
 
+    if is_paper(body.login):
+        with paper_session(body.login):
+            return PAPER.pending_modify(body)
+
     with session(body.login):
         found = mt5.orders_get(ticket=body.ticket)
 
@@ -1112,6 +1579,10 @@ def cancel(
 ):
     authorized(x_gomez_key)
 
+    if is_paper(body.login):
+        with paper_session(body.login):
+            return PAPER.cancel(body)
+
     with session(body.login):
         found = mt5.orders_get(ticket=body.ticket)
 
@@ -1143,6 +1614,10 @@ def modify(
     x_gomez_key: Optional[str] = Header(default=None),
 ):
     authorized(x_gomez_key)
+
+    if is_paper(body.login):
+        with paper_session(body.login):
+            return PAPER.modify(body)
 
     with session(body.login):
         found = mt5.positions_get(ticket=body.ticket)
@@ -1275,6 +1750,10 @@ def close(
 ):
     authorized(x_gomez_key)
 
+    if is_paper(body.login):
+        with paper_session(body.login):
+            return PAPER.close(body)
+
     with session(body.login):
         try:
             ticket = close_ticket(body.ticket, body.percent)
@@ -1295,6 +1774,10 @@ def close_all(
 ):
     authorized(x_gomez_key)
 
+    if is_paper(body.login):
+        with paper_session(body.login):
+            return PAPER.close_all(body.login)
+
     with session(body.login):
         closed = 0
         failed = 0
@@ -1314,6 +1797,439 @@ def close_all(
             "failed": failed,
             "errors": errors,
         }
+
+
+# ------------------------------------------------------------
+# PRICE TARGETS, kept by the bridge (they work with the page closed):
+#   partial  = close X % of one position when the price reaches a level (partial take profit)
+#   keepbest = close every position of one side except the best entry, and X % of that one (leave a runner)
+# Paper accounts: handled in paper.py (replayed on tick history).
+# Real accounts: checked here every second, with MT5's tick history filling any gap.
+# ------------------------------------------------------------
+from paper import tick_history, new_target, public_target, first_true  # noqa: E402
+
+
+class TargetIn(BaseModel):
+    login: int
+    kind: str = Field(pattern="^(partial|keepbest)$")
+    ticket: int = 0
+    symbol: str = Field("", max_length=32)
+    side: str = Field("", max_length=4)
+    price: float = Field(default=0, ge=0)  # 0 (keepbest only) = do it now
+    percent: float = Field(default=50, ge=0, le=100)
+    be: bool = False
+
+
+class TargetDelIn(BaseModel):
+    login: int
+    id: int
+
+
+TARGETS_FILE = Path(os.getenv("GOMEZ_TARGETS_FILE") or BASE / "targets.json")
+TGLOCK = threading.RLock()
+
+
+def _tg_load():
+    try:
+        return json.loads(TARGETS_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+TG = _tg_load()  # {"login": {"targets": [...], "events": [...]}}
+
+
+def _tg_save():
+    with TGLOCK:
+        tmp = TARGETS_FILE.with_suffix(".tmp")
+        tmp.write_text(json.dumps(TG, indent=1), encoding="utf-8")
+        os.replace(tmp, TARGETS_FILE)
+
+
+def _tg(login):
+    return TG.setdefault(str(int(login)), {"targets": [], "events": []})
+
+
+def _tg_event(login, text, kind="info"):
+    ev = _tg(login)["events"]
+    ev.append({"id": int(time.time() * 1000) + len(ev), "time": int(time.time()), "text": text, "kind": kind})
+    del ev[:-30]
+
+
+def _side(p):
+    return "BUY" if p.type == mt5.POSITION_TYPE_BUY else "SELL"
+
+
+def _real_be(ticket):
+    """Stop of a still-open position to its entry, if it is in profit. MT5 lock held."""
+    ps = mt5.positions_get(ticket=ticket)
+    if not ps:
+        return ""
+    p = ps[0]
+    t = mt5.symbol_info_tick(p.symbol)
+    buy = p.type == mt5.POSITION_TYPE_BUY
+    if t is None or ((t.bid if buy else t.ask) - p.price_open) * (1 if buy else -1) <= 0:
+        return ", runner stop unchanged (not in profit)"
+    r = mt5.order_send({"action": mt5.TRADE_ACTION_SLTP, "position": p.ticket, "symbol": p.symbol,
+                        "sl": p.price_open, "tp": p.tp})
+    ok = r is not None and r.retcode == mt5.TRADE_RETCODE_DONE
+    return ", runner stop at break-even" if ok else f", break-even failed ({getattr(r, 'comment', mt5.last_error())})"
+
+
+def _real_keep_best(sym, side, pct, be):
+    """Close every `side` position on `sym` except the best entry; close `pct` % of that one. MT5 lock held."""
+    ps = [p for p in (mt5.positions_get(symbol=sym) or []) if _side(p) == side]
+    if not ps:
+        return "no open positions"
+    best = (min if side == "BUY" else max)(ps, key=lambda p: p.price_open)
+    closed, errs = 0, []
+    for p in ps:
+        if p.ticket != best.ticket:
+            try:
+                close_ticket(int(p.ticket), 100)
+                closed += 1
+            except ValueError as e:
+                errs.append(f"#{p.ticket}: {e}")
+    msg = f"closed {closed}" if closed else "nothing else to close"
+    if pct:
+        try:
+            close_ticket(int(best.ticket), pct)
+            msg += f"; {pct:g}% of the best entry #{best.ticket} closed" if pct < 100 else "; best entry closed too"
+        except ValueError as e:
+            msg += f"; best entry: {e}"
+    if be and pct < 100:
+        msg += _real_be(int(best.ticket))
+    if errs:
+        msg += "; failed: " + ", ".join(errs)
+    return msg
+
+
+def _tg_check(login):
+    """Fire the targets of a real account. MT5 lock held and connected to `login`."""
+    with TGLOCK:
+        d = _tg(login)
+        tg = d["targets"]
+        if not tg:
+            return
+        pos = {int(p.ticket): p for p in (mt5.positions_get() or [])}
+        sides = {(p.symbol, _side(p)) for p in pos.values()}
+        changed = False
+        for g in list(tg):
+            if (g["kind"] == "partial" and g["ticket"] not in pos) or \
+               (g["kind"] == "keepbest" and (g["symbol"], g["side"]) not in sides):
+                tg.remove(g)  # its position(s) closed some other way
+                changed = True
+        for g in list(tg):
+            t = mt5.symbol_info_tick(g["symbol"])
+            if t is None:
+                continue
+            now = int(getattr(t, "time_msc", 0) or 0) or int(t.time) * 1000
+            if now < g["chk"]:  # an old price from MT5's memory right after an account switch: never act on it
+                continue
+            buy = g["side"] == "BUY"
+            up = g["dir"] > 0
+            px = t.bid if buy else t.ask
+            hit = px >= g["price"] if up else px <= g["price"]
+            if not hit:  # also look at every price since the last check (PC locked, MT5 on another account)
+                h = tick_history(mt5, g["symbol"], g["chk"], now)
+                if h is not None and len(h[0]):
+                    pxs = h[1] if buy else h[2]
+                    hit = first_true(pxs >= g["price"] if up else pxs <= g["price"]) >= 0
+                    if not hit and not h[3]:
+                        g["chk"] = int(h[0][-1])
+                        changed = True
+                        continue
+            if not hit:
+                if g["chk"] != now:
+                    g["chk"] = now
+                    changed = True
+                continue
+            tg.remove(g)
+            changed = True
+            dg = int(getattr(mt5.symbol_info(g["symbol"]), "digits", 2) or 2)
+            lvl = f"{g['price']:.{dg}f}"
+            if g["kind"] == "partial":
+                try:
+                    close_ticket(g["ticket"], g["percent"])
+                    extra = _real_be(g["ticket"]) if g.get("be") else ""
+                    _tg_event(login, f"Partial TP {lvl} reached: closed {g['percent']:g}% of #{g['ticket']}{extra}.", "ok")
+                except ValueError as e:
+                    _tg_event(login, f"Partial TP {lvl} on #{g['ticket']} failed: {e}", "warn")
+            else:
+                msg = _real_keep_best(g["symbol"], g["side"], g["percent"], g.get("be"))
+                _tg_event(login, f"Keep-best {g['side']} {g['symbol']} at {lvl}: {msg}.", "ok")
+        if changed:
+            _tg_save()
+
+
+_TG_SWITCH = {}
+
+
+def _targets_loop():
+    while True:
+        time.sleep(1.0)
+        try:
+            with TGLOCK:
+                logins = [int(k) for k, d in TG.items() if d.get("targets")]
+            for login in logins:
+                if is_paper(login):
+                    continue
+                with LOCK:
+                    if STATE["login"] != login:  # MT5 is on another account: look at most every 15 s, don't flip it every second
+                        if time.time() - _TG_SWITCH.get(login, 0) < 15:
+                            continue
+                        _TG_SWITCH[login] = time.time()
+                        try:
+                            ensure(login)
+                        except Exception as e:
+                            print(f"[targets] {login}: {getattr(e, 'detail', e)}", flush=True)
+                            continue
+                    _tg_check(login)
+        except Exception as e:  # keep the checker alive
+            print(f"[targets] loop: {e}", flush=True)
+
+
+threading.Thread(target=_targets_loop, name="targets", daemon=True).start()
+
+
+def targets_of(login):
+    with TGLOCK:
+        d = TG.get(str(int(login))) or {}
+        return [public_target(g) for g in d.get("targets", [])], d.get("events", [])[-10:]
+
+
+@app.post("/api/targets/add")
+def targets_add(body: TargetIn, x_gomez_key: Optional[str] = Header(default=None)):
+    authorized(x_gomez_key)
+    body.side = body.side.upper()
+    if body.kind == "partial" and (not body.ticket or not body.price or not body.percent):
+        raise HTTPException(400, "A partial take profit needs a position, a price and a percentage.")
+    if body.kind == "keepbest" and (not body.symbol or body.side not in ("BUY", "SELL")):
+        raise HTTPException(400, "Keep-best needs a symbol and a side (BUY or SELL).")
+    paper = is_paper(body.login)
+    with (paper_session(body.login) if paper else session(body.login)):
+        if body.kind == "keepbest" and not body.price:  # now
+            if paper:
+                return PAPER.keep_best_now(body)
+            msg = _real_keep_best(body.symbol.strip(), body.side, body.percent, body.be)
+            return {"ok": True, "message": msg[:1].upper() + msg[1:] + "."}
+        if paper:
+            return PAPER.target_add(body)
+        if body.kind == "partial":
+            ps = mt5.positions_get(ticket=body.ticket)
+            if not ps:
+                raise HTTPException(404, "Position not found.")
+            sym, side = ps[0].symbol, _side(ps[0])
+        else:
+            sym, side = body.symbol.strip(), body.side
+            if not any(_side(p) == side for p in (mt5.positions_get(symbol=sym) or [])):
+                raise HTTPException(404, f"No open {side} positions on {sym}.")
+        si, t = mt5.symbol_info(sym), mt5.symbol_info_tick(sym)
+        if si is None or t is None:
+            raise HTTPException(400, f"No quote for {sym}.")
+        now = int(getattr(t, "time_msc", 0) or 0) or int(t.time) * 1000
+        g = new_target(body.kind, sym, side, round(body.price, int(si.digits)), t.bid if side == "BUY" else t.ask,
+                       body.percent, body.ticket, body.be, now)
+        with TGLOCK:
+            _tg(body.login)["targets"].append(g)
+            _tg_save()
+        return {"ok": True, "target": public_target(g)}
+
+
+@app.post("/api/targets/remove")
+def targets_remove(body: TargetDelIn, x_gomez_key: Optional[str] = Header(default=None)):
+    authorized(x_gomez_key)
+    if is_paper(body.login):
+        return PAPER.target_remove(body.login, body.id)
+    with TGLOCK:
+        d = _tg(body.login)
+        n = len(d["targets"])
+        d["targets"] = [g for g in d["targets"] if g["id"] != body.id]
+        if len(d["targets"]) == n:
+            raise HTTPException(404, "Target not found (it may just have fired).")
+        _tg_save()
+    return {"ok": True}
+
+
+# ------------------------------------------------------------
+# ACCOUNTS FROM THE APP: paper accounts + adding a real MT5 demo account
+# ------------------------------------------------------------
+
+class PaperCreateIn(BaseModel):
+    name: str = Field("", max_length=40)
+    balance: float = Field(10000, ge=100, le=10_000_000)
+    feed: Optional[int] = None  # which configured MT5 account supplies prices
+    leverage: int = Field(500, ge=1, le=10000)
+
+
+class PaperLeverageIn(BaseModel):
+    login: int
+    leverage: int = Field(ge=1, le=10000)
+
+
+class PaperLoginIn(BaseModel):
+    login: int
+    balance: Optional[float] = Field(default=None, ge=100, le=10_000_000)
+
+
+class PaperDepositIn(BaseModel):
+    login: int
+    amount: float = Field(ge=-10_000_000, le=10_000_000)
+
+
+class AccountAddIn(BaseModel):
+    login: int = Field(gt=0)
+    password: str = Field(min_length=1, max_length=64)
+    server: str = Field(min_length=1, max_length=64)
+    label: str = Field("", max_length=40)
+
+
+@app.post("/api/paper/create")
+def paper_create(body: PaperCreateIn, x_gomez_key: Optional[str] = Header(default=None)):
+    authorized(x_gomez_key)
+    feed = int(body.feed or STATE["login"] or TERMINALS[0]["login"])
+    terminal_cfg(feed)
+    with LOCK:
+        return {"ok": True, "account": PAPER.create(body.name, body.balance, feed, body.leverage)}
+
+
+@app.post("/api/paper/leverage")
+def paper_leverage(body: PaperLeverageIn, x_gomez_key: Optional[str] = Header(default=None)):
+    authorized(x_gomez_key)
+    return {"ok": True, "account": PAPER.set_leverage(body.login, body.leverage)}
+
+
+@app.post("/api/paper/reset")
+def paper_reset(body: PaperLoginIn, x_gomez_key: Optional[str] = Header(default=None)):
+    authorized(x_gomez_key)
+    return {"ok": True, "account": PAPER.reset(body.login, body.balance)}
+
+
+@app.post("/api/paper/deposit")
+def paper_deposit(body: PaperDepositIn, x_gomez_key: Optional[str] = Header(default=None)):
+    authorized(x_gomez_key)
+    return {"ok": True, "account": PAPER.deposit(body.login, body.amount)}
+
+
+@app.post("/api/paper/delete")
+def paper_delete(body: PaperLoginIn, x_gomez_key: Optional[str] = Header(default=None)):
+    authorized(x_gomez_key)
+    PAPER.delete(body.login)
+    return {"ok": True}
+
+
+# ---------------------------------------------------------------- monthly challenge (a paper account with fixed rules)
+class ChallengeStartIn(BaseModel):
+    entry: dict
+
+
+@app.post("/api/challenge/start")
+def challenge_start(body: ChallengeStartIn, x_gomez_key: Optional[str] = Header(default=None)):
+    """The website passes the entry it got from the server; this PC makes the challenge account (once)."""
+    authorized(x_gomez_key)
+    e = body.entry
+    if not e.get("id") or not (100 <= float(e.get("balance") or 0) <= 10_000_000):
+        raise HTTPException(400, "Invalid challenge entry.")
+    if not TERMINALS and not STATE["login"]:
+        raise HTTPException(400, "Log in to an account in MetaTrader 5 first: the challenge uses its live prices.")
+    feed = int(STATE["login"] or TERMINALS[0]["login"])
+    terminal_cfg(feed)
+    with LOCK:
+        acc = PAPER.challenge_create(e, feed)
+    threading.Thread(target=challenge_push, daemon=True).start()
+    return {"ok": True, "account": acc}
+
+
+@app.get("/api/challenge/stats")
+def challenge_stats(entry: str = "", x_gomez_key: Optional[str] = Header(default=None)):
+    authorized(x_gomez_key)
+    return {"stats": PAPER.challenge_stats(entry or None)}
+
+
+def challenge_push():
+    """Send this PC's challenge results to the license server (licensed bridges; the website also relays them)."""
+    if not (LICENSE.enabled and LICENSE.key and LICENSE.server):
+        return
+    try:
+        stats = PAPER.challenge_stats()
+        if not stats:
+            return
+        body = json.dumps({"key": LICENSE.key, "machine": LICENSE.machine, "stats": stats}).encode()
+        req = urllib.request.Request(LICENSE.server + "/api/challenge/push", data=body, headers={"Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=20).read()
+    except Exception as e:
+        print("[challenge] could not send results:", e, flush=True)
+
+
+def _challenge_loop():
+    while True:
+        time.sleep(300)  # every 5 minutes
+        challenge_push()
+
+
+threading.Thread(target=_challenge_loop, name="challenge", daemon=True).start()
+
+
+@app.post("/api/accounts/add")
+def accounts_add(body: AccountAddIn, x_gomez_key: Optional[str] = Header(default=None)):
+    """Add a real MT5 DEMO account (for example a fresh MetaQuotes-Demo account)
+    without editing config.json. The login is tested first; live accounts are refused."""
+    authorized(x_gomez_key)
+    if any(int(t["login"]) == body.login for t in TERMINALS):
+        raise HTTPException(400, "That account is already in the bridge.")
+    lim = int((LICENSE.data.get("limits") or {}).get("accounts") or 0) if LICENSE.enabled else 0
+    if lim and len(TERMINALS) >= lim:
+        raise HTTPException(402, f"Your plan allows {lim} MT5 account{'s' if lim > 1 else ''}. Upgrade in your dashboard to add more.")
+    path = next((t.get("path") for t in TERMINALS if t.get("path")), None)
+    cfg = {"label": body.label.strip() or f"MT5 Demo {body.login}", "login": body.login,
+           "server": body.server.strip(), "password": body.password}
+    if path:
+        cfg["path"] = path
+    with LOCK:
+        ok = STATE["login"] is not None and mt5.login(body.login, password=body.password, server=cfg["server"])
+        if not ok:
+            mt5.shutdown()
+            STATE["login"] = None
+            kw = {"login": body.login, "password": body.password, "server": cfg["server"]}
+            if path:
+                kw["path"] = path
+            if not mt5.initialize(**kw):
+                raise HTTPException(400, f"MT5 could not log in to {body.login} on {cfg['server']}: {mt5.last_error()}. Check the login, password and server name.")
+        info = mt5.account_info()
+        if info is None or int(info.login) != body.login:
+            raise HTTPException(400, "MT5 did not switch to that account. Check the login details.")
+        if int(info.trade_mode) != int(mt5.ACCOUNT_TRADE_MODE_DEMO):
+            if CONFIG.get("live_trading") is True:  # customer allowed real money (Setup > Allow real-money trading)
+                cfg["allow_live"] = True
+            else:
+                mt5.shutdown()
+                STATE["login"] = None
+                raise HTTPException(403, "This is a real-money account. First allow real-money trading (website > Setup), then add it again.")
+        STATE["login"], STATE["path"] = body.login, path
+        TERMINALS.append(cfg)
+        try:
+            saved = json.loads(ACCOUNTS_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            saved = []
+        saved.append(cfg)
+        ACCOUNTS_FILE.write_text(json.dumps(saved, indent=2), encoding="utf-8")
+    return {"ok": True, "account": {"login": body.login, "name": cfg["label"], "server": cfg["server"],
+                                    "balance": info.balance, "currency": info.currency}}
+
+
+@app.post("/api/accounts/remove")
+def accounts_remove(body: PaperLoginIn, x_gomez_key: Optional[str] = Header(default=None)):
+    """Remove an account that was added from the app (accounts in config.json stay)."""
+    authorized(x_gomez_key)
+    try:
+        saved = json.loads(ACCOUNTS_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        saved = []
+    if not any(int(t["login"]) == body.login for t in saved):
+        raise HTTPException(400, "Only accounts added from the app can be removed here.")
+    ACCOUNTS_FILE.write_text(json.dumps([t for t in saved if int(t["login"]) != body.login], indent=2), encoding="utf-8")
+    TERMINALS[:] = [t for t in TERMINALS if int(t["login"]) != body.login]
+    return {"ok": True}
 
 
 # ------------------------------------------------------------
