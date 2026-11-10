@@ -18,8 +18,8 @@
 {"@type":"Question","name":"Which brokers work?","acceptedAnswer":{"@type":"Answer","text":"Any broker that offers MetaTrader 5. MetaTrader 4 is not supported."}},
 {"@type":"Question","name":"Is my account safe?","acceptedAnswer":{"@type":"Answer","text":"Your MT5 password stays on your own computer and is never sent to us. Goldmine never places a trade by itself."}},
 {"@type":"Question","name":"What happens after the free trial?","acceptedAnswer":{"@type":"Answer","text":"No card is asked for the trial, so nothing is charged automatically. Pick a plan to keep going."}}]}</script>
-<link rel="stylesheet" href="gp-theme.css?v=20261109e">
-<script src="gp-shared.js?v=20261109e"></script>
+<link rel="stylesheet" href="gp-theme.css?v=20261110v">
+<script src="gp-shared.js?v=20261110v"></script>
 <script>document.documentElement.dataset.theme = 'light' // the website is always light (it has its own dark section); the terminal keeps its own theme</script>
 <style>
 html,body{overflow:auto;height:auto}
@@ -102,6 +102,8 @@ p.lead{color:var(--mut);text-align:center;max-width:640px;margin:0 auto 40px;fon
 .ivl .seg button{height:34px;padding:0 16px;font-size:13px}
 .ivl em{font-style:normal;color:var(--acc);font-size:11px;margin-left:4px}
 .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
+@media (min-width:901px){.plans:has(> :nth-child(2):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}} /* only 2 plans shown: two equal halves, no empty third column */
+.plans:has(> :only-child){grid-template-columns:minmax(0,1fr)}
 .plan{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;position:relative}
 .plan.best{border:2px solid var(--acc);box-shadow:0 24px 60px -30px color-mix(in srgb,var(--acc) 60%,transparent)}
 .plan .tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--acc);color:var(--acctx);font-size:11px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:.04em;white-space:nowrap}
@@ -377,6 +379,7 @@ input.in:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--a
 .lifetime h4{font-size:19px;margin:8px 0 4px;letter-spacing:-.01em}.lifetime p{color:#c7bba5;font-size:13.5px;line-height:1.5}
 .lifetime .lt2{display:grid;text-align:right}.lifetime .lt2 small{color:#a8987b}.lifetime .lt2 b{font-size:34px;letter-spacing:-.03em;color:#fff}.lifetime .lt2 span{font-size:12px;color:#c7bba5}
 .lifetime .btn.acc{background:linear-gradient(135deg,#f5b73b,#e0960c);color:#1a1203}
+.lifetime .ltown{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 18px;border-radius:12px;font-weight:800;font-size:14px;white-space:nowrap;color:#f5c25b;background:rgba(245,183,59,.14);border:1px solid rgba(245,183,59,.45)}
 @media (max-width:900px){.lifetime{grid-template-columns:minmax(0,1fr);text-align:center}.lifetime .lt2{text-align:center}}
 .toffer{margin-top:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:12px;border:1.5px dashed var(--accline);background:color-mix(in srgb,var(--acc) 6%,var(--panel))}
 .toffer.urgent{border-style:solid;border-color:var(--orange);background:color-mix(in srgb,var(--orange) 8%,var(--panel))}
@@ -923,6 +926,16 @@ body.lpb #links,body.lpb .burger,body.lpb #right .btn.acc{display:none!important
 .adempty{font-size:12.5px;padding:4px 0}
 .pwbig{display:inline-block;font-size:20px;font-weight:800;letter-spacing:.04em;background:var(--panel2);padding:8px 12px;border-radius:10px;user-select:all}
 @media (max-width:760px){.adgrid{grid-template-columns:1fr}}
+
+.chpage .chme{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.chpage .chme>div:first-child{flex:1;min-width:200px}.chpage .chme b{font-size:16px}.chpage .chme small{display:block;color:var(--mut);margin-top:3px}
+.chnums{display:flex;gap:18px;flex-wrap:wrap}.chnums span{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}.chnums b{display:block;font-size:18px;color:var(--txt);letter-spacing:0;text-transform:none}
+.chgrid{display:grid;grid-template-columns:1fr 1.6fr;gap:14px}@media(max-width:760px){.chgrid{grid-template-columns:1fr}}
+.chprize{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.chprize:last-child{border:0}.chprize span{font-size:22px}
+.chrules{margin:0;padding-left:18px;line-height:1.75;font-size:13.5px;color:var(--mut)}.chrules b{color:var(--txt)}
+.chtbl td.rk{font-weight:800;width:36px}.chtbl tr.mine td{background:color-mix(in srgb,var(--acc) 10%,transparent)}.chtbl .up{color:var(--ok,#16a34a)}.chtbl .dn{color:var(--bad,#dc2626)}
+.chnums .up{color:var(--ok,#16a34a)}.chnums .dn{color:var(--bad,#dc2626)}
+.lpb-ch{display:flex;align-items:center;gap:18px;flex-wrap:wrap;border:1px solid var(--line);border-radius:16px;padding:22px 24px;background:color-mix(in srgb,var(--acc) 7%,transparent)}
+.lpb-ch>div{flex:1;min-width:220px}.lpb-ch h3{margin:0 0 4px;font-size:20px}.lpb-ch p{margin:0;color:var(--mut);font-size:14px}
 </style>
 </head>
 <body>
@@ -1033,6 +1046,7 @@ function route() {
   if (r === 'welcome') { if (new URLSearchParams(qs).get('paid')) afterPayment(); return renderWelcome() }
   if (r === 'setup') return renderSetup();
   if (r === 'billing') return renderBilling();
+  if (r === 'challenge') return renderChallenge();
   if (r === 'terminal') return renderTerminal();
   if (r === 'admin') { if (!A.me) { location.hash = 'login'; return } if (!isAdmin() && !store.get('saasAdmin', '') && !/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) { location.hash = 'dashboard'; return } return renderAdmin() }
   location.hash = 'home';
@@ -1046,8 +1060,8 @@ document.addEventListener('click', e => { const a = e.target.closest('a[href^="#
 
 function renderNav(r) {
   const L = A.me
-    ? [['dashboard', 'Dashboard'], ['setup', 'Setup'], ['billing', 'Billing'], ['terminal', 'Open terminal']]
-    : [['offer', 'The offer'], ['features', 'Features'], ['pricing', 'Pricing'], ['faq', 'FAQ'], ['login', 'Log in']];
+    ? [['dashboard', 'Dashboard'], ['setup', 'Setup'], ['billing', 'Billing'], ['challenge', '🏆 Challenge'], ['terminal', 'Open terminal']]
+    : [['offer', 'The offer'], ['features', 'Features'], ['pricing', 'Pricing'], ['challenge', '🏆 Challenge'], ['faq', 'FAQ'], ['login', 'Log in']];
   // the owner sees Admin when a token is saved, or always when the site runs on this PC (your own bridge); visitors never see it
   // Admin shows for admin accounts (any device), when a token is saved, or on your own PC; customers never see it
   if (isAdmin() || (A.me && store.get('saasAdmin', ''))) L.push(['admin', 'Admin']); // only the owner sees it
@@ -1055,7 +1069,7 @@ function renderNav(r) {
   $('#right').innerHTML = A.me
     ? `<button id="acctBtn" data-act="menu"><span class="hide-sm">${esc(A.me.user.name || A.me.user.email.split('@')[0])}</span><i>${esc((A.me.user.name || A.me.user.email)[0].toUpperCase())}</i></button>
        <div class="menu" id="menu"><div class="who">${esc(A.me.user.email)}<br>${stPill(SUB())} ${esc(P(SUB().plan)?.name || '')}</div><hr>
-       <a href="#dashboard">🏠 Dashboard</a><a href="#billing">💳 Billing</a><a href="journal.html" target="_blank">📒 Journal</a><hr>
+       <a href="#dashboard">🏠 Dashboard</a><a href="#challenge">🏆 Challenge</a><a href="#billing">💳 Billing</a><a href="journal.html" target="_blank">📒 Journal</a><hr>
        <button data-act="logout">↩ Log out</button></div>`
     : `<a class="nl hide-sm" href="#login">Log in</a><a class="btn acc md" href="#signup">Get the Risk Lock</a>`;
   const tm = A.me?.test_mode ?? A.plans?.test_mode;
@@ -1083,11 +1097,12 @@ function priceCard(k) {
     .map(t => `<li>${t}</li>`).join('') + ALLF.map(f => `<li class="${p.features.includes(f) ? '' : 'no'}">${FEAT[f]}</li>`).join('');
   let btn;
   if (!A.me) btn = `<a class="btn ${k === 'pro' ? 'acc' : ''} lg" href="#signup" data-cta="price-${k}">Start free · ${A.plans.trial_days} days</a>`;
+  else if (SUB().interval === 'lifetime' && SUB().plan === k) btn = `<button class="btn lg" disabled>✓ You own ${p.name} Lifetime</button>`;
   else if (cur) btn = `<button class="btn lg" disabled>Your current plan</button>`;
   else btn = `<button class="btn ${k === 'pro' ? 'acc' : ''} lg" data-buy="${k}" data-cta="buy-${k}">${SUB().status === 'active' ? 'Switch to ' + p.name : 'Get ' + p.name}</button>`;
   return `<div class="plan ${k === 'pro' ? 'best' : ''} ${cur ? 'cur' : ''}">${k === 'pro' ? '<div class="tag">MOST POPULAR</div>' : ''}
     <h4>${p.name}</h4><div class="bl">${p.blurb}</div>
-    ${reg ? `<div class="was"><span>Founding price, locked for life · normally ${money2(reg)}/mo</span></div>` : ''}
+    ${reg ? `<div class="was"><span>Founding price, locked for life · normally ${money2(reg)}/mo</span></div>` : ['starter', 'pro', 'elite'].some(x => P(x) && isFound(x)) ? '<div class="was" aria-hidden="true" style="visibility:hidden"><span>&nbsp;</span></div>' : ''}
     <div class="pr"><b>${money2(price)}</b><span>/ month</span></div>
     <div class="eq">${yr ? `${money2(planPrice(k, 'year'))} billed yearly` : 'billed monthly · cancel anytime'}</div>
     ${btn}<ul>${items}</ul></div>`;
@@ -1096,7 +1111,7 @@ const ivlSeg = () => `<div class="ivl"><div class="seg"><button data-ivl="month"
 const minPrice = () => money2(planPrice('pro', 'month') || 29);
 
 /* ---------------------------------------------------------------- landing v2: "the risk manager MT5 never gave you"
-   Buyer: every MT5 trader who stacks positions and cares about risk: live accounts first, funded accounts too. The old landing is kept in terminal_test_v1.html.
+   Buyer: every MT5 trader who stacks positions and cares about risk: live accounts first, funded accounts too.
    Analytics: every CTA has data-cta="<where>"; hook your pixel into track(). */
 const LPC = { bal: 10000, mkt: 'xau', n: 3 };
 const lpMoney = v => '$' + Math.round(v).toLocaleString('en-US');
@@ -1984,6 +1999,11 @@ function renderLandingB() {
       ${P('elite') ? `<span>Managing many accounts? <button class="lpb-link" data-intent="elite:month" data-cta="b-way-elite">Elite · 25 accounts · ${money2(P('elite').month)}/mo</button></span>` : ''}</div>
   </div></section>
 
+  <!-- monthly challenge teaser -->
+  ${A.plans?.challenge_on === false ? '' : `<section class="lp-sec" style="padding-top:8px;padding-bottom:8px"><div class="wrap"><div class="lpb-ch"><span style="font-size:38px">🏆</span>
+    <div><h3>Free monthly trading challenge</h3><p>Same $10,000 paper account and rules for everyone. Top 3 win Pro for 12, 6 or 3 months. Included in your free trial.</p></div>
+    <a class="lp-btn ghost" href="#challenge" data-cta="b-challenge">See the leaderboard →</a></div></div></section>`}
+
   <!-- 6 · OBJECTIONS, then the close -->
   <section class="lp-sec" id="faq"><div class="wrap">
     <div class="lp-head"><h2>Before you decide</h2></div>
@@ -2034,18 +2054,6 @@ function afterLead(source) {
   track('ty_offer', { source });
 }
 
-const SHOWCASE = [
-  ['lp-layers.jpg', '🪜', 'Layered entries, sized by your risk', 'Pick a zone, a stop and how much you want to risk. Goldmine spreads 2–10 limit orders over the zone and calculates every lot size, so the total risk is exactly what you chose.',
-    ['Risk in % of balance or a fixed amount', 'Equal lots, or more lots deeper in the zone', 'Average entry, max risk and R:R before you send', 'Every layer on the chart, drag to adjust']],
-  ['lp-basket.jpg', '🎯', 'Basket break-even & basket exit', 'Scaled into a move? Choose the profit you want when everything closes. Goldmine finds the one exit price where the whole basket makes that amount, and sets it on every position in one click.',
-    ['Break-even, +$25, +$50, +$100 or any target', 'TP on winners, SL on losers, or close the whole basket', 'Exit line on the chart: drag it to change the target', 'Per-position preview before anything changes']],
-  ['lp-manage.jpg', '⚙', 'Close the worst entries, keep a runner', 'Manage a stack of positions like one trade. Cut the 1–5 worst entries, close every loser or every winner, take partials, or keep only your best position as a runner with its stop at break-even.',
-    ['Close the 1–5 worst positions, biggest losers first', 'Close 25 / 50 / 75 % of every position', 'One SL / TP for all positions at once', 'Keep a runner, its stop moved to break-even']],
-  ['lp-drag.jpg', '✋', 'Drag your stop loss and take profit', 'Hover an entry and pull a stop loss or take profit straight out of it. The label shows the money at risk while you drag. Works for positions and for limit orders before they fill.',
-    ['＋SL / ＋TP handles on every entry and limit', 'Live P/L on each label, red or green', 'Break-even and close from the label', 'Clean labels, even with 10+ positions']],
-  ['lp-journal.jpg', '📒', 'A trading journal that writes itself', 'Every trade from MT5, analysed: equity curve, drawdown, R-multiples, MAE / MFE, best sessions and setups, a P/L calendar, and insights about what to stop doing.',
-    ['Win rate, profit factor, expectancy, SQN', 'Calendar with daily P/L', 'Notes, setups and mistakes per trade', 'CSV export and a printable report']],
-];
 const FAQS = [
   ['Why is it so cheap?', 'We are launching. The first members get the founding price, and it stays yours for as long as you stay subscribed, even when the regular price applies to new members.'],
   ['Which brokers work?', 'Any broker that offers MetaTrader 5: forex, gold, indices and crypto CFDs. Goldmine uses the official MetaTrader 5 connection on your own PC, so whatever your MT5 can trade, Goldmine can trade. MetaTrader 4 is not supported.'],
@@ -2070,7 +2078,7 @@ function authBox(mode) {
   const su = mode === 'signup';
   openModal(`<form class="auth" id="authF" autocomplete="on">
     <h3>${su ? 'Start the 5-Minute Risk Lock' : 'Welcome back'}</h3>
-    <p>${su ? (A.plans?.trial_card ? `${A.plans?.trial_days || 7} days of every Pro feature. Add a card next; nothing is charged before day ${(A.plans?.trial_days || 7) + 1}, cancel in 2 clicks.` : `${A.plans?.trial_days || 7} days of every Pro feature, free. No card, nothing to cancel.`) + (store.get('gpRef', '') ? '<br><b style="color:var(--acc)">🎁 Invited by a friend: your first paid month is free.</b>' : '') : 'Log in to your Goldmine Pro account.'}</p>
+    <p>${su ? (store.get('gpRef', '') ? '<b style="color:var(--acc)">🎁 Invited by a friend: ' + refDays() + ' days free instead of ' + (A.plans?.trial_days || 7) + '.</b><br>' : '') + (A.plans?.trial_card ? `${trialDays()} days of every Pro feature. Add a card next; nothing is charged before day ${trialDays() + 1}, cancel in 2 clicks.` : `${trialDays()} days of every Pro feature, free. No card, nothing to cancel.`) : 'Log in to your Goldmine Pro account.'}</p>
     <label>Email<input class="in" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
     <label>Password<input class="in" name="password" type="password" autocomplete="${su ? 'new-password' : 'current-password'}" required minlength="8" placeholder="${su ? 'At least 8 characters' : ''}"></label>
     <div class="err" id="authErr"></div>
@@ -2092,7 +2100,7 @@ function authBox(mode) {
         A.interval = iv; store.set('saasIvl', iv); store.set('gpWant', want);
       }
       if (su && A.plans?.trial_card && SUB().status === 'none') return buy('pro', A.interval, true); // card trial: straight to checkout
-      toast(su ? `🎉 Welcome! Your ${A.plans?.trial_days || 7}-day Pro trial has started.` : 'Logged in', 'ok');
+      toast(su ? `🎉 Welcome! Your ${SUB().days_left || A.plans?.trial_days || 7}-day Pro trial has started.` : 'Logged in', 'ok');
       location.hash = su ? 'setup' : 'dashboard'; route();
     } catch (err) { $('#authErr').textContent = err.message; b.disabled = false; b.textContent = su ? 'Start my free trial →' : 'Log in' }
   });
@@ -2238,12 +2246,13 @@ function renderSetup() {
       <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn acc lg" data-act="download">⬇ Download GoldmineBridge.zip</button><small class="mut">Saved in your <b>Downloads</b> folder · about 140 KB</small></div>`)}
 
     ${step(2, bridgeUp, 'Unzip it and start Goldmine', `
-      ${sub(['Open your <b>Downloads</b> folder. Right-click <b>GoldmineBridge.zip</b> → <b>Extract All…</b> → <b>Extract</b>.<br><small>Tip: move the extracted folder to your <b>Desktop</b> or <b>Documents</b>, so you find it again tomorrow.</small>',
+      ${sub(['Open your <b>Downloads</b> folder. Right-click <b>GoldmineBridge.zip</b> → <b>Properties</b>, tick <b>Unblock</b> at the bottom (if you see it) → <b>OK</b>. This tells Windows you trust the download, so it won\'t warn about the files inside.',
+        'Right-click <b>GoldmineBridge.zip</b> → <b>Extract All…</b> → <b>Extract</b>.<br><small>Tip: move the extracted folder to your <b>Desktop</b> or <b>Documents</b>, so you find it again tomorrow.</small>',
         'Open the <b>GoldmineBridge</b> folder and double-click <b>START GOLDMINE</b>.',
-        'The first time, Windows may show <b>“Windows protected your PC”</b>. Click <b>More info</b> → <b>Run anyway</b>. This only happens once.',
+        'Still a warning such as <b>“Windows protected your PC”</b>? Click <b>More info</b> → <b>Run anyway</b>. Goldmine is new and not yet known to Windows; this only happens once.',
         'A window opens. The first start installs what it needs (Python included), which takes 1–3 minutes. It is ready when you see <b>Application startup complete</b>.',
         '<b>Leave that window open</b> (you may minimise it). Closing it stops Goldmine.'])}
-      <div class="term"><i></i><i></i><i></i><pre>Starting bridge on port 8765.
+      <div class="term"><i></i><i></i><i></i><pre>Starting the Goldmine bridge on http://127.0.0.1:8765  (keep this window open)
 Make sure MetaTrader 5 is open and logged in to your account.
 [setup] Using the MT5 account that is logged in: 12345678 on YourBroker-Live
 [license] licensed mode - server ${esc(A.me.server)}
@@ -2256,7 +2265,7 @@ INFO:     Application startup complete.   <b>← ready</b></pre></div>
         'Fill in your <b>Login</b> (account number) and <b>Password</b>, and pick the exact <b>Server</b> from your broker email (for example <i>VantageMarkets-Live 10</i> or <i>ICMarketsSC-Demo</i>). Tick <b>Save password</b> → <b>OK</b>.',
         'Check the bottom-right corner of MT5: it shows a speed like <b>42.3 ms</b>. If it says <i>Invalid account</i> or <i>No connection</i>, the login, password or server is wrong.',
         'Click <b>Algo Trading</b> in the MT5 toolbar so the icon turns <b style="color:var(--up)">green ▶</b>. Without it, MT5 refuses every order from Goldmine.'])}
-      <div class="livechip ${mt5Up ? 'ok' : ''}">${mt5Up ? `✓ MetaTrader 5 is logged in: account ${esc(BR.h?.mt5?.login || BR.acc?.login || '')} on ${esc(BR.h?.mt5?.server || '')}` : bridgeUp ? '<span class="spin"></span> Waiting for you to log in to MetaTrader 5…' : 'Start Goldmine first (step 2)'}</div>
+      <div class="livechip ${mt5Up ? 'ok' : ''}">${mt5Up ? `✓ MetaTrader 5 is logged in: account ${esc(BR.h?.mt5?.login || BR.acc?.login || '')}${(BR.h?.mt5?.server || BR.acc?.server) ? ' on ' + esc(BR.h?.mt5?.server || BR.acc?.server) : ''}` : bridgeUp ? '<span class="spin"></span> Waiting for you to log in to MetaTrader 5…' : 'Start Goldmine first (step 2)'}</div>
       ${mt5Up && algo === false ? '<div class="livechip bad">✗ Algo Trading is OFF in MetaTrader 5: click the <b>Algo Trading</b> button so it turns green.</div>' : mt5Up && algo ? '<div class="livechip ok">✓ Algo Trading is on</div>' : ''}`)}
 
     ${s === 'live' ? liveCard() : ''}
@@ -2340,6 +2349,10 @@ async function checkBridge() {
     if (L.enabled && !L.ok && !BR.activating) { // first start of a downloaded bridge: it activates itself, this only speeds it up
       BR.activating = true; L = await bridge('/api/license/activate', { key: A.me.license, server: A.me.server }).catch(() => L);
     }
+    // plan changed on the website (upgrade, new trial, renewal)? Tell the bridge now instead of waiting for its next check
+    const want = SUB(); if (L.enabled && (L.plan !== want.plan || !!L.ok !== !!want.valid) && Date.now() - (BR.refreshed || 0) > 15000) {
+      BR.refreshed = Date.now(); L = await bridge('/api/license/refresh', {}).catch(() => L);
+    }
     if (L.enabled && !L.ok) { BR.state = /already used|ended|failed|cancel|Unknown|subscription/i.test(L.reason || '') ? 'lic' : 'nomt5'; BR.msg = L.reason || 'checking your license…' }
     else {
       const a = await bridge('/api/accounts');
@@ -2409,6 +2422,79 @@ async function quickAccount() {
   } catch (e) { toast(e.message, 'err') }
 }
 
+/* ---------------------------------------------------------------- monthly challenge: free paper challenge + leaderboard */
+const pct = v => (v > 0 ? '+' : '') + Number(v || 0).toFixed(2) + '%';
+const CHST = { active: ['Trading', 'ok'], finished: ['Finished', 'ok'], failed: ['Rule broken', 'bad'], disqualified: ['Disqualified', 'bad'] };
+const chLeft = end => { const s = end - Date.now() / 1000; return s <= 0 ? 'ended' : s < 86400 ? Math.ceil(s / 3600) + ' h left' : Math.ceil(s / 86400) + ' days left' };
+async function chSync(quiet) { // this PC's challenge results -> server (the bridge also sends them itself every 5 min when licensed)
+  if (!A.me || CFG.demo || !CFG.key) return false;
+  try {
+    const st = (await bridge('/api/challenge/stats')).stats || []; if (!st.length) return false;
+    await srv('/api/challenge/push', { stats: st }); return st;
+  } catch (e) { if (!quiet) toast(e.message, 'err'); return false }
+}
+async function renderChallenge() {
+  $('#view').dataset.v = 'challenge';
+  $('#view').innerHTML = `<div class="page"><div class="wrap"><div class="empty">Loading the challenge…</div></div></div>`;
+  let j; try { j = await srv('/api/challenge') } catch (e) { $('#view').innerHTML = `<div class="page"><div class="wrap"><div class="box"><h3>🏆 Challenge</h3><p class="mut">${esc(e.message)}</p></div></div></div>`; return }
+  if (!j.on) { $('#view').innerHTML = `<div class="page"><div class="wrap"><div class="box"><h3>🏆 Challenge</h3><p class="mut">There is no challenge running right now. Check back soon.</p></div></div></div>`; return }
+  const ch = j.challenge, me = j.me, money = v => '$' + Number(v).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  let local = null;
+  const bOk = () => ['ok', 'live', 'nomt5'].includes(BR.state);
+  if (me && !CFG.demo && CFG.key) {
+    if (bOk()) { try { local = ((await bridge('/api/challenge/stats?entry=' + me.id)).stats || [])[0] || null } catch {} }
+    else if (!A.chRetry) { A.chRetry = 1; checkBridge().catch(() => {}).then(() => { A.chRetry = 0; if (bOk() && $('#view').dataset.v === 'challenge') renderChallenge() }) } // show the page now, fill in this PC's part when Goldmine answers
+  }
+  const meBox = !A.me
+    ? `<div class="chme"><div><b>Join for free</b><small>Every member can play, also during the free trial.</small></div><a class="btn acc md" href="#signup" data-cta="ch-signup">Start free trial & join</a></div>`
+    : !me ? `<div class="chme"><div><b>Pick your leaderboard name</b><small>Only this name is shown publicly, never your email.</small></div>
+        <div class="reflink" style="flex:1;min-width:240px;max-width:420px"><input class="in" id="chNick" maxlength="20" placeholder="Nickname, e.g. GoldHunter" value="${esc((A.me.user.name || A.me.user.email.split('@')[0]).replace(/[^\w .-]/g, '').slice(0, 20))}"><button class="btn acc md" data-act="chJoin">Join the challenge</button></div></div>`
+    : !local ? `<div class="chme"><div><b>You're in as ${esc(me.nickname)}.</b><small>Last step: make your challenge account on your trading PC (Goldmine must be running there).</small></div>
+        ${['ok', 'live', 'nomt5'].includes(BR.state) ? '<button class="btn acc md" data-act="chStart">Create my challenge account</button>' : '<a class="btn md" href="#setup">Start Goldmine first →</a>'}</div>`
+    : `<div class="chme"><div><b>${esc(me.nickname)} · ${(CHST[local.status] || CHST.active)[0]}</b><small>${local.status === 'failed' ? esc(local.fail) : me.rank ? `Rank #${me.rank} of ${j.board.filter(b => b.rank).length}` : `${Math.max(0, ch.min_trades - local.trades)} more closed trades to be ranked`}</small></div>
+        <div class="chnums"><span>Return<b class="${local.return_pct >= 0 ? 'up' : 'dn'}">${pct(local.return_pct)}</b></span><span>Equity<b>${money(local.equity)}</b></span><span>Trades<b>${local.trades}</b></span><span>Max DD<b>${Number(local.max_dd_pct).toFixed(1)}%</b></span></div>
+        <a class="btn acc md" href="#terminal">Trade it →</a></div>`;
+  const row = b => { const [t, c] = CHST[b.status] || CHST.active; return `<tr class="${me && b.nickname === me.nickname ? 'mine' : ''}"><td class="rk">${b.rank ? (b.rank <= 3 ? ['🥇', '🥈', '🥉'][b.rank - 1] : b.rank) : '—'}</td><td><b>${esc(b.nickname)}</b>${b.prize ? ` <span class="st ok">🏆 ${esc(b.prize)}</span>` : ''}</td>
+    <td style="text-align:right" class="${b.return_pct >= 0 ? 'up' : 'dn'}"><b>${pct(b.return_pct)}</b></td><td style="text-align:right">${b.trades}${b.needs ? `<small class="mut"> (${b.needs} to go)</small>` : ''}</td>
+    <td style="text-align:right" class="hide-sm">${b.trades ? Number(b.win_rate).toFixed(0) + '%' : '—'}</td><td style="text-align:right" class="hide-sm">${Number(b.max_dd_pct).toFixed(1)}%</td><td><span class="st ${c}">${t}</span></td></tr>` };
+  $('#view').innerHTML = `<div class="page"><div class="wrap chpage">
+    <div class="ph"><div><h1>🏆 ${esc(ch.name)}</h1><p>Same ${money(ch.balance)} paper account and the same rules for everyone. Best % return wins. Free for every member. <b>${chLeft(ch.end)}</b> · ${ch.entries} trader${ch.entries === 1 ? '' : 's'}</p></div></div>
+    <div class="g">
+      <div class="box">${meBox}</div>
+      <div class="chgrid">
+        <div class="box"><h3>Prizes</h3>${ch.prizes.map(p => `<div class="chprize"><span>${['🥇', '🥈', '🥉'][p.place - 1] || p.place}</span><b>${esc(p.label)}</b></div>`).join('')}</div>
+        <div class="box"><h3>Rules</h3><ul class="chrules">
+          <li>Start: <b>${money(ch.balance)}</b> paper money, leverage <b>1:${ch.leverage}</b>, live MT5 prices</li>
+          <li>Daily loss limit: <b>${ch.daily_loss}%</b> (${money(ch.balance * ch.daily_loss / 100)}) from the start of each day (UTC)</li>
+          <li>Max drawdown: <b>${ch.max_dd}%</b>: equity under ${money(ch.balance * (1 - ch.max_dd / 100))} ends your challenge</li>
+          <li>At least <b>${ch.min_trades} closed trades</b> to be ranked</li>
+          <li>No deposits, resets or leverage changes. Runs ${dt(ch.start)} – ${dt(ch.end)}</li></ul></div>
+      </div>
+      <div class="box"><h3>Leaderboard <span class="grow"></span>${me && local ? '<button class="btn ghost sm" data-act="chSync">↻ Update my result</button>' : ''}</h3>
+        ${j.board.length ? `<div class="tscroll"><table class="tbl2 chtbl"><thead><tr><th>#</th><th>Trader</th><th style="text-align:right">Return</th><th style="text-align:right">Trades</th><th style="text-align:right" class="hide-sm">Win rate</th><th style="text-align:right" class="hide-sm">Max DD</th><th>Status</th></tr></thead>
+          <tbody>${j.board.map(row).join('')}</tbody></table></div>` : '<div class="empty">Nobody has joined yet. Be the first!</div>'}</div>
+      ${j.previous?.winners?.length ? `<div class="box"><h3>Last month: ${esc(j.previous.name)}</h3><div class="tscroll"><table class="tbl2 chtbl"><tbody>${j.previous.winners.map(row).join('')}</tbody></table></div></div>` : ''}
+      <p class="mut" style="font-size:12px">Paper trading only: no real money is traded. Results are checked before prizes are given. A prize is free Pro access added to your account.</p>
+    </div></div></div>`;
+  if (local && Date.now() - (A.chSyncT || 0) > 60000) { A.chSyncT = Date.now(); chSync(true) } // keep the server's copy fresh (at most once a minute)
+}
+async function chJoin() {
+  const n = $('#chNick')?.value.trim() || '';
+  try {
+    const j = await srv('/api/challenge/join', { nickname: n }); toast('✓ You joined the challenge', 'ok'); track('challenge_join');
+    if (['ok', 'live', 'nomt5'].includes(BR.state)) await chStart(j.entry, true);
+    renderChallenge();
+  } catch (e) { toast(e.message, 'err') }
+}
+async function chStart(entry, quiet) {
+  try {
+    entry = entry || (await srv('/api/challenge')).me; if (!entry) return;
+    const r = await bridge('/api/challenge/start', { entry });
+    toast(`✓ Challenge account ready (#${r.account.login}). Open the terminal to trade it.`, 'ok', 6000); await chSync(true);
+    if (!quiet) renderChallenge();
+  } catch (e) { toast(/404/.test(e.message) || /Not Found/i.test(e.message) ? 'Your Goldmine on this PC is too old for the challenge. Download it again in Setup.' : e.message, 'err', 7000) }
+}
+
 /* ---------------------------------------------------------------- billing */
 function renderBilling() {
   $('#view').dataset.v = 'billing';
@@ -2439,11 +2525,13 @@ async function afterPayment() {
 }
 
 /* ---------------------------------------------------------------- welcome: right after buying (setup call, connect, invite, one upsell) */
+const refDays = () => A.plans?.ref_trial_days || 30;
+const trialDays = () => store.get('gpRef', '') ? refDays() : (A.plans?.trial_days || 7); // an invited friend gets the longer trial
 const refLink = () => `${location.origin}${location.pathname}?ref=${A.me?.ref?.code || ''}#signup`;
 function refBox() {
   const r = A.me?.ref || {}; if (!r.code) return '';
-  return `<div class="box refbox"><h3>🎁 Give a month, get a month</h3>
-    <p class="mut" style="font-size:13px;margin:-2px 0 12px">Share your link. Your friend's first paid month is free, and you get a month free when they join.</p>
+  return `<div class="box refbox"><h3>🎁 Give ${refDays()} days, get a month</h3>
+    <p class="mut" style="font-size:13px;margin:-2px 0 12px">Share your link. Your friend gets <b>${refDays()} days free</b> instead of ${A.plans?.trial_days || 7}. When they become a paying customer, <b>you get a month free</b>.</p>
     <div class="reflink"><input class="in" readonly value="${esc(refLink())}"><button class="btn acc md" data-act="copyRef">Copy link</button></div>
     <div class="lim" style="margin-top:12px"><span>Friends joined</span><b>${r.joined || 0}</b><span>Months earned</span><b>${r.rewarded || 0}</b></div></div>`;
 }
@@ -2488,7 +2576,7 @@ function renderWelcome() {
     <div class="wel-steps">
       ${[[me.booking_url ? 'Book your setup call' : 'Read your Risk Rulebook', me.booking_url ? '20 minutes: we set your risk, daily limit and layers with you.' : 'Your 5 rules on one page.', me.booking_url ? `<a class="btn acc md" href="${esc(me.booking_url)}" target="_blank" rel="noopener" data-cta="welcome-call">Book my call</a>` : `<a class="btn acc md" href="rulebook.html" target="_blank">Open my Rulebook</a>`],
          ['Install Goldmine next to MT5', 'One download, one double-click. It finds your account by itself.', '<a class="btn md" href="#setup">Start setup</a>'],
-         ['Invite a friend', 'They get their first month free, you get a month free.', '<button class="btn md" data-act="copyRef">Copy my link</button>']]
+         ['Invite a friend', `They get ${refDays()} days free. You get a free month when they subscribe.`, '<button class="btn md" data-act="copyRef">Copy my link</button>']]
         .map(([t, d, b], i) => `<div class="box wel-step"><span class="n">${i + 1}</span><h3>${t}</h3><p class="mut">${d}</p>${b}</div>`).join('')}
     </div>
     ${addonMenu()}
@@ -2571,10 +2659,13 @@ document.addEventListener('click', e => {
 function lifetimeCard() {
   const p = P('pro'), F = FOUND(); if (!p?.lifetime || (F.lifetime_left <= 0 && SUB().interval !== 'lifetime')) return '';
   const owned = A.me && SUB().interval === 'lifetime';
+  if (owned) return `<div class="lifetime owned"><div class="lt1"><span class="obadge">✓ YOURS FOREVER</span><h4>You own Pro Lifetime</h4>
+    <p>Every Pro feature and every future Pro update, for life. Nothing to renew, nothing will be charged again.</p></div>
+    <div class="lt2"><small>paid once</small><b>Lifetime</b><span>no end date</span></div><span class="ltown">✓ Active for life</span></div>`;
   return `<div class="lifetime"><div class="lt1"><span class="obadge">LIMITED: ${F.lifetime_left} LEFT</span><h4>Pro Lifetime: pay once, keep it forever</h4>
     <p>Every Pro feature and every future Pro update, for life. No subscription, nothing to renew.</p></div>
     <div class="lt2"><small>only ${F.lifetime_left} of ${F.lifetime_seats} left</small><b>${money2(p.lifetime)}</b><span>one-time · about ${Math.round(p.lifetime / p.month)} months of Pro</span></div>
-    ${owned ? '<button class="btn lg" disabled>You own Lifetime ✓</button>' : A.me ? `<button class="btn acc lg" data-buy="pro" data-bivl="lifetime" data-cta="buy-lifetime">Get Lifetime</button>` : `<a class="btn acc lg" href="#signup" data-cta="lifetime-trial">Try free first</a>`}</div>`;
+    ${A.me ? `<button class="btn acc lg" data-buy="pro" data-bivl="lifetime" data-cta="buy-lifetime">Get Lifetime</button>` : `<a class="btn acc lg" href="#signup" data-cta="lifetime-trial">Try free first</a>`}</div>`;
 }
 
 /* ---------------------------------------------------------------- terminal */
@@ -2743,11 +2834,42 @@ async function admAdd() {
 async function admDownload(path, name) {
   try { const r = await fetch(SRV + path, { headers: admHeaders() }); if (!r.ok) throw new Error('Download failed'); const u = URL.createObjectURL(await r.blob()), l = document.createElement('a'); l.href = u; l.download = name; l.click(); setTimeout(() => URL.revokeObjectURL(u), 2000) } catch (e) { toast(e.message, 'err') }
 }
+async function admChallenge(el, id) {
+  el = el || $('.admpane[data-pane="challenge"]'); if (!el) return;
+  let j; try { j = await admApi('/api/admin/challenge' + (id ? '?id=' + encodeURIComponent(id) : '')) } catch (e) { el.innerHTML = `<div class="res on bad">${esc(e.message)}</div>`; return }
+  A.admCh = j; const ch = j.challenge, now = Date.now() / 1000, prizes = ch.prizes;
+  const st = r => { const [t, k] = CHST[r.status] || CHST.active; return `<span class="st ${k}" ${r.fail ? `title="${esc(r.fail)}"` : ''}>${t}</span>` };
+  el.innerHTML = `<div class="admbar" style="flex-wrap:wrap;gap:10px"><select class="in" id="admChSel" style="width:auto">${j.all.map(x => `<option value="${esc(x.id)}" ${x.id === ch.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>
+      <span class="mut" style="font-size:12.5px">${ch.entries} entries · ${now > ch.end ? 'ended ' + dt(ch.end) : chLeft(ch.end)} · $${ch.balance.toLocaleString()} · daily ${ch.daily_loss}% · max DD ${ch.max_dd}% · min ${ch.min_trades} trades</span>
+      <span class="grow"></span><a class="btn sm" href="#challenge" target="_blank">Public leaderboard ↗</a></div>
+    <p class="mut" style="font-size:12px;margin:0 0 10px">Results come from each trader's own PC. Before giving a prize, open the winner (click the email) and check their trades look real; disqualify anyone who cheats.</p>
+    <div class="tscroll"><table class="tbl2"><thead><tr><th>#</th><th>Nickname</th><th>Customer</th><th style="text-align:right">Return</th><th style="text-align:right">Equity</th><th style="text-align:right">Trades</th><th style="text-align:right">Win</th><th style="text-align:right">PF</th><th style="text-align:right">Max DD</th><th>Status</th><th>Synced</th><th></th></tr></thead><tbody>
+    ${j.entries.map(r => `<tr><td><b>${r.rank || '—'}</b></td><td><b>${esc(r.nickname)}</b>${r.prize ? `<br><span class="st ok">🏆 ${esc(r.prize)}</span>` : ''}</td><td><a href="#" data-admu="${esc(r.email)}">${esc(r.email)}</a><br><small class="mut">acct ${r.login || 'not made yet'}</small></td>
+      <td style="text-align:right;font-weight:800" class="${(r.return_pct || 0) < 0 ? 'dn' : ''}">${pct(r.return_pct)}</td><td style="text-align:right">$${Number(r.equity || ch.balance).toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>
+      <td style="text-align:right">${r.trades || 0}</td><td style="text-align:right">${r.trades ? Number(r.win_rate).toFixed(0) + '%' : '—'}</td><td style="text-align:right">${r.trades ? Number(r.profit_factor).toFixed(2) : '—'}</td><td style="text-align:right">${Number(r.max_dd_pct || 0).toFixed(1)}%</td>
+      <td>${st(r)}</td><td><small>${ago(r.updated)}</small></td>
+      <td style="white-space:nowrap">${r.rank && r.rank <= prizes.length && !r.prize ? `<button class="btn sm acc" data-chact="award" data-e="${r.id}" data-rank="${r.rank}">🏆 Give prize</button> ` : ''}${r.status === 'disqualified' ? `<button class="btn sm" data-chact="reinstate" data-e="${r.id}">Reinstate</button>` : `<button class="btn sm danger" data-chact="disqualify" data-e="${r.id}">Disqualify</button>`}</td></tr>`).join('') || '<tr><td colspan="12" class="empty">Nobody joined this challenge yet.</td></tr>'}
+    </tbody></table></div>`;
+}
+async function admChAct(act, el) {
+  const r = A.admCh.entries.find(x => x.id === el.dataset.e), ch = A.admCh.challenge; let body = { entry: r.id, action: act };
+  if (act === 'award') {
+    const p = ch.prizes[(+el.dataset.rank || 1) - 1] || { label: 'Pro', days: 365 };
+    const v = await formBox(`Give the prize to ${r.nickname}`, [{ id: 'text', label: 'Prize', value: `${['1st', '2nd', '3rd'][+el.dataset.rank - 1] || el.dataset.rank + 'th'} place ${ch.name}: ${p.label}`, text: true }, { id: 'days', label: 'Days of Pro to add', value: p.days }], 'Give prize',
+      `Adds the days of Pro to ${esc(r.email)} (on top of what they have; lifetime customers keep lifetime). Did you check their trades?`);
+    if (!v) return; body = { ...body, text: v.text, days: parseInt(v.days) || 0 };
+  } else if (act === 'disqualify') {
+    const v = await formBox(`Disqualify ${r.nickname}?`, [{ id: 'text', label: 'Reason (shown on the leaderboard)', value: 'Broke the challenge rules', text: true }], 'Disqualify');
+    if (!v) return; body.text = v.text;
+  }
+  try { const j = await admApi('/api/admin/challenge/action', body); toast(j.message, 'ok', 6000); admChallenge(null, ch.id) } catch (e) { toast(e.message, 'err') }
+}
 async function admTab(t) {
   A.admTab = t; $$('[data-admtab]').forEach(b => b.classList.toggle('on', b.dataset.admtab === t));
   $$('.admpane').forEach(p => p.style.display = p.dataset.pane === t ? '' : 'none');
   if (t === 'customers') return;
   const el = $(`.admpane[data-pane="${t}"]`); el.innerHTML = '<div class="empty">Loading…</div>';
+  if (t === 'challenge') return admChallenge(el);
   let j; try { j = await admApi('/api/admin/activity') } catch (e) { el.innerHTML = `<div class="res on bad">${esc(e.message)}</div>`; return }
   if (t === 'payments') {
     const tot = j.payments.reduce((s, p) => s + p.amount, 0);
@@ -2783,23 +2905,25 @@ async function admLoad(quiet) {
           ['Founding seats left', j.founding ? `${j.founding.left} / ${j.founding.seats}` : '—'], ['Lifetime left', j.founding ? `${j.founding.lifetime_left} / ${j.founding.lifetime_seats}` : '—'], ['Founding closes', j.founding?.ends || 'no date set']]
           .map(([k, v]) => `<div class="kp"><small>${k}</small><b>${v}</b></div>`).join('')}</div></div>
       <div class="box">
-        <div class="admtop"><div class="seg admtabs">${[['customers', '👥 Customers'], ['leads', '📄 Leads'], ['payments', '💶 Payments'], ['log', '🕑 Admin log']].map(([k, t]) => `<button data-admtab="${k}" class="${(A.admTab || 'customers') === k ? 'on' : ''}">${t}</button>`).join('')}</div><span class="grow"></span>
+        <div class="admtop"><div class="seg admtabs">${[['customers', '👥 Customers'], ['leads', '📄 Leads'], ['payments', '💶 Payments'], ['challenge', '🏆 Challenge'], ['log', '🕑 Admin log']].map(([k, t]) => `<button data-admtab="${k}" class="${(A.admTab || 'customers') === k ? 'on' : ''}">${t}</button>`).join('')}</div><span class="grow"></span>
           <button class="btn sm acc" data-act="admAdd">＋ Add customer</button><button class="btn sm" data-act="admCsv">⤓ Customers CSV</button></div>
         <div class="admpane" data-pane="customers">
           <div class="admbar"><input class="in" id="admQ" placeholder="Search email or name…" value="${esc(A.admQ || '')}"><span class="mut" style="font-size:12px" id="admN"></span></div>
           <div class="seg" id="admF" style="margin-bottom:12px;flex-wrap:wrap;width:max-content;max-width:100%">${ADMF.map(([k, t, fn]) => `<button data-admf="${k}" class="${A.admF === k ? 'on' : ''}">${t} <span class="mut">${j.customers.filter(fn).length}</span></button>`).join('')}</div>
           <p class="mut" style="font-size:12px;margin:-4px 0 8px">Click a customer to upgrade, extend, block, reset, record payments, add notes or delete.</p>
           <div class="tscroll" id="admT"></div></div>
-        <div class="admpane" data-pane="leads" style="display:none"></div><div class="admpane" data-pane="payments" style="display:none"></div><div class="admpane" data-pane="log" style="display:none"></div>
+        <div class="admpane" data-pane="leads" style="display:none"></div><div class="admpane" data-pane="payments" style="display:none"></div><div class="admpane" data-pane="challenge" style="display:none"></div><div class="admpane" data-pane="log" style="display:none"></div>
       </div></div>`;
     admTable(); renderNav('admin'); if (A.admTab && A.admTab !== 'customers') admTab(A.admTab);
   } catch (e) { $('#adm').innerHTML = `<div class="res on bad">${esc(e.message)}</div>` }
 }
 document.addEventListener('input', e => { if (e.target.id === 'admQ') { A.admQ = e.target.value; admTable() } });
+document.addEventListener('change', e => { if (e.target.id === 'admChSel') admChallenge(null, e.target.value) });
 document.addEventListener('click', e => {
   const r = e.target.closest('[data-admu]'); if (r && $('#view').dataset.v === 'admin') { e.preventDefault(); return admUser(r.dataset.admu) }
   const ad = e.target.closest('[data-ada]'); if (ad) return admButton(ad.dataset.ada, ad);
   const tb = e.target.closest('[data-admtab]'); if (tb) return admTab(tb.dataset.admtab);
+  const ca = e.target.closest('[data-chact]'); if (ca) return admChAct(ca.dataset.chact, ca);
   const cp = e.target.closest('[data-adcopy]'); if (cp) { navigator.clipboard?.writeText(cp.dataset.adcopy); return toast('Copied', 'ok') }
 });
 
@@ -2851,6 +2975,9 @@ document.addEventListener('click', async e => {
   if (a === 'portal') { try { const j = await srv('/api/billing/portal', {}); if (j.url) location.href = j.url; else toast('Billing portal is available once Stripe is connected (test mode now).', 'warn') } catch (err) { toast(err.message, 'err') } return }
   if (a === 'cancelSub') return downsellCancel();
   if (a === 'resume') { try { setMe(await srv('/api/billing/resume', {})); renderBilling(); toast('Subscription resumed', 'ok') } catch (err) { toast(err.message, 'err') } return }
+  if (a === 'chJoin') return chJoin();
+  if (a === 'chStart') return chStart();
+  if (a === 'chSync') { const s = await chSync(); if (s) { toast('✓ Result updated', 'ok'); renderChallenge() } else toast('No challenge account on this PC yet.', 'warn'); return }
   if (a === 'admLoad') return admLoad();
   if (a === 'admAdd') return admAdd();
   if (a === 'admCsv') return admDownload('/api/admin/customers.csv', 'goldmine-customers.csv');

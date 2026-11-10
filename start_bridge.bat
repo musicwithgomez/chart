@@ -1,0 +1,3 @@
+@echo off
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0start_bridge.ps1"
+pause

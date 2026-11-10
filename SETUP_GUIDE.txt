@@ -1,0 +1,42 @@
+GOMEZ TRADING - MT5 DEMO BRIDGE: SIMPLE SETUP
+==============================================
+
+HOW IT FITS TOGETHER
+  MT5 (on your PC)  <-->  bridge (app.py, on your PC)  <-->  dashboard (GitHub Pages, in your browser)
+The dashboard page cannot talk to MT5 directly, so the small bridge program runs on your PC and
+passes messages between them. The bridge must be running whenever you use the MT5 Trade page.
+
+ONE-TIME SETUP
+ 1. Install Python 3.11 or 3.12 from python.org (tick "Add python to PATH").
+ 2. Open MetaTrader 5, log in to your DEMO account, and in Tools > Options > Expert Advisors
+    tick "Allow algorithmic trading".
+ 3. Put the whole "backend" folder somewhere on your PC, e.g. C:\gomez-bridge\
+    (config.json is already filled in: origin, key, login, server.)
+ 4. Check config.json: the "path" must match where terminal64.exe really is on your PC.
+ 5. Upload the new dashboard.html to your GitHub repo (replace the old one), commit, wait ~1 minute.
+    Do NOT upload the backend folder or config.json to GitHub.
+
+EVERY TIME YOU TRADE
+ 6. Double-click start_bridge.bat. First run installs things (1-2 min). Type your demo password when asked.
+    You should see: "Uvicorn running on http://127.0.0.1:8765". Leave that window open.
+ 7. Open https://musicwithgomez.github.io/... (your dashboard) in Chrome/Edge on the SAME PC.
+    Go to MT5 Trade, paste the api_key from config.json into "Private bridge key", click Connect / Refresh.
+    If the browser asks to "access other apps and services on this device" (or "local network"), click ALLOW.
+ 8. Type a broker symbol (e.g. EURUSD, XAUUSD, or your broker's Nasdaq name) in the chart box.
+    Your positions appear as lines: blue = entry, red = SL, green = TP. Drag red/green lines to move them.
+    A position with no SL/TP has no red/green line yet: set one with the SL/TP button once, then drag.
+
+IF CONNECT FAILS
+ - "Cannot reach the bridge": the black window from step 6 is not running.
+ - Still a CORS error: the black window prints "Allowed browser origins: [...]" - your site must be in that list
+   exactly (scheme + host only, no /path, no trailing slash). Restart the bridge after editing config.json.
+ - Brave browser: turn Shields off for your site. Firefox/Safari may block http://127.0.0.1 from https pages: use Chrome/Edge.
+ - 401: the key pasted does not match config.json.
+ - "MT5 initialize failed": MT5 path/login/server wrong in config.json, or wrong password.
+ - Chart empty: symbol name must match your broker's Market Watch exactly.
+
+SECURITY
+ - You posted your password and key in chat: change the demo password in MT5, and use a new api_key
+   (the config.json here already has a freshly generated one).
+ - Never put your password in config.json: the file only holds the NAME of the variable (MT5_DEMO_PASSWORD).
+ - Demo only: the bridge refuses non-demo accounts.

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Goldmine Pro Terminal</title>
-<link rel="stylesheet" href="gp-theme.css?v=20261109e">
+<link rel="stylesheet" href="gp-theme.css?v=20261110v">
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.0.8/dist/lightweight-charts.standalone.production.js"></script>
-<script src="gp-shared.js?v=20261109e"></script>
+<script src="gp-shared.js?v=20261110v"></script>
 <style>
 html,body{overflow:hidden}
 #app{height:100%;display:grid;grid-template-rows:auto auto 1fr}
@@ -469,6 +469,90 @@ input[type=range]{width:100%;accent-color:var(--acc)}
   .prow .acts [data-pa=pct]{display:none}
   .hc{padding:6px 8px}.hc b{font-size:13.5px}
 }
+
+#trPanel{position:absolute;right:calc(var(--psw, 64px) + 10px);top:44px;z-index:4;width:244px;display:none;flex-direction:column;gap:6px;font-size:11.5px;color:var(--text);pointer-events:auto}
+#trPanel.on{display:flex}
+.mbody label.tg{display:flex;align-items:center;gap:9px;font-weight:600;color:var(--text)}
+#trPanel .trh{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--mut);text-transform:uppercase}
+#trPanel .trh{cursor:grab;user-select:none;touch-action:none;background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--line);border-radius:8px;padding:3px 3px 3px 6px}#trPanel.drag .trh{cursor:grabbing}#trPanel.drag{opacity:.85}
+#trPanel .trh .grip{font-style:normal;letter-spacing:-2px;opacity:.6;margin-right:2px}#trPanel .trh b{text-transform:none;letter-spacing:0;font-size:11px;margin-left:6px;color:var(--text)}#trPanel .trh b.st{color:var(--sell)}#trPanel .trh b.bt{color:var(--buy)}#trPanel .trh b.pulse{animation:trBlink 1.2s ease-in-out infinite}@keyframes trBlink{50%{opacity:.45}}
+#trPanel.col{width:auto;max-width:420px}#trPanel .trh>*{flex:none}#trPanel .trh span{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#trPanel .trh button{background:var(--panel);border:1px solid var(--line);border-radius:6px;color:var(--mut);width:22px;height:22px;cursor:pointer;font-size:11px}
+#trPanel .trc.slim{padding:6px 10px}#trPanel .trc.slim>small{margin:0}
+#trPanel .trc{background:color-mix(in srgb,var(--panel) 86%,transparent);backdrop-filter:blur(6px);border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:9px;padding:9px 11px;box-shadow:0 6px 20px -10px rgba(0,0,0,.5)}
+#trPanel .trc.s{border-left-color:var(--sell)}#trPanel .trc.b{border-left-color:var(--buy)}
+#trPanel .trc.almost{animation:trPulse 1.4s ease-in-out infinite}
+#trPanel .trc.go.s{background:color-mix(in srgb,var(--sell) 14%,var(--panel))}#trPanel .trc.go.b{background:color-mix(in srgb,var(--buy) 14%,var(--panel))}
+@keyframes trPulse{50%{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 45%,transparent)}}
+#trPanel .trc>b{display:block;font-size:12.5px;letter-spacing:.01em}#trPanel .trc>small{display:block;color:var(--mut);font-size:10.5px;margin:1px 0 6px}
+#trPanel ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}#trPanel li{display:flex;gap:6px;align-items:baseline;color:var(--mut)}
+#trPanel li i{flex:none;width:13px;height:13px;border-radius:4px;border:1.5px solid var(--line2);font-style:normal;font-size:9px;font-weight:900;display:grid;place-items:center;transform:translateY(2px)}
+#trPanel li.ok{color:var(--text)}#trPanel li.ok i{background:var(--buy);border-color:var(--buy);color:#fff}
+#trPanel li em{font-style:normal;color:var(--acc);font-weight:700;margin-left:auto;white-space:nowrap;padding-left:6px}
+#trPanel .trr{margin-top:6px;font-size:10.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+#trPanel .trk{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:4px 0}#trPanel .trk span{font-size:9.5px;color:var(--mut);text-transform:uppercase}#trPanel .trk b{display:block;font-size:12px;color:var(--text);text-transform:none;font-variant-numeric:tabular-nums}
+#trPanel .trc .btn{margin-top:7px;width:100%}
+#trPanel .bt{color:var(--buy);font-weight:800}#trPanel .st{color:var(--sell);font-weight:800}
+@media (max-width:860px){#trPanel{width:220px;top:auto;bottom:34px;right:calc(var(--psw, 56px) + 6px);font-size:11px}#trPanel .trc ul,#trPanel .trr{display:none}#trPanel .trc.almost ul{display:grid}}
+
+.mbody.bt p{font-size:12.5px;line-height:1.5}
+.btopts{display:flex;align-items:end;gap:10px;flex-wrap:wrap}.btopts label{min-width:150px}
+.btchips{display:flex;gap:4px;flex-wrap:wrap;flex:1}.btchips button{height:30px;padding:0 10px;border-radius:7px;border:1px solid var(--line);background:var(--panel2);color:var(--mut);font-weight:700;font-size:12px;cursor:pointer}.btchips button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.btempty{padding:22px;text-align:center;color:var(--mut);font-size:12.5px;border:1px dashed var(--line);border-radius:10px}
+.btwin{padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--acc) 12%,transparent);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);font-size:13px;margin-bottom:10px}.btwin .warn{color:var(--orange,#e0962c)}
+.bthead{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:11.5px;color:var(--mut);font-weight:700}.btseg button{height:26px;font-size:11.5px}
+.btscroll{overflow:auto;border:1px solid var(--line);border-radius:10px}
+.bttbl{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bttbl th{position:sticky;top:0;background:var(--panel2);text-align:right;padding:7px 9px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+.bttbl td{text-align:right;padding:6px 9px;border-top:1px solid var(--line)}.bttbl th:first-child,.bttbl td:first-child,.bttbl th:nth-child(2),.bttbl td:nth-child(2){text-align:left}
+.bttbl tbody tr{cursor:pointer}.bttbl tbody tr:hover td{background:var(--panel2)}.bttbl tr.best td{background:color-mix(in srgb,var(--acc) 10%,transparent)}.bttbl tr.sel td{outline:0;box-shadow:inset 0 0 0 9999px color-mix(in srgb,var(--blue,#2f7fd6) 10%,transparent)}
+.bttbl .up{color:var(--buy)}.bttbl .dn{color:var(--sell)}
+.trb{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:800;color:#fff;background:#7a4fd0}.trb.t2{background:#2f7fd6}
+.btsub{margin:14px 0 6px;font-size:12.5px}
+.modal.wide .mbox:has(.mbody.bt){width:min(920px,100%)}
+
+.btmode{margin-bottom:2px;width:max-content}.btmode button{height:30px;font-size:12px}
+.optgrid{display:grid;grid-template-columns:170px 1fr;gap:8px 12px;align-items:center}.optgrid>span{font-size:11.5px;font-weight:700;color:var(--mut)}
+@media(max-width:640px){.optgrid{grid-template-columns:1fr}}
+.optbar{height:5px;border-radius:3px;background:var(--line);margin:10px auto 0;max-width:320px;overflow:hidden}.optbar i{display:block;height:100%;background:var(--acc);transition:width .2s}
+.btwin .ok{color:var(--buy);font-weight:700}.btwin .warn{color:var(--sell);font-weight:700}
+.opttbl th.un,.opttbl td.un{background:color-mix(in srgb,var(--blue,#2f7fd6) 7%,transparent)}
+.opttbl tbody tr{cursor:default}
+
+.optcards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}@media(max-width:640px){.optcards{grid-template-columns:1fr}}
+.optcard{display:flex;flex-direction:column;gap:3px;padding:11px 13px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);font-size:11.5px;color:var(--mut)}
+.optcard small{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}.optcard>b{font-size:22px;color:var(--text);letter-spacing:-.01em}.optcard>b em{font-style:normal;font-size:12px;font-weight:700;color:var(--mut);margin-left:6px}
+.optcard .ok{color:var(--buy);font-weight:700}.optcard .warn{color:var(--sell);font-weight:700}.optcard .btn{margin-top:6px;align-self:flex-start}
+.bthead{flex-wrap:wrap}.bthead .btseg{flex-wrap:wrap}
+
+.trsys{display:flex;flex-direction:column;gap:4px;max-height:300px;overflow:auto}
+.trsys>div{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}.trsys>div.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--panel2))}
+.trsys .nm{flex:1;min-width:0;text-align:left;background:none;border:0;padding:7px 9px;cursor:pointer;color:var(--text)}.trsys .nm b{display:block;font-size:12.5px}.trsys .nm small{display:block;font-size:10.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trsys .ib{background:none;border:0;cursor:pointer;padding:6px 8px;opacity:.6}.trsys .ib:hover{opacity:1}
+.pop.trpop{width:320px;padding:8px}.pop.trpop .trsys{margin:4px 2px 6px}
+#trPanel .trh .sysb{width:auto;padding:0 7px;font-size:10.5px;font-weight:800;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--acc)}#trPanel .trh{gap:3px}#trPanel .trh button{flex:none}
+
+.optcards.three{grid-template-columns:repeat(3,1fr)}@media(max-width:820px){.optcards.three{grid-template-columns:1fr}}
+.opttbl .wl{display:block;height:3px;border-radius:2px;background:var(--sell);margin-top:3px;overflow:hidden;min-width:44px}.opttbl .wl b{display:block;height:100%;background:var(--buy)}
+.opttbl td.up,.optcard b.up{color:var(--buy)}.opttbl td.dn,.optcard b.dn{color:var(--sell)}
+
+#trPanel .trbtns{display:flex;gap:5px;margin-top:7px}#trPanel .trbtns .btn{margin-top:0}#trPanel .trbtns .btn:first-child{flex:1;width:auto}#trPanel .trbtns .btn.ghost{width:auto}
+#trPanel .btn.sell{background:var(--sell);border-color:var(--sell);color:#fff}#trPanel .btn.buy{background:var(--buy);border-color:var(--buy);color:#fff}
+#trPanel .trdone{margin-top:6px;font-size:11px;font-weight:800;color:var(--acc)}
+#trPanel .trh .lim{width:auto;padding:0 7px;font-size:10.5px;font-weight:800;color:#fff;border:0}#trPanel .trh .lim.st{background:var(--sell)}#trPanel .trh .lim.bt{background:var(--buy)}
+
+#trPanel .trauto{display:flex;flex-direction:column;gap:2px;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 90%,transparent);font-size:11px;color:var(--mut)}
+#trPanel .trauto b{color:var(--text);font-size:11.5px;letter-spacing:.04em}#trPanel .trauto.run{border-color:var(--acc);box-shadow:inset 3px 0 0 var(--acc)}#trPanel .trauto.run b{color:var(--acc)}#trPanel .trauto.wait{box-shadow:inset 3px 0 0 var(--orange,#e0962c)}
+#trPanel .trauto .btn{margin-top:5px}
+#trPanel .trh .autob{width:auto;padding:0 6px;font-size:10.5px;font-weight:800}#trPanel .trh .autob.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.talog{max-height:180px;overflow:auto;border:1px solid var(--line);border-radius:8px;font-size:11.5px}.talog div{padding:5px 8px;border-top:1px solid var(--line)}.talog div:first-child{border:0}.talog small{color:var(--mut);margin-right:6px}.talog .err{color:var(--sell)}.talog .placed{color:var(--text)}.talog .filled{color:var(--buy)}
+
+#trPanel .tatfs{display:flex;gap:3px;flex-wrap:wrap;margin:3px 0}#trPanel .tatfs i{font-style:normal;font-size:10px;font-weight:800;padding:1px 6px;border-radius:4px;border:1px solid var(--line2);color:var(--mut)}#trPanel .tatfs i.ok{border-color:var(--acc);color:var(--acc)}
+
+/* TR panel on the light theme: crisp white cards, soft shadow, same layout */
+[data-theme="light"] #trPanel .trc,[data-theme="light"] #trPanel .trh,[data-theme="light"] #trPanel .trauto{background:rgba(255,255,255,.94);border-color:rgba(20,40,35,.12);box-shadow:0 8px 24px -14px rgba(20,40,35,.35)}
+[data-theme="light"] #trPanel .trc.go.s{background:color-mix(in srgb,var(--sell) 9%,#fff)}[data-theme="light"] #trPanel .trc.go.b{background:color-mix(in srgb,var(--buy) 9%,#fff)}
+[data-theme="light"] #trPanel .trh button{background:#fff;border-color:rgba(20,40,35,.14)}
+[data-theme="light"] #trPanel li i{border-color:rgba(20,40,35,.25)}
 </style>
 </head>
 <body>
@@ -513,6 +597,7 @@ input[type=range]{width:100%;accent-color:var(--acc)}
         <svg id="draw"></svg>
         <div id="zones"></div>
         <div id="tl"></div>
+        <div id="trPanel"></div>
         <div id="legend"><div class="lg1"><b id="lgSym">—</b><span id="lgTf"></span><span class="cd" id="lgCd">⧗ --:--</span></div><div id="lgOhlc"></div><div id="lgInd"></div></div>
         <div id="cacts"></div>
         <div id="dtb"></div>
@@ -570,7 +655,7 @@ input[type=range]{width:100%;accent-color:var(--acc)}
         <div id="tkLock"></div>
       </div>
       <div class="tkfoot">
-        <label class="tg"><input type="checkbox" id="oneClick"><span></span>One-click trading</label>
+        <label class="tg" title="Demo and paper accounts always trade in one click. This switch removes the confirmation on real-money accounts too."><input type="checkbox" id="oneClick"><span></span>One-click on real accounts</label>
         <span class="hint">Hover an entry and drag <b>＋ SL / ＋ TP</b> out of it. Drag a label to move its line. <span class="kbd">⇧B</span> buy · <span class="kbd">⇧S</span> sell · <span class="kbd">?</span> all keys</span>
       </div>
     </aside>
@@ -653,6 +738,184 @@ function atr(c, n = 14) {
   for (let i = Math.max(1, c.length - 300); i < c.length; i++) { const tr = Math.max(c[i].high - c[i].low, Math.abs(c[i].high - c[i - 1].close), Math.abs(c[i].low - c[i - 1].close)); a = a ? (a * (n - 1) + tr) / n : tr }
   return a;
 }
+/* ---------- TR backtest: the same rules on every timeframe, TR1 vs TR2, scored in R ----------
+   A trade = a valid retest. Result at a target of xR: +x if price reached x R before the stop, −1 if the stop came first,
+   still open = not counted. Careful by design: on the entry candle only the stop counts; a candle touching stop AND target = loss.
+   No spread / commission included (subtract roughly your spread ÷ stop distance per trade). */
+const BT = { tfs: store.get('btTfs', ['M1', 'M5', 'M15', 'M30', 'H1', 'H4']), count: store.get('btCount', 5000), target: store.get('btTarget', 'best'), rows: [], busy: false, sel: '' };
+const BT_TARGETS = [1, 1.5, 2, 3];
+function btStats(tr, t) {
+  let net = 0, w = 0, l = 0, gp = 0, open = 0, eq = 0, peak = 0, dd = 0, st = 0, maxSt = 0;
+  for (const s of tr) {
+    let r; if (s.maxR >= t) r = t; else if (s.out === 'sl') r = -1; else { open++; continue }
+    net += r; eq += r; peak = Math.max(peak, eq); dd = Math.max(dd, peak - eq);
+    if (r > 0) { w++; gp += r; st = 0 } else { l++; st++; maxSt = Math.max(maxSt, st) }
+  }
+  const n = w + l; return { t, n, w, l, open, won: gp, lost: l, win: n ? w / n * 100 : 0, net, avg: n ? net / n : 0, pf: l ? gp / l : gp ? 99 : 0, dd, streak: maxSt };
+}
+const btBest = tr => BT_TARGETS.map(t => btStats(tr, t)).reduce((a, b) => b.net > a.net ? b : a);
+const btPick = r => BT.target === 'best' ? btBest(r.trades) : btStats(r.trades, +BT.target);
+function openBacktest() {
+  closePopover();
+  const tfs = ['M1', 'M3', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1'];
+  if (BT.mode === 'opt') return openOptimizer();
+  openModal(`<h3>📊 TR backtest · ${esc(S.symbol)}</h3><div class="mbody bt">
+    <div class="seg btmode"><button class="on">By timeframe</button><button onclick="btMode('opt')">🔍 Find the best settings</button></div>
+    <p>Runs the TR rules (your current TR settings) over the past candles of every timeframe you pick, and scores <b>TR1 vs TR2</b> in R: +target when price reached it before the stop, −1 when the stop came first.</p>
+    <div class="btopts"><div class="btchips">${tfs.map(t => `<button class="${BT.tfs.includes(t) ? 'on' : ''}" onclick="btTf('${t}',this)">${t}</button>`).join('')}</div>
+      <label>Candles per timeframe<select id="btCount" onchange="BT.count=+this.value;store.set('btCount',BT.count)">${[2000, 5000, 10000, 20000].map(v => `<option ${v === BT.count ? 'selected' : ''} value="${v}">${v.toLocaleString()}</option>`).join('')}</select></label>
+      <button class="btn acc" id="btRun" onclick="btRun()">▶ Run backtest</button></div>
+    <div id="btOut"><div class="btempty">Pick timeframes and press Run. Bigger timeframes need more candles for enough trades.</div></div>
+  </div><div class="mact"><button class="btn ghost" data-m="no">Close</button></div>`, true);
+  if (BT.rows.length && BT.sym === S.symbol) btRender();
+}
+/* ---------- settings optimizer: try many TR settings × take-profit targets × timeframes at once ----------
+   Honest by design: settings are ranked on the first 70% of the candles, and every row also shows how the SAME settings
+   did on the last 30% they were not picked on ("unseen"). Settings that only look good on the first part are curve-fitted. */
+const OPT = Object.assign({ risk: 1, minBars: [3, 4, 5, 6, 8], range: [1, 1.3, 1.6, 2, 2.5], buf: [0, .1, .25], away: [true, false], tp: [1, 1.5, 2, 3], tr: ['1', '2', '12'], minTrades: 20, rank: 'net' }, store.get('optCfg', {}));
+OPT.res = []; OPT.busy = false;
+const saveOPT = () => { const { res, busy, ...k } = OPT; store.set('optCfg', k) };
+const OPT_CHOICES = { minBars: [3, 4, 5, 6, 7, 8, 10, 12], range: [.8, 1, 1.3, 1.6, 2, 2.5, 3], buf: [0, .1, .25, .5], away: [true, false], tp: [1, 1.5, 2, 2.5, 3, 4, 5], tr: ['1', '2', '12'] };
+const OPT_LBL = { minBars: v => v, range: v => v + '×', buf: v => v + '×', away: v => v ? 'Yes' : 'No', tp: v => v + 'R', tr: v => ({ 1: 'TR1', 2: 'TR2', 12: 'TR1+2' })[v] };
+function btMode(m) { BT.mode = m; m === 'opt' ? openOptimizer() : openBacktest() }
+function optChip(k, v, b) { const a = OPT[k], i = a.findIndex(x => String(x) === String(v)); if (i >= 0) { if (a.length > 1) a.splice(i, 1) } else a.push(v); a.sort((x, y) => (+x) - (+y)); saveOPT(); b.parentElement.outerHTML = optRow(k) }
+const optRow = k => `<div class="btchips">${OPT_CHOICES[k].map(v => `<button class="${OPT[k].some(x => String(x) === String(v)) ? 'on' : ''}" onclick="optChip('${k}',${typeof v === 'string' ? `'${v}'` : v},this)">${OPT_LBL[k](v)}</button>`).join('')}</div>`;
+const optCount = () => OPT.minBars.length * OPT.range.length * OPT.buf.length * OPT.away.length;
+function openOptimizer() {
+  closePopover(); BT.mode = 'opt';
+  const tfs = ['M1', 'M3', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1'];
+  openModal(`<h3>📊 TR backtest · ${esc(S.symbol)}</h3><div class="mbody bt">
+    <div class="seg btmode"><button onclick="btMode('tf')">By timeframe</button><button class="on">🔍 Find the best settings</button></div>
+    <p>Tick the values to try. Every combination is tested on every timeframe you pick, then ranked. <b>Ranked on the first 70%</b> of the candles; the <b>“unseen”</b> columns show the same settings on the last 30%: if they hold up there too, they are more likely real.</p>
+    <div class="optgrid">
+      <span>Timeframes</span><div class="btchips">${tfs.map(t => `<button class="${BT.tfs.includes(t) ? 'on' : ''}" onclick="btTf('${t}',this)">${t}</button>`).join('')}</div>
+      <span>Min. candles in a range</span>${optRow('minBars')}
+      <span>Range size (× ATR)</span>${optRow('range')}
+      <span>Stop buffer (× ATR)</span>${optRow('buf')}
+      <span>Leave zone before retest</span>${optRow('away')}
+      <span>Take profit at</span>${optRow('tp')}
+      <span>Which signals</span>${optRow('tr')}
+    </div>
+    <div class="btopts"><label>Candles per timeframe<select onchange="BT.count=+this.value;store.set('btCount',BT.count)">${[2000, 5000, 10000, 20000].map(v => `<option ${v === BT.count ? 'selected' : ''} value="${v}">${v.toLocaleString()}</option>`).join('')}</select></label>
+      <label>Risk per trade<select onchange="OPT.risk=+this.value;saveOPT();optRender()">${[.25, .5, 1, 2, 3].map(v => `<option value="${v}" ${v === OPT.risk ? 'selected' : ''}>${v}% of the account</option>`).join('')}</select></label>
+      <label>Min. trades<select onchange="OPT.minTrades=+this.value;saveOPT();optRender()">${[10, 20, 30, 50].map(v => `<option ${v === OPT.minTrades ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+      <label>Rank by<select onchange="OPT.rank=this.value;saveOPT();optRender()">${[['net', 'Total R'], ['avg', 'R per trade'], ['winp', 'Win rate (profitable)'], ['win', 'Win rate (any)'], ['pf', 'Profit factor'], ['both', 'Good on BOTH parts']].map(([k, l]) => `<option value="${k}" ${OPT.rank === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <button class="btn acc" id="optRun" onclick="optRun()">▶ Test all combinations</button></div>
+    <div id="optOut">${OPT.res.length && OPT.sym === S.symbol ? '' : '<div class="btempty">Pick the values and press Test. Tip: start with 2–3 timeframes; every extra value multiplies the number of tests.</div>'}</div>
+  </div><div class="mact"><button class="btn ghost" data-m="no">Close</button></div>`, true);
+  if (OPT.res.length && OPT.sym === S.symbol) optRender();
+}
+async function optRun() {
+  if (OPT.busy || !BT.tfs.length) return; OPT.busy = true; OPT.res = []; OPT.sym = S.symbol;
+  const btn = $('#optRun'), out = $('#optOut'), order = Object.keys(TF_SEC), tfs = [...BT.tfs].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  const total = tfs.length * optCount(); let done = 0, t0 = Date.now();
+  const prog = tf => { if (out) out.innerHTML = `<div class="btempty"><span class="spin"></span>${tf}: ${done} of ${total} setting combinations tested…<div class="optbar"><i style="width:${(done / total * 100).toFixed(1)}%"></i></div></div>` };
+  try {
+    for (const tf of tfs) {
+      prog(tf);
+      let C; try { C = (await api(`/api/candles?${L()}&symbol=${enc(S.symbol)}&timeframe=${tf}&count=${BT.count}`)).candles || [] } catch { done += optCount(); continue }
+      if (C.length < 200) { done += optCount(); continue }
+      const A = TR.atrA(C), split = C.length * .7, days = (C[C.length - 1].time - C[0].time) / 86400;
+      for (const mb of OPT.minBars) for (const rg of OPT.range) for (const bf of OPT.buf) for (const aw of OPT.away) {
+        const cfg = { ...TRC, minBars: mb, rangeAtr: rg, slBuf: bf, away: aw }, r = trScan(C, cfg, { closed: C.length - 1, A });
+        const valid = r.setups.filter(s => s.state === 'valid');
+        for (const trf of OPT.tr) {
+          const tr = valid.filter(s => trf === '12' ? s.tr <= 2 : s.tr === +trf), train = tr.filter(s => s.trig < split), test = tr.filter(s => s.trig >= split);
+          for (const t of OPT.tp) OPT.res.push({ tf, mb, rg, bf, aw, trf, t, a: btStats(train, t), b: btStats(test, t), all: btStats(tr, t), days });
+        }
+        if (++done % 12 === 0) { prog(tf); if (btn) btn.textContent = `Testing… ${Math.round(done / total * 100)}%`; await sleep(0) }
+      }
+    }
+  } finally { OPT.busy = false; if (btn) btn.textContent = '▶ Test all combinations' }
+  OPT.ms = Date.now() - t0; optRender();
+}
+function optRender() {
+  const out = $('#optOut'); if (!out || !OPT.res.length) return;
+  // win rate: ties broken by R per trade. 'winp' = only settings that also made money (a high win rate that loses money is useless)
+  const score = { net: x => x.a.net, avg: x => x.a.avg, pf: x => x.a.net > 0 ? x.a.pf : -999 + x.a.net / 1e4, win: x => x.a.win + x.a.avg / 100, winp: x => x.a.net > 0 ? x.a.win + x.a.avg / 100 : -999 + x.a.net / 1e4, both: x => Math.min(x.a.avg, x.b.n >= 5 ? x.b.avg : -9) };
+  const R = v => `<b class="${v > 0 ? 'up' : v < 0 ? 'dn' : ''}">${v > 0 ? '+' : ''}${v.toFixed(1)}R</b>`, r2 = v => `${v >= 0 ? '+' : ''}${v.toFixed(2)}`;
+  const rows = OPT.res.filter(x => x.a.n >= OPT.minTrades).sort((x, y) => score[OPT.rank](y) - score[OPT.rank](x)).slice(0, 30);
+  if (!rows.length) { out.innerHTML = `<div class="btempty">No combination had ${OPT.minTrades}+ trades in the first 70%. Load more candles, lower “Min. trades”, or try smaller timeframes.</div>`; return }
+  const ok = OPT.res.filter(x => x.a.n >= OPT.minTrades), best = f => ok.reduce((p, x) => !p || f(x) > f(p) ? x : p, null);
+  const topR = best(score.net), topW = best(score.winp) || best(score.win), topP = best(score.pf), pc = v => `${v >= 0 ? '+' : '−'}${Math.abs(v * OPT.risk).toFixed(0)}%`;
+  const card = (x, icon, title, main) => { if (!x) return ''; const held = x.b.n ? x.b.avg > 0 : null; return `<div class="optcard"><small>${icon} ${title}</small><b>${main}</b>
+      <span>${x.tf} · ${OPT_LBL.tr(x.trf)} · TP ${x.t}R · ${x.mb} candles · range ${x.rg}× · stop buf. ${x.bf}× · ${x.aw ? 'leave first' : 'no leave rule'}</span>
+      <span>${x.a.n} trades · win ${x.a.win.toFixed(0)}% · won <b class="up">+${x.a.won.toFixed(1)}R</b> · lost <b class="dn">−${x.a.lost}R</b> · ${r2(x.a.avg)}R per trade</span>
+      <span>At ${OPT.risk}% risk per trade: <b class="${x.a.net >= 0 ? 'up' : 'dn'}">${pc(x.a.net)}</b> on the account · worst drawdown −${(x.a.dd * OPT.risk).toFixed(0)}%</span>
+      <span class="${held ? 'ok' : 'warn'}">${held === null ? 'No unseen trades to check' : held ? `✓ Unseen: win ${x.b.win.toFixed(0)}% · ${R(x.b.net)}` : `✗ Unseen: win ${x.b.win.toFixed(0)}% · ${R(x.b.net)} (may be luck)`}</span>
+      <div style="display:flex;gap:6px"><button class="btn sm acc" onclick="optApply(${OPT.res.indexOf(x)})">Use these settings</button><button class="btn sm" onclick="optSave(${OPT.res.indexOf(x)})">☆ Save as…</button></div></div>` };
+  const seg = [['net', '💰 Biggest profit'], ['avg', 'R per trade'], ['winp', '🎯 Win rate (profitable)'], ['win', 'Win rate (any)'], ['pf', '⚖️ Won vs lost'], ['both', 'Good on both parts']];
+  out.innerHTML = `<div class="optcards three">${card(topR, '💰', 'Biggest profit', R(topR.a.net) + ` <em>${pc(topR.a.net)} at ${OPT.risk}% risk</em>`)}${card(topW, '🎯', 'Highest win rate (profitable)', `${topW?.a.win.toFixed(0)}% <em>${topW ? R(topW.a.net) : ''}</em>`)}${card(topP, '⚖️', 'Best won vs lost', `${topP?.a.pf.toFixed(2)} <em>${topP ? `+${topP.a.won.toFixed(0)}R won / −${topP.a.lost}R lost` : ''}</em>`)}</div>
+    <div class="bthead"><span>Sort by</span><div class="seg btseg">${seg.map(([k, l]) => `<button class="${OPT.rank === k ? 'on' : ''}" onclick="OPT.rank='${k}';saveOPT();optRender()">${l}</button>`).join('')}</div><span class="mut" style="font-weight:600">${OPT.res.length.toLocaleString()} tests in ${(OPT.ms / 1000).toFixed(1)} s</span></div>
+    <div class="btscroll" style="max-height:420px"><table class="bttbl opttbl"><thead><tr><th>#</th><th>TF</th><th>Signals</th><th>Candles</th><th>Range</th><th>Stop buf.</th><th>Leave</th><th>TP</th><th>Trades</th><th>Win %</th><th>Won</th><th>Lost</th><th>Net</th><th>Per trade</th><th>Won/lost</th><th>Max DD</th><th>Account @${OPT.risk}%</th><th class="un">Unseen trades</th><th class="un">Unseen win %</th><th class="un">Unseen total</th><th class="un">Per trade</th><th></th></tr></thead><tbody>
+      ${rows.map((x, i) => `<tr><td>${i + 1}</td><td><b>${x.tf}</b></td><td>${OPT_LBL.tr(x.trf)}</td><td>${x.mb}</td><td>${x.rg}×</td><td>${x.bf}×</td><td>${x.aw ? 'yes' : 'no'}</td><td><b>${x.t}R</b></td><td>${x.a.n}</td><td>${x.a.win.toFixed(0)}%</td><td class="up">+${x.a.won.toFixed(1)}R</td><td class="dn">−${x.a.lost}R</td><td>${R(x.a.net)}<i class="wl" title="won vs lost"><b style="width:${(x.a.won / Math.max(1e-9, x.a.won + x.a.lost) * 100).toFixed(0)}%"></b></i></td><td>${r2(x.a.avg)}</td><td>${x.a.pf.toFixed(2)}</td><td>−${x.a.dd.toFixed(1)}R</td><td><b class="${x.a.net >= 0 ? 'up' : 'dn'}">${pc(x.a.net)}</b></td>
+        <td class="un">${x.b.n}</td><td class="un">${x.b.n ? x.b.win.toFixed(0) + '%' : '—'}</td><td class="un">${x.b.n ? R(x.b.net) : '—'}</td><td class="un">${x.b.n ? `${r2(x.b.avg)} ${x.b.avg > 0 ? '<span class="up">✓</span>' : '<span class="dn">✗</span>'}` : '—'}</td>
+        <td style="white-space:nowrap"><button class="btn sm" onclick="optApply(${OPT.res.indexOf(x)})">Use</button> <button class="btn sm ghost" onclick="optSave(${OPT.res.indexOf(x)})" title="Save as a named system">☆</button></td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="mut" style="font-size:11px">Top 30 with at least ${OPT.minTrades} trades in the first 70%. Same scoring as the timeframe backtest (stop first on doubtful candles, no spread). The more combinations you test, the more likely the #1 is luck: trust rows that are ✓ on unseen data and look similar to their neighbours.</p>`;
+}
+const optCfg = x => ({ ...trPick(TRC), minBars: x.mb, rangeAtr: x.rg, slBuf: x.bf, away: x.aw, tp: x.t, show: x.trf === '1' ? 'tr1' : x.trf === '2' ? 'tr2' : 'both' });
+function optSave(i) { const x = OPT.res[i]; if (x) trSaveAs(optCfg(x), x.tf, () => openOptimizer()) }
+function optApply(i) {
+  const x = OPT.res[i]; if (!x) return;
+  Object.assign(TRC, { on: true, minBars: x.mb, rangeAtr: x.rg, slBuf: x.bf, away: x.aw, tp: x.t, show: x.trf === '1' ? 'tr1' : x.trf === '2' ? 'tr2' : 'both' }); saveTRC();
+  resolveModal(null); TR.key = ''; Overlay.dirty = true; TR.tick(); if (S.tf !== x.tf) setTF(x.tf);
+  toast(`Using: ${x.tf} · ${OPT_LBL.tr(x.trf)} · ${x.mb} candles · range ${x.rg}× · stop buffer ${x.bf}× · TP ${x.t}R`, 'ok', 7000);
+}
+function btTf(t, b) { BT.tfs = BT.tfs.includes(t) ? BT.tfs.filter(x => x !== t) : [...BT.tfs, t]; store.set('btTfs', BT.tfs); b.classList.toggle('on') }
+async function btRun() {
+  if (BT.busy || !BT.tfs.length) return; BT.busy = true; BT.rows = []; BT.sel = ''; BT.sym = S.symbol;
+  const btn = $('#btRun'), out = $('#btOut'), order = Object.keys(TF_SEC), tfs = [...BT.tfs].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  try {
+    for (const tf of tfs) {
+      if (btn) btn.textContent = `Testing ${tf}…`; if (out) out.innerHTML = `<div class="btempty"><span class="spin"></span>Loading ${BT.count.toLocaleString()} ${tf} candles and testing…</div>`;
+      let C; try { C = (await api(`/api/candles?${L()}&symbol=${enc(S.symbol)}&timeframe=${tf}&count=${BT.count}`)).candles || [] } catch (e) { BT.rows.push({ tf, err: e.message }); continue }
+      if (C.length < 100) { BT.rows.push({ tf, err: 'not enough history' }); continue }
+      await sleep(0); // let the page breathe between timeframes
+      const r = trScan(C, TRC, { closed: C.length - 1, id: S.symbol + tf }), valid = r.setups.filter(s => s.state === 'valid');
+      const days = (C[C.length - 1].time - C[0].time) / 86400;
+      for (const k of [1, 2]) {
+        const trades = valid.filter(s => s.tr === k).map(s => ({ ...s, time: C[s.trig].time, brkTime: C[s.brk].time }));
+        BT.rows.push({ tf, tr: k, trades, days, from: C[0].time, to: C[C.length - 1].time, setups: r.setups.filter(s => s.tr === k).length });
+      }
+    }
+  } finally { BT.busy = false; if (btn) btn.textContent = '▶ Run backtest' }
+  btRender();
+}
+function btRender() {
+  const out = $('#btOut'); if (!out) return;
+  const ok = BT.rows.filter(r => !r.err), errs = BT.rows.filter(r => r.err);
+  if (!ok.length) { out.innerHTML = `<div class="btempty">No results${errs.length ? ': ' + errs.map(e => `${e.tf} ${esc(e.err)}`).join(', ') : ''}.</div>`; return }
+  const scored = ok.map(r => ({ r, s: btPick(r) })), cand = scored.filter(x => x.s.n >= 10), best = (cand.length ? cand : scored).reduce((a, b) => b.s.net > a.s.net ? b : a);
+  const R = v => `<b class="${v > 0 ? 'up' : v < 0 ? 'dn' : ''}">${v > 0 ? '+' : ''}${v.toFixed(1)}R</b>`;
+  const seg = `<div class="seg btseg">${[...BT_TARGETS.map(t => [String(t), t + 'R']), ['best', 'Best target']].map(([k, l]) => `<button class="${BT.target === k ? 'on' : ''}" onclick="BT.target='${k}';store.set('btTarget','${k}');btRender()">${l}</button>`).join('')}</div>`;
+  const tfMax = {}; for (const x of scored) if (!tfMax[x.r.tf] || x.s.net > tfMax[x.r.tf]) tfMax[x.r.tf] = x.s.net;
+  out.innerHTML = `<div class="btwin">🏆 Best: <b>${best.r.tf} · TR${best.r.tr}</b> with a ${best.s.t}R target: ${R(best.s.net)} over ${best.s.n} trades · win rate ${best.s.win.toFixed(0)}% · profit factor ${best.s.pf.toFixed(2)}${best.s.n < 20 ? ' <span class="warn">· few trades, treat with care</span>' : ''}</div>
+    <div class="bthead"><span>Take profit at</span>${seg}</div>
+    <div class="btscroll"><table class="bttbl"><thead><tr><th>TF</th><th>TR</th><th>Trades</th><th>Win %</th><th>Net</th><th>Per trade</th><th>Profit factor</th><th>Max DD</th><th>Loss streak</th><th>${BT.target === 'best' ? 'Target' : 'Open'}</th><th>Per week</th></tr></thead><tbody>
+      ${scored.map(({ r, s }) => `<tr class="${r === best.r ? 'best' : ''} ${BT.sel === r.tf + r.tr ? 'sel' : ''}" onclick="BT.sel='${r.tf}${r.tr}';btRender()" title="Show the trades">
+        <td><b>${r.tf}</b></td><td><span class="trb t${r.tr}">TR${r.tr}</span></td><td>${s.n}</td><td>${s.n ? s.win.toFixed(0) + '%' : '—'}</td><td>${R(s.net)}${s.net === tfMax[r.tf] && s.n ? ' ◂' : ''}</td><td>${s.n ? (s.avg >= 0 ? '+' : '') + s.avg.toFixed(2) + 'R' : '—'}</td>
+        <td>${s.n ? s.pf.toFixed(2) : '—'}</td><td>${s.n ? '−' + s.dd.toFixed(1) + 'R' : '—'}</td><td>${s.streak}</td><td>${BT.target === 'best' ? s.t + 'R' : s.open}</td><td>${(s.n / Math.max(1, r.days / 7)).toFixed(1)}</td></tr>`).join('')}
+    </tbody></table></div>
+    ${errs.length ? `<p class="mut" style="font-size:11px">Skipped: ${errs.map(e => `${e.tf} (${esc(e.err)})`).join(', ')}</p>` : ''}
+    <p class="mut" style="font-size:11px">◂ = better TR on that timeframe. Period per timeframe = the candles loaded (${ok.map(r => r.tr === 1 ? `${r.tf} ${Math.round(r.days)} days` : '').filter(Boolean).join(' · ')}). No spread or commission included. Past results don't promise future results.</p>
+    ${btTrades()}`;
+}
+function btTrades() {
+  const r = BT.rows.find(x => !x.err && x.tf + x.tr === BT.sel); if (!r) return '<p class="mut" style="font-size:11.5px">Click a row to see its trades.</p>';
+  const t = BT.target === 'best' ? btBest(r.trades).t : +BT.target, list = [...r.trades].reverse().slice(0, 300);
+  const q = tm => { const z = tzParts(tm); return `${z.d} ${MON[z.mo - 1]} ${pad2(z.h)}:${pad2(z.mi)}` };
+  return `<h4 class="btsub">${r.tf} · TR${r.tr} · ${r.trades.length} trades (newest first) · result at ${t}R</h4><div class="btscroll" style="max-height:260px"><table class="bttbl"><thead><tr><th>Entry time</th><th>Side</th><th>Entry</th><th>Stop</th><th>Best reached</th><th>Result</th><th></th></tr></thead><tbody>
+    ${list.map(s => { const res = s.maxR >= t ? `<b class="up">+${t}R</b>` : s.out === 'sl' ? '<b class="dn">−1R</b>' : '<span class="mut">open</span>'; return `<tr><td>${q(s.time)}</td><td><b class="${s.dir < 0 ? 'dn' : 'up'}">${s.dir < 0 ? 'SELL' : 'BUY'}</b></td><td>${fx(s.entry)}</td><td>${fx(s.sl)}</td><td>${s.maxR.toFixed(1)}R${s.out === 'sl' ? ' then stop' : ''}</td><td>${res}</td><td><button class="btn sm ghost" onclick="btGoto('${r.tf}',${s.brkTime})">Chart ↗</button></td></tr>` }).join('')}
+  </tbody></table></div>`;
+}
+async function btGoto(tf, time) { // show one trade on the chart
+  resolveModal(null); if (!TRC.on) { TRC.on = true; saveTRC() }
+  if (S.tf !== tf) { setTF(tf); for (let i = 0; i < 50 && !(S.tf === tf && S.candles.length && TR.calc()); i++) await sleep(150) }
+  let i = 0; while (S.candles.length && S.candles[0].time > time && i++ < 6) { await loadMore(); await sleep(200) }
+  if (!S.candles.length || S.candles[0].time > time) return toast('That trade is older than the candles the chart has loaded.', 'warn');
+  const l = t2l(time); Chart.c.timeScale().setVisibleLogicalRange({ from: l - 40, to: l + 50 }); Overlay.dirty = true;
+}
 /* ---------- configurable indicators: add as many as you like, every number and colour editable ---------- */
 const SRC = { close: b => b.close, open: b => b.open, high: b => b.high, low: b => b.low, hl2: b => (b.high + b.low) / 2, hlc3: b => (b.high + b.low + b.close) / 3 };
 function emaA(v, n) { const k = 2 / (n + 1); let e = null, c = 0; return v.map(x => { if (x == null) return null; c++; e = c === 1 ? x : x * k + e * (1 - k); return c >= n ? e : null }) }
@@ -683,6 +946,467 @@ let INDS = store.get('inds', null) || [{ id: 'a', type: 'ema', period: 9, src: '
 const saveInds = () => store.set('inds', INDS);
 const indName = o => { const T = ITYPES[o.type]; return `${T.name} ${T.p.filter(p => !['hi', 'lo'].includes(p[0])).map(p => o[p[0]]).join(', ')}${T.ma && o.src && o.src !== 'close' ? ' ' + o.src : ''}` };
 const OVERLAYS = { pdhl: 'Previous day high / low', asia: 'Asia range (01–09 CET)', marks: 'Trade markers', bidask: 'Bid / ask lines', wm: 'Watermark' };
+
+/* =====================================================================
+   TR1 / TR2 SIGNALS  (consolidation -> body-close break -> zone -> retest)
+   TR1 = the first consolidation broken in a new direction (change of character, CHOCH)
+   TR2 = the next consolidation broken in the SAME direction (break of structure, BOS)
+   Zone = the breaking candle from its body close to its full wick, extended right until price comes back.
+   Retest of the zone = valid signal. Entry = body close of the breaking candle, SL beyond the consolidation, TP open (R levels).
+   ===================================================================== */
+const TRC = Object.assign({ hist: 'minimal', collapsed: true, on: false, only: false, show: 'both', minBars: 5, rangeAtr: 1.6, slBuf: 0.1, away: true, rr: true, tp: 0, maxAge: 200 }, store.get('trCfg', {}));
+const saveTRC = () => store.set('trCfg', TRC);
+const trOnly = () => TRC.on && TRC.only;
+/* the TR1 / TR2 rules on any candle array (the live chart AND the backtest use exactly this) */
+function trScan(C, cfg, o = {}) {
+  const n = C.length, closed = o.closed ?? n, A = o.A || TR.atrA(C), mb = Math.max(3, cfg.minBars | 0), out = [];
+  let lastDir = 0, count = 0, i = Math.max(1, o.from || 1), forming = null;
+  while (i + mb <= closed) {
+    const lim = A[i + mb - 1] * cfg.rangeAtr; let hi = -Infinity, lo = Infinity;
+    for (let k = i; k < i + mb; k++) { hi = Math.max(hi, C[k].high); lo = Math.min(lo, C[k].low) }
+    if (hi - lo > lim) { i++; continue }
+    let j = i + mb, brk = -1, blown = false;
+    for (; j < closed; j++) {
+      const b = C[j];
+      if (b.close > hi || b.close < lo) { brk = j; break }        // a candle BODY closes outside the range
+      const nh = Math.max(hi, b.high), nl = Math.min(lo, b.low);
+      if (nh - nl > lim * 1.6) { blown = true; break }            // a huge wick: not a clean range anymore
+      hi = nh; lo = nl;
+    }
+    if (brk < 0) { if (!blown) { forming = { from: i, to: closed - 1, hi, lo }; break } i = j; continue }
+    const b = C[brk], dir = b.close > hi ? 1 : -1;
+    count = dir === lastDir ? count + 1 : 1; lastDir = dir;
+    let zl = dir < 0 ? b.close : b.low, zh = dir < 0 ? b.high : b.close;
+    const minH = A[brk] * .05; if (zh - zl < minH) { if (dir < 0) zh = zl + minH; else zl = zh - minH }
+    const sl = dir < 0 ? Math.max(hi, b.high) + A[brk] * cfg.slBuf : Math.min(lo, b.low) - A[brk] * cfg.slBuf;
+    const s = { id: (o.id || '') + b.time + dir, tr: count, dir, box: { from: i, to: brk - 1, hi, lo }, brk, zl, zh, entry: b.close, sl, state: cfg.away ? 'away' : 'wait', trig: -1, end: -1, maxR: 0, out: '' };
+    for (let k = brk + 1; k < n; k++) {
+      const q = C[k];
+      if (k < closed && (dir < 0 ? q.close > sl : q.close < sl)) { s.state = 'invalid'; s.end = k; break }
+      if (s.state === 'away') { if (dir < 0 ? q.high < zl : q.low > zh) s.state = 'wait'; continue }
+      if (dir < 0 ? q.high >= zl : q.low <= zh) { s.state = 'valid'; s.trig = k; break }
+      if (k - brk > cfg.maxAge) { s.state = 'expired'; s.end = k; break }
+    }
+    out.push(s); i = brk + 1;
+  }
+  // a break the other way cancels zones that were still waiting (the structure changed) — also in hindsight, so history = what you saw live
+  for (const s of out) {
+    if (!['away', 'wait', 'valid'].includes(s.state)) continue;
+    const t = out.find(x => x.brk > s.brk && x.dir !== s.dir);
+    if (t && (s.state !== 'valid' || s.trig > t.brk)) { s.state = 'cancelled'; s.end = t.brk; s.trig = -1 }
+  }
+  // what happened after the entry. Careful (no wishful fills): on the entry candle only the stop counts, a candle that touches both stop and target is a loss.
+  for (const s of out) {
+    if (s.state !== 'valid') continue;
+    const risk = Math.abs(s.entry - s.sl) || 1e-9, d = s.dir; s.risk = risk; s.out = 'open'; s.path = [];
+    for (let k = s.trig; k < n && k < s.trig + 600; k++) {
+      const q = C[k];
+      if (d < 0 ? q.high >= s.sl : q.low <= s.sl) { s.out = 'sl'; s.end = k; break }
+      if (k > s.trig) { s.maxR = Math.max(s.maxR, (d < 0 ? s.entry - q.low : q.high - s.entry) / risk); s.path.push(s.maxR) }
+    }
+  }
+  return { setups: out, forming, atr: A[n - 1], lastDir, count };
+}
+const TR = {
+  key: '', res: null, seen: null, seenKey: '', panelHtml: '',
+  atrA(C, n = 14) { const a = []; let v = null; for (let i = 0; i < C.length; i++) { const b = C[i], tr = i ? Math.max(b.high - b.low, Math.abs(b.high - C[i - 1].close), Math.abs(b.low - C[i - 1].close)) : b.high - b.low; v = v == null ? tr : (v * (n - 1) + tr) / n; a.push(v) } return a },
+  shown(s) { return TRC.show === 'all' || (TRC.show === 'both' ? s.tr <= 2 : TRC.show === 'tr1' ? s.tr === 1 : s.tr === 2) },
+  candlesOk() { // the candles really are this symbol + timeframe (right after a switch the old ones are still loaded)
+    const C = S.candles, n = C.length; if (S.cKey !== S.symbol + '|' + S.tf + '|' + S.login || n < 40) return false;
+    const d = []; for (let i = n - 30; i < n; i++) if (i > 0) d.push(C[i].time - C[i - 1].time); d.sort((a, b) => a - b);
+    return Math.abs(d[d.length >> 1] - tfs()) <= tfs() * .1; // typical gap between candles = this timeframe (months vary a bit)
+  },
+  calc() {
+    const C = S.candles, n = C.length;
+    if (!TRC.on || n < 40) { this.key = ''; return this.res = null }
+    if (!this.candlesOk()) { this.key = ''; return this.res = null }
+    const lb = C[n - 1], key = [S.symbol, S.tf, n, C[0].time, lb.time, lb.high, lb.low, lb.close, JSON.stringify(TRC)].join('|');
+    if (key === this.key) return this.res; this.key = key;
+    const r = trScan(C, TRC, { closed: n - 1, from: Math.max(1, n - 3000), id: S.symbol + S.tf }); // the last candle is still forming: a break needs a CLOSED body
+    return this.res = { ...r, nextTr: d => d === r.lastDir ? r.count + 1 : 1 };
+  },
+  // called every frame: recompute when the candles change, redraw, update the panel, announce new signals
+  tick() {
+    const before = this.key, r = this.calc();
+    if (this.key !== before) { Overlay.dirty = true; this.panel(r); this.announce(r) }
+    if (!r && this.panelHtml) { this.panelHtml = ''; $('#trPanel').innerHTML = ''; $('#trPanel').classList.remove('on') }
+  },
+  announce(r) {
+    if (!r) return; const k = S.symbol + S.tf, valid = r.setups.filter(s => s.state === 'valid' && this.shown(s));
+    if (this.seenKey !== k) { this.seenKey = k; this.seen = new Set(valid.map(s => s.id)); return } // first load: no pop-ups for old signals
+    for (const s of valid) if (!this.seen.has(s.id)) { this.seen.add(s.id); if (s.trig >= S.candles.length - 3) toast(`${s.dir < 0 ? '▼ SELL' : '▲ BUY'} TR${s.tr} valid on ${S.symbol} ${S.tf}: price retested the zone · entry ${fx(s.entry)} · SL ${fx(s.sl)}`, 'ok', 9000) }
+  },
+  svg(X, Y, W, H) {
+    const r = this.res; if (!TRC.on || !r || !S.candles.length) return '';
+    const C = S.candles, n = C.length, bw = Math.max(2, (Chart.c.timeScale().options().barSpacing || 8) / 2), xb = i => X(C[Math.min(i, n - 1)].time) + (i > n - 1 ? (i - n + 1) * bw * 2 : 0);
+    const txt = PAL['--text'], mut = PAL['--mut'], dark = CFG.theme !== 'light', lt = !dark, edge = lt ? txt : mut; // light: lines in the text colour (soft), not the pale grey
+    const pill = (x, y, t, bg, fg = '#fff', anchor = 'start', op = 1) => { const w = t.length * 5.6 + 10, x0 = anchor === 'end' ? x - w : anchor === 'middle' ? x - w / 2 : x; return `<g opacity="${op}"><rect x="${x0}" y="${y - 11}" width="${w}" height="14" rx="3.5" fill="${bg}"/><text x="${x0 + w / 2}" y="${y}" fill="${fg}" font-size="9.5" font-weight="800" text-anchor="middle" letter-spacing=".3">${esc(t)}</text></g>` };
+    const lab = (x, y, t, col, op = 1) => `<text x="${x}" y="${y}" fill="${col}" font-size="9.5" font-weight="700" opacity="${op}">${t}</text>`;
+    // what deserves attention: setups still waiting, and the newest signal. Everything older is drawn small (or not at all).
+    const all = r.setups.filter(z => this.shown(z) && z.brk > n - 1500);
+    const lastValid = [...all].reverse().find(z => z.state === 'valid');
+    const focus = new Set(all.filter(z => z.state === 'away' || z.state === 'wait'));
+    if (lastValid && (lastValid.out === 'open' || lastValid.end > n - 60)) focus.add(lastValid);
+    const hist = TRC.hist || 'minimal';
+    let s = '';
+    for (const z of all) {
+      const isF = focus.has(z), dead = ['invalid', 'expired', 'cancelled'].includes(z.state), live = z.state === 'away' || z.state === 'wait';
+      if (!isF && (hist === 'none' || (dead && hist !== 'full'))) continue;
+      const col = z.dir < 0 ? PAL['--sell'] : PAL['--buy'], x0 = xb(z.box.from) - bw, x1 = xb(z.box.to) + bw, xbk = xb(z.brk);
+      const endX = z.state === 'valid' ? xb(z.end > 0 ? z.end : z.trig) : xb(z.end > 0 ? z.end : n - 1);
+      if (Math.max(x1, endX) < -40 || x0 > W + 40) continue;
+      const yh = Y(z.box.hi), yl = Y(z.box.lo), yb = z.dir < 0 ? yl : yh, yzt = Y(z.zh), yzb = Y(z.zl), name = `TR${z.tr} ${z.dir < 0 ? 'SELL' : 'BUY'}`;
+      if (!isF) { // ---- history: small and quiet
+        const op = dead ? (lt ? .45 : .3) : (lt ? .8 : .55);
+        s += `<g opacity="${op}"><rect x="${x0}" y="${yh}" width="${x1 - x0}" height="${yl - yh}" fill="none" stroke="${edge}" stroke-opacity="${lt ? .35 : 1}" stroke-width="1" stroke-dasharray="3 3" rx="2"/>`
+          + `<line x1="${x0}" y1="${yb}" x2="${xbk + bw}" y2="${yb}" stroke="${col}" stroke-width="1"/>`
+          + `<text x="${x0 + 2}" y="${yh - 3}" fill="${lt ? txt : mut}" fill-opacity="${lt ? .6 : 1}" font-size="8.5" font-weight="800" letter-spacing=".3">TR${z.tr}</text></g>`;
+        if (z.state === 'valid') {
+          const xt = xb(z.trig), q = C[z.trig], ye = Y(z.entry), win = z.maxR >= (+TRC.tp || 1), yw = z.dir < 0 ? Y(q.high) - 4 : Y(q.low) + 4;
+          const tp = +TRC.tp || 0, res = tp ? (z.maxR >= tp ? `+${tp}R` : z.out === 'sl' ? '−1R' : 'open') : z.out === 'sl' ? (win ? `+${z.maxR.toFixed(1)}R` : '−1R') : `+${z.maxR.toFixed(1)}R`; // with a TP: the real result at that TP
+          // the entry candle: a thin outline around it, and a dot exactly at the entry price
+          s += `<rect x="${xt - bw + .5}" y="${Y(q.high) - 2}" width="${bw * 2 - 1}" height="${Y(q.low) - Y(q.high) + 4}" fill="none" stroke="${col}" stroke-opacity=".7" stroke-width="1" rx="2"/>`
+            + `<circle cx="${xt}" cy="${ye}" r="3" fill="${col}" stroke="${dark ? '#111' : '#fff'}" stroke-width="1"/>`
+            + lab(xt + bw + 3, z.dir < 0 ? yw - 2 : yw + 9, res, win ? PAL['--buy'] : mut, .9);
+        }
+        continue;
+      }
+      // ---- in focus: the full picture
+      s += `<rect x="${x0}" y="${yh}" width="${x1 - x0}" height="${yl - yh}" fill="${txt}" fill-opacity="${dark ? .045 : .04}" stroke="${edge}" stroke-opacity="${lt ? .45 : .8}" stroke-width="1" stroke-dasharray="4 3" rx="2"/>`;
+      { const lt = `TR${z.tr} RANGE`, w = lt.length * 5.6 + 12; s += `<rect x="${x0}" y="${yh - 15}" width="${w}" height="13" rx="3" fill="${dark ? '#1b2024' : '#fff'}" fill-opacity=".9" stroke="${edge}" stroke-opacity="${lt ? .35 : .7}" stroke-width="1"/><text x="${x0 + w / 2}" y="${yh - 5.5}" fill="${mut}" font-size="9" font-weight="800" text-anchor="middle" letter-spacing=".4">${lt}</text>` } // the setup: quiet grey outline. Only the ENTRY gets a solid coloured tag.
+      s += `<line x1="${x0}" y1="${yb}" x2="${xbk + bw}" y2="${yb}" stroke="${col}" stroke-width="1.2"/><text x="${(x0 + xbk) / 2}" y="${yb + (z.dir < 0 ? 11 : -4)}" fill="${col}" font-size="9" font-weight="700" text-anchor="middle" opacity=".9">${z.tr === 1 ? 'CHOCH' : 'BOS'} ${z.dir < 0 ? '↓' : '↑'}</text>`;
+      // the zone only stays while it is unused: once price has reacted to it (the retest), it is removed
+      if (live) s += `<rect x="${xbk - bw}" y="${yzt}" width="${Math.max(2, W - xbk + bw)}" height="${Math.max(1.5, yzb - yzt)}" fill="${col}" fill-opacity="${lt ? .14 : .18}" stroke="${col}" stroke-opacity="${lt ? .8 : .6}" stroke-width="1"/>`;
+      if (live) s += `<text x="${W - 6}" y="${(yzt + yzb) / 2 + 3.5}" fill="${col}" font-size="9.5" font-weight="800" text-anchor="end" opacity=".9">${name} ZONE</text>`;
+      if (z.state === 'valid') {
+        const xt = xb(z.trig), q = C[z.trig], ya = z.dir < 0 ? Y(q.high) - 16 : Y(q.low) + 16, xe = z.end > 0 ? xb(z.end) + bw : Math.min(W - 70, xt + bw * 2 * 22);
+        const ye = Y(z.entry), ys = Y(z.sl), risk = Math.abs(z.entry - z.sl), yt = Y(q.high), yb2 = Y(q.low);
+        // the entry candle: a small SELL / BUY tag just above / below it, and a small dot at the entry price
+        { const lt = z.dir < 0 ? 'SELL' : 'BUY', w = lt.length * 5.4 + 8, yl2 = z.dir < 0 ? yt - 6 : yb2 + 15;
+          s += `<rect x="${xt - w / 2}" y="${yl2 - 9}" width="${w}" height="12" rx="3" fill="${col}" fill-opacity=".9"/><text x="${xt}" y="${yl2}" fill="#fff" font-size="8.5" font-weight="800" text-anchor="middle" letter-spacing=".4">${lt}</text>`
+            + `<circle cx="${xt}" cy="${ye}" r="2.6" fill="${col}"/>` }
+        const res = z.out === 'sl' ? (z.maxR >= 1 ? ` · stopped at +${z.maxR.toFixed(1)}R max` : ' · stopped') : z.trig < n - 1 ? ` · +${z.maxR.toFixed(1)}R` : '';
+        const xs = xbk - bw; // the trade box starts AT the breaking candle (its close = the entry)
+        s += `<rect x="${xs}" y="${Math.min(ye, ys)}" width="${Math.max(0, xe - xs)}" height="${Math.abs(ys - ye)}" fill="${PAL['--sell']}" fill-opacity="${lt ? .08 : .07}"/>`;
+        s += `<line x1="${xs}" y1="${ye}" x2="${xe}" y2="${ye}" stroke="${txt}" stroke-opacity=".6" stroke-width="1"/>` + lab(xe + 4, ye + 3.5, `E ${fx(z.entry)}<tspan fill="${z.out === 'sl' && z.maxR < 1 ? mut : col}">${res}</tspan>`, txt);
+        s += `<line x1="${xs}" y1="${ys}" x2="${xe}" y2="${ys}" stroke="${PAL['--sell']}" stroke-opacity=".8" stroke-width="1" stroke-dasharray="5 3"/>` + lab(xe + 4, ys + 3.5, `SL ${fx(z.sl)}`, PAL['--sell'], .9);
+        if (TRC.tp > 0) { const yp = Y(z.entry + z.dir * risk * TRC.tp); s += `<line x1="${xs}" y1="${yp}" x2="${xe}" y2="${yp}" stroke="${PAL['--buy']}" stroke-width="1.2"/>` + lab(xe + 4, yp + 3.5, `TP ${TRC.tp}R ${fx(z.entry + z.dir * risk * TRC.tp)}`, PAL['--buy']) }
+        if (TRC.rr) for (const R of [1, 2, 3].filter(v => v !== +TRC.tp)) { const yr = Y(z.entry + z.dir * risk * R); s += `<line x1="${xs}" y1="${yr}" x2="${xe}" y2="${yr}" stroke="${PAL['--buy']}" stroke-opacity="${(lt ? .95 : .75) - R * .15}" stroke-width="1" stroke-dasharray="2 3"/>` + lab(xe + 4, yr + 3.5, `${R}R`, PAL['--buy'], lt ? 1 : .8) }
+      }
+    }
+    // a range still forming at the right edge: an outline and a short tag
+    const f = r.forming;
+    if (f) {
+      const x0 = xb(f.from) - bw, yh = Y(f.hi), yl = Y(f.lo), ac = PAL['--acc'];
+      s += `<rect x="${x0}" y="${yh}" width="${Math.max(0, W - x0)}" height="${yl - yh}" fill="${ac}" fill-opacity="${lt ? .06 : .04}" stroke="${ac}" stroke-opacity="${lt ? .75 : .55}" stroke-width="1" stroke-dasharray="6 4"/>`
+        + `<text x="${x0 + 3}" y="${yh - 4}" fill="${ac}" font-size="9" font-weight="800" letter-spacing=".3">RANGE · ${f.to - f.from + 1}</text>`;
+    }
+    return s;
+  },
+  // the "what are we waiting for" panel
+  panel(r) {
+    const el = $('#trPanel'); if (!el) return;
+    if (!r) { el.innerHTML = ''; el.classList.remove('on'); this.panelHtml = ''; return }
+    const n = S.candles.length, px = S.candles[n - 1].close, pt = v => fx(Math.abs(v)); // distances as a price move (e.g. 3.45 on gold)
+    const ck = (ok, t) => `<li class="${ok ? 'ok' : ''}"><i>${ok ? '✓' : ''}</i>${t}</li>`;
+    let h = '';
+    const live = [...r.setups].reverse().find(s => (s.state === 'away' || s.state === 'wait') && this.shown(s));
+    const recent = [...r.setups].reverse().find(s => s.state === 'valid' && this.shown(s) && s.out === 'open' && s.trig >= n - 15);
+    if (recent) {
+      const d = recent.dir < 0 ? 'SELL' : 'BUY', risk = Math.abs(recent.entry - recent.sl);
+      h += `<div class="trc go ${recent.dir < 0 ? 's' : 'b'}"><b>${recent.dir < 0 ? '▼' : '▲'} VALID ${d} · TR${recent.tr}</b><small>${n - 1 - recent.trig ? n - 1 - recent.trig + ' bars ago' : 'this candle'} · price retested the zone</small>
+        <div class="trk"><span>Entry<b>${fx(recent.entry)}</b></span><span>SL<b>${fx(recent.sl)}</b></span><span>Risk<b>${pt(risk)}</b></span><span>Now<b>${recent.maxR >= 0 ? '+' : ''}${recent.maxR.toFixed(1)}R max</b></span></div>
+        <button class="btn sm" onclick="TR.ticket('${recent.id}')">→ Fill order ticket</button></div>`;
+    }
+    const more = (recent ? 1 : 0) + (live ? 1 : 0) > 1;
+    if (live && !recent) {
+      const d = live.dir < 0 ? 'SELL' : 'BUY', near = live.dir < 0 ? live.zl : live.zh, dist = live.dir < 0 ? near - px : px - near, almost = live.state === 'wait' && dist <= r.atr * .6;
+      h += `<div class="trc ${almost ? 'almost' : ''} ${live.dir < 0 ? 's' : 'b'}"><b>${almost ? '⚡ ALMOST ' : '⏳ '}${d} · TR${live.tr}</b><small>${almost ? 'price is close to the zone' : 'setup building'}</small><ul>
+        ${ck(true, `Consolidation ${fx(live.box.lo)} – ${fx(live.box.hi)} <em>${live.box.to - live.box.from + 1} bars</em>`)}
+        ${ck(true, `Body close ${live.dir < 0 ? 'below' : 'above'} it (${live.tr === 1 ? 'CHOCH' : 'BOS'}) at ${fx(live.entry)}`)}
+        ${TRC.away ? ck(live.state === 'wait', 'Price leaves the zone') : ''}
+        ${ck(false, `Retest the zone ${fx(live.zl)} – ${fx(live.zh)} ${live.state === 'wait' ? `<em>${dist > 0 ? pt(dist) + ' away' : 'touching'}</em>` : ''}`)}</ul>
+        <div class="trr">Entry ${fx(live.entry)} · SL ${fx(live.sl)} (${pt(live.entry - live.sl)}) · ${TRC.tp > 0 ? 'TP ' + TRC.tp + 'R' : 'TP open'}</div>
+        ${this.placed.has(live.id) ? '<div class="trdone">✓ Limit order placed in the zone</div>' : live.state !== 'wait' ? '<div class="trdone" style="color:var(--mut)">⚡ One-click limit appears once price has left the zone</div>' : `<div class="trbtns"><button class="btn sm ${live.dir < 0 ? 'sell' : 'buy'}" onclick="TR.limit('${live.id}')">⚡ Set ${d} limit @ ${fx(live.entry)}</button><button class="btn sm ghost" onclick="TR.ticket('${live.id}')" title="Only fill the order ticket">Ticket</button></div>`}</div>`;
+    }
+    if (more) { const d = live.dir < 0 ? 'SELL' : 'BUY', near = live.dir < 0 ? live.zl : live.zh, dist = live.dir < 0 ? near - px : px - near; h += `<div class="trc slim ${live.dir < 0 ? 's' : 'b'}"><b>⏳ Next: ${d} TR${live.tr}</b><small>${live.state === 'away' ? 'waiting for price to leave the zone' : dist > 0 ? pt(dist) + ' from the zone' : 'touching the zone'}</small>${this.placed.has(live.id) ? '<div class="trdone">✓ Limit placed</div>' : live.state !== 'wait' ? '' : `<button class="btn sm ${live.dir < 0 ? 'sell' : 'buy'}" style="margin-top:5px;width:100%" onclick="TR.limit('${live.id}')">⚡ Set ${d} limit @ ${fx(live.entry)}</button>`}</div>` }
+    if (r.forming && !live && !recent) {
+      const f = r.forming;
+      h += `<div class="trc"><b>⏳ Range forming</b><small>${f.to - f.from + 1} bars · ${fx(f.lo)} – ${fx(f.hi)}</small><ul>
+        ${ck(true, 'Consolidation')}${ck(false, `Body close above ${fx(f.hi)} → <span class="bt">BUY TR${r.nextTr(1)}</span>`)}${ck(false, `Body close below ${fx(f.lo)} → <span class="st">SELL TR${r.nextTr(-1)}</span>`)}</ul></div>`;
+    }
+    if (!h) h = `<div class="trc"><b>TR signals on</b><small>No range or zone right now · waiting for a consolidation</small></div>`;
+    // collapsed: one line in the header (still shows what we wait for)
+    let mini = 'waiting for a range', mc = '';
+    if (recent) { mini = `${recent.dir < 0 ? '▼' : '▲'} VALID ${recent.dir < 0 ? 'SELL' : 'BUY'} TR${recent.tr} @ ${fx(recent.entry)}`; mc = recent.dir < 0 ? 'st' : 'bt' }
+    else if (live) { const near = live.dir < 0 ? live.zl : live.zh, dist = live.dir < 0 ? near - px : px - near, almost = live.state === 'wait' && dist <= r.atr * .6; mini = `${almost ? '⚡' : '⏳'} ${live.dir < 0 ? 'SELL' : 'BUY'} TR${live.tr} · ${live.state === 'away' ? 'wait for price to leave' : dist > 0 ? pt(dist) + ' to zone' : 'touching'}`; mc = (live.dir < 0 ? 'st' : 'bt') + (almost ? ' pulse' : '') }
+    else if (r.forming) mini = `⏳ range ${fx(r.forming.lo)} – ${fx(r.forming.hi)}`;
+    const col = !!TRC.collapsed;
+    h = `<div class="trh" title="Drag to move"><i class="grip">⋮⋮</i><button class="sysb" onclick="openTRSystems(this)" title="My TR systems: switch or save">${esc(trActive()?.name || 'TR1 / TR2')} ▾</button><span>${col ? `<b class="${mc}">${mini}</b>` : ''}</span>${col && live && live.state === 'wait' && !recent && !this.placed.has(live.id) ? `<button class="lim ${live.dir < 0 ? 'st' : 'bt'}" onclick="TR.limit('${live.id}')" title="Set the ${live.dir < 0 ? 'sell' : 'buy'} limit in the zone now (${fx(live.entry)}, SL ${fx(live.sl)})">⚡ Limit</button>` : ''}<button class="autob ${TRA.on ? 'on' : ''}" onclick="openAuto()" title="${TRA.on ? 'Auto-trade is ON' : 'Auto-trade: take every signal of this system'}">🤖</button><button onclick="openBacktest()" title="Backtest TR1 / TR2 on every timeframe">📊</button><button onclick="TR.collapse()" title="${col ? 'Expand' : 'Collapse'}">${col ? '▾' : '▴'}</button><button onclick="openTRSettings()" title="TR settings">⚙</button><button onclick="TR.toggle()" title="Hide TR signals">✕</button></div>` + (col ? '' : h);
+    if (TRA.on && !col) h = h.replace('</div>', '</div>' + TRAuto.line()); // right under the header (collapsed: only the green 🤖 in the header)
+    el.classList.toggle('col', col);
+    this.place();
+    // while the mouse is on the panel it does not redraw (a redraw between press and release would swallow the click)
+    if (h !== this.panelHtml) { if (!this.force && el.matches(':hover') && el.classList.contains('on')) { this.held = h; return } this.force = false; this.held = ''; this.panelHtml = h; el.innerHTML = h; el.classList.add('on') }
+  },
+  collapse() { TRC.collapsed = !TRC.collapsed; saveTRC(); this.force = true; this.panelHtml = ''; this.panel(this.res) }, // your own click: redraw now, even with the mouse on the panel
+  // where the panel sits: your dragged spot (kept inside the chart), else top right next to the price axis
+  place() {
+    const el = $('#trPanel'), box = el?.parentElement; if (!el || !box) return;
+    if (TRC.pos) {
+      const x = Math.max(0, Math.min(box.clientWidth - el.offsetWidth - priceScaleW(), TRC.pos.x)), y = Math.max(0, Math.min(box.clientHeight - el.offsetHeight - 28, TRC.pos.y));
+      el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.right = 'auto';
+    } else { el.style.left = 'auto'; el.style.top = ''; el.style.right = (priceScaleW() + 10) + 'px' }
+  },
+  placed: new Set(store.get('trPlaced', [])),
+  // ONE step left (price back into the zone): put the limit order there now, with the SL and TP of the system.
+  // Uses your ticket sizing (lots or risk %). Real-money accounts still ask to confirm.
+  async limit(id) {
+    const z = this.res?.setups.find(s => s.id === id); if (!z) return;
+    if (this.placed.has(id)) return toast('You already placed a limit for this setup.', 'warn');
+    if (!this.ticket(id, true)) return;
+    if (T.mode !== 'limit') { $('#ticket').classList.add('open'); return toast('Price is already past the entry: check the ticket and send it yourself.', 'warn') }
+    const before = S.pending?.length || 0; await placeOrder(z.dir > 0 ? 'buy' : 'sell');
+    await sleep(400); if (!T.entry) { this.placed.add(id); store.set('trPlaced', [...this.placed].slice(-200)); this.force = true; this.panelHtml = ''; this.panel(this.res); toast(`${z.dir < 0 ? 'SELL' : 'BUY'} LIMIT ${fx(z.entry)} is waiting in the zone · SL ${fx(z.sl)}${T.tp ? '' : ''}. Cancel it in Orders if the setup gets cancelled.`, 'ok', 8000) }
+  },
+  ticket(id, quiet) {
+    const z = this.res?.setups.find(s => s.id === id); if (!z) return false; const m = mid(), buy = z.dir > 0;
+    T.mode = (buy ? z.entry < m : z.entry > m) ? 'limit' : 'stop'; T.entry = +fx(z.entry); T.sl = +fx(z.sl); T.tp = TRC.tp > 0 ? +fx(z.entry + z.dir * Math.abs(z.entry - z.sl) * TRC.tp) : 0; T.layers = 1; T.entry2 = 0; T.atrSide = null;
+    Ticket.render(); syncLines(); if (quiet) return true;
+    $('#ticket').classList.add('open'); toast(`Ticket filled: ${buy ? 'BUY' : 'SELL'} ${T.mode.toUpperCase()} @ ${fx(z.entry)} · SL ${fx(z.sl)} · ${TRC.tp > 0 ? 'TP ' + TRC.tp + 'R' : 'TP open'}`, 'ok'); return true;
+  },
+  toggle(k = 'on') { TRC[k] = !TRC[k]; saveTRC(); this.key = ''; this.seenKey = ''; Indicators.rebuild(); Levels.key = '#'; Levels.sync(); Markers.update(); Overlay.dirty = true; this.tick(); if (popEl) openIndicators(popEl._a || $('#indBtn')) },
+};
+/* ---------- TR AUTO-TRADE: takes every signal of the chosen system, on the timeframes YOU pick ----------
+   Works in the background, independent of the chart: every picked timeframe loads its OWN candles (checked: right symbol,
+   right spacing, seen twice before acting) and is scanned with the system settings frozen when you pressed ON.
+   A setup that only waits for the retest gets a limit in the zone (risk % sizing, system SL / TP); when that setup is
+   cancelled, the order is removed. Locked to one account + symbol. Real money only when explicitly allowed.
+   Respects the daily loss lock, max open orders, max trades per day, one order per direction per timeframe.
+   Runs while this terminal page is open (PC or VPS). */
+const TRA = Object.assign({ on: false, live: false, risk: .5, maxOpen: 2, maxDay: 5, since: 0, takeCurrent: false, login: 0, sym: '', tfs: [], cfg: null, sys: '' }, store.get('trAuto', {}));
+if (!TRA.tfs?.length && TRA.tf) TRA.tfs = [TRA.tf]; delete TRA.tf;
+let TRW = store.get('trAutoWork', {});            // setup id -> { ticket, login, symbol, tf, side, price, sl, tp, lots, t }
+let TRL = store.get('trAutoLog', []);             // [{ t, text, k }]
+const saveTRA = () => { store.set('trAuto', TRA); store.set('trAutoWork', TRW) };
+const traLog = (text, k = '') => { TRL.push({ t: Date.now(), text, k }); TRL = TRL.slice(-80); store.set('trAutoLog', TRL) };
+const traToday = () => TRL.filter(x => x.k === 'placed' && new Date(x.t).toDateString() === new Date().toDateString()).length;
+const traReal = () => { const a = S.accounts.find(x => x.login === S.login); return !!a && !a.is_demo && !a.paper && !CFG.demo };
+const TFS_AUTO = ['M1', 'M3', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1'];
+const pos = () => (S.allPositions || S.positions || []).filter(q => q.symbol === TRA.sym);
+// value of a 1.0 price move for 1 lot, checked two ways; if they disagree a lot, take the SAFER (bigger) one -> smaller lots
+function traPerUnit() {
+  const byTick = S.tickValue && S.tickSize ? S.tickValue / S.tickSize : 0, byContract = S.contract || 0;
+  if (!byTick) return byContract;
+  if (byContract && (byTick < byContract / 3 || byTick > byContract * 3)) { traLog(`Price value check: broker says ${byTick.toFixed(2)} per 1.00 per lot, contract says ${byContract}: using the safer ${Math.max(byTick, byContract)}`, 'err'); return Math.max(byTick, byContract) }
+  return byTick;
+}
+function traSize(dist) { // lots for TRA.risk %, rounded DOWN, never above the risk, plus the money at risk
+  const bal = Math.min(S.account?.balance || 0, S.account?.equity || Infinity), pu = traPerUnit(), want = bal * TRA.risk / 100;
+  if (!bal || !pu || !dist) return { ok: false, why: 'no balance / price data yet' };
+  const st = S.volStep || .01, lots = +(Math.floor(want / (dist * pu) / st + 1e-9) * st).toFixed(decs(st));
+  if (lots < (S.volMin || .01)) return { ok: false, why: `the smallest lot would risk ${(S.volMin * dist * pu / bal * 100).toFixed(1)}% (more than ${TRA.risk}%)` };
+  const l2 = Math.min(lots, S.volMax || lots), risk = l2 * dist * pu;
+  if (risk > want * 1.05) return { ok: false, why: 'risk check failed' };
+  return { ok: true, lots: l2, risk, bal };
+}
+function traOpenRisk() { // money at risk now on this symbol: open trades + pending orders (with a stop), plus 1R for any trade without a stop
+  const pu = traPerUnit(), bal = S.account?.balance || 0;
+  const one = (p, sl, v) => sl ? Math.abs(p - sl) * v * pu : bal * TRA.risk / 100;
+  return pos().reduce((a, q) => a + one(q.price_open, q.sl, q.volume), 0) + (S.allPending || S.pending || []).filter(o => o.symbol === TRA.sym).reduce((a, o) => a + one(o.price_open ?? o.price, o.sl, o.volume_current ?? o.volume), 0);
+}
+const TRAuto = {
+  busy: false, status: '', st: {},                // st[tf] = { good, at, status }
+  why() { // '' = allowed to act now, else the reason everything waits
+    if (!TRA.on) return 'off';
+    if (!this.leader) return 'running in another open terminal window (only one copy trades)';
+    if (!S.connected) return 'not connected';
+    if (S.login !== TRA.login) return `switch back to account ${TRA.login}`;
+    if (S.symbol !== TRA.sym) return `switch the chart back to ${TRA.sym} (any timeframe)`;
+    if (!S.bid || !S.account) return 'waiting for prices…';
+    if (traReal() && !TRA.live) return 'real-money account (not allowed in auto settings)';
+    if (Guard.reason()) return 'daily loss limit reached';
+    return '';
+  },
+  every: tf => Math.min(60000, Math.max(5000, TF_SEC[tf] * 50)),   // M1 every 5 s … H1+ every 60 s
+  async candles(tf) { // this timeframe's own candles, checked
+    const r = await api(`/api/candles?login=${TRA.login}&symbol=${enc(TRA.sym)}&timeframe=${tf}&count=1200`), C = r?.candles || [];
+    if (C.length < 100) return null;
+    const d = []; for (let i = C.length - 40; i < C.length; i++) d.push(C[i].time - C[i - 1].time); d.sort((x, y) => x - y);
+    return Math.abs(d[d.length >> 1] - TF_SEC[tf]) <= TF_SEC[tf] * .1 ? C : null;
+  },
+  async loop() {
+    if (!TRA.on || this.busy) return;
+    const why = this.why(); if (why !== this.status) { this.status = why; TR.panelHtml = '' } if (why) { for (const tf of TRA.tfs) if (this.st[tf]) this.st[tf].good = 0; return }
+    this.busy = true;
+    try {
+      for (const tf of TRA.tfs) {
+        const st = this.st[tf] ||= { good: 0, at: 0, status: 'starting' };
+        if (Date.now() - st.at < this.every(tf)) continue; st.at = Date.now();
+        let C = null; try { C = await this.candles(tf) } catch (e) { st.status = 'no candles: ' + e.message; st.good = 0; continue }
+        if (S.login !== TRA.login || S.symbol !== TRA.sym || !TRA.on) break;              // something changed while loading
+        if (!C) { st.status = 'candles look wrong, skipped'; st.good = 0; continue }
+        if (++st.good < 2) { st.status = 'warming up'; continue }                        // act only after two good loads
+        const cfg = { ...TRC, ...(TRA.cfg || {}) }, r = trScan(C, cfg, { closed: C.length - 1, from: Math.max(1, C.length - 1000), id: TRA.sym + tf });
+        st.status = 'watching'; await this.act(tf, C, r, cfg, st);
+      }
+    } finally { this.busy = false; saveTRA(); TR.panelHtml = '' }
+  },
+  async act(tf, C, r, cfg, st) {
+    const n = C.length, shown = s => cfg.show === 'all' || (cfg.show === 'both' ? s.tr <= 2 : cfg.show === 'tr1' ? s.tr === 1 : s.tr === 2);
+    const pend = (S.allPending || S.pending || []).filter(o => o.symbol === TRA.sym), mine = Object.entries(TRW).filter(([, w]) => w.login === TRA.login && w.symbol === TRA.sym && w.tf === tf);
+    // 1. orders of THIS timeframe whose setup is gone: remove them. Filled ones: done.
+    for (const [id, w] of mine) {
+      const s = r.setups.find(x => x.id === id), still = pend.some(o => o.ticket === w.ticket);
+      if (s && s.state === 'valid') { delete TRW[id]; traLog(`Filled: ${w.side.toUpperCase()} ${w.lots} @ ${fx(w.price)} (${tf})`, 'filled'); continue }
+      if (!s || ['invalid', 'expired', 'cancelled'].includes(s.state)) {
+        if (still) { try { await api('/api/cancel', { login: TRA.login, ticket: w.ticket }); traLog(`Removed ${w.side.toUpperCase()} LIMIT ${fx(w.price)} (${tf}): setup ${s ? s.state : 'gone'}`, 'cancel'); toast(`🤖 Auto removed the ${tf} ${w.side} limit ${fx(w.price)} (setup ${s ? s.state : 'gone'})`, 'warn') } catch (e) { traLog(`Could not remove #${w.ticket}: ${e.message}`, 'err'); continue } }
+        delete TRW[id];
+      } else if (!still && Date.now() - w.t > 20000) { delete TRW[id]; traLog(`${tf} order #${w.ticket} is gone (filled or removed by hand)`, 'info') }
+    }
+    // 2. setups of this timeframe that only wait for the retest: place the limit
+    const since = TRA.takeCurrent ? 0 : TRA.since;
+    const ready = r.setups.filter(s => s.state === 'wait' && shown(s) && !TRW[s.id] && !TR.placed.has(s.id) && s.brk > n - 1 - cfg.maxAge && C[s.brk].time >= since);
+    for (const s of ready) {
+      const open = Object.values(TRW).filter(w => w.login === TRA.login).length;
+      if (open >= TRA.maxOpen) { st.status = `max ${TRA.maxOpen} open auto orders`; break }
+      if (traToday() >= TRA.maxDay) { st.status = `max ${TRA.maxDay} trades today`; break }
+      const buy = s.dir > 0, side = buy ? 'buy' : 'sell', price = +fx(s.entry), sl = +fx(s.sl), dist = Math.abs(price - sl);
+      if (buy ? price >= S.ask : price <= S.bid) continue;                                                     // already past the entry
+      if (Object.values(TRW).some(w => w.login === TRA.login && w.symbol === TRA.sym && w.tf === tf && w.side === side)) { st.status = `one ${side} order already working`; continue }
+      if (pend.some(o => Math.abs((o.price_open ?? o.price) - price) <= S.point * 5)) { TR.placed.add(s.id); continue } // an order is already there
+      if (Math.abs(price - mid()) > r.atr * 8) { TR.placed.add(s.id); continue }                              // far-away zone: not a fresh setup
+      const sz = traSize(dist); if (!sz.ok) { st.status = sz.why; TR.placed.add(s.id); traLog(`Skipped ${tf} ${side} ${fx(price)}: ${sz.why}`, 'err'); continue }
+      const lots = sz.lots, tp = cfg.tp > 0 ? +fx(s.entry + s.dir * dist * cfg.tp) : 0;
+      const openRisk = traOpenRisk(); if (openRisk + sz.risk > sz.bal * TRA.risk * TRA.maxOpen / 100 * 1.05) { st.status = `total open risk would pass ${(TRA.risk * TRA.maxOpen).toFixed(1)}%`; continue }
+      if (pos().some(q => Math.abs(q.price_open - price) <= Math.max(S.point * 5, dist * .1))) { TR.placed.add(s.id); continue } // already in a trade at this zone
+      { const all = new Set([...store.get('trPlaced', []), ...TR.placed]); if (all.has(s.id)) { TR.placed = all; continue } TR.placed = all }  // another window already took it
+      TR.placed.add(s.id); store.set('trPlaced', [...TR.placed].slice(-300));                                   // mark first: never twice, even if the answer is slow
+      try {
+        const res = await api('/api/pending', { login: TRA.login, symbol: TRA.sym, side, kind: 'limit', volume: lots, price, sl, tp });
+        let ticket = res?.ticket; await poll?.(); if (!ticket) ticket = (S.allPending || S.pending || []).find(o => o.symbol === TRA.sym && Math.abs((o.price_open ?? o.price) - price) < S.point * 2)?.ticket || 0;
+        TRW[s.id] = { ticket, login: TRA.login, symbol: TRA.sym, tf, side, price, sl, tp, lots, t: Date.now() };
+        const rk = `risk ${CUR()}${num(sz.risk)} (${(sz.risk / sz.bal * 100).toFixed(2)}%)`;
+        traLog(`Placed ${side.toUpperCase()} LIMIT ${lots} @ ${fx(price)} · SL ${fx(sl)}${tp ? ' · TP ' + fx(tp) : ''} · ${rk} (${tf} TR${s.tr})`, 'placed');
+        toast(`🤖 Auto ${tf}: ${side.toUpperCase()} LIMIT ${lots} @ ${fx(price)} · SL ${fx(sl)} · ${rk}`, 'ok', 8000); beep?.(1046);
+      } catch (e) { traLog(`Could not place ${tf} ${side} limit ${fx(price)}: ${e.message}`, 'err'); toast('🤖 Auto: ' + e.message, 'err') }
+    }
+  },
+  line() { // the auto block in the TR panel
+    if (!TRA.on) return '';
+    const w = Object.values(TRW).filter(x => x.login === TRA.login), why = this.why();
+    const tfs = TRA.tfs.map(tf => { const s = this.st[tf], n = w.filter(x => x.tf === tf).length; const ok = !why && s?.status === 'watching'; return `<i class="${ok ? 'ok' : ''}" title="${esc(s?.status || 'starting')}">${tf}${n ? ' · ' + n : ''}</i>` }).join('');
+    return `<div class="trauto ${why ? 'wait' : 'run'}"><b>🤖 AUTO ${why ? 'PAUSED' : 'ON'}</b><span>${esc(TRA.sys || 'saved settings')} · ${TRA.sym} · ${TRA.risk}% risk</span><div class="tatfs">${tfs}</div><span>${why ? '⏸ ' + esc(why) : `${w.length} order${w.length === 1 ? '' : 's'} working · ${traToday()}/${TRA.maxDay} today`}</span><button class="btn sm ghost" onclick="openAuto()">Settings / log</button></div>`;
+  },
+};
+// only ONE open copy of the terminal runs the bot (two tabs, or the website's built-in terminal + this one, would each place the same trades)
+TRAuto.leader = false;
+(function claimBot() {
+  if (navigator.locks?.request) navigator.locks.request('goldmine-auto-bot', () => { TRAuto.leader = true; TR.panelHtml = ''; return new Promise(() => {}) }); // held until this page closes
+  else { // fallback: a heartbeat in local storage
+    const me = Math.random().toString(36).slice(2), beat = () => { const h = store.get('botBeat', null); if (!h || h.id === me || Date.now() - h.t > 8000) { store.set('botBeat', { id: me, t: Date.now() }); TRAuto.leader = true } else TRAuto.leader = false };
+    beat(); setInterval(beat, 3000);
+  }
+})();
+setInterval(() => TRAuto.loop().catch(e => console.error(e)), 2500);
+let AUTO_TFS = null; // picker draft
+function openAuto() {
+  closePopover(); const real = traReal(), sys = trActive()?.name || '';
+  AUTO_TFS = TRA.on && TRA.tfs.length ? [...TRA.tfs] : [S.tf];
+  const cfg = TRA.on && TRA.cfg ? TRA.cfg : trPick(TRC);
+  openModal(`<h3>🤖 Auto-trade TR signals</h3><div class="mbody">
+    <p>Every setup that only waits for the retest gets a <b>limit order in the zone</b> automatically (stop beyond the range, ${cfg.tp > 0 ? 'TP ' + cfg.tp + 'R' : 'no TP: TP is open in this system'}). If the setup is cancelled before it fills, the order is removed again.</p>
+    <p>System: <b>${esc(TRA.on ? TRA.sys || 'saved settings' : sys || 'current TR settings')}</b> <span class="mut">(${esc(trDesc(cfg))})</span>${TRA.on ? '' : '. Frozen when you press ON: changing the chart settings later does not change what auto trades.'}</p>
+    <label>Timeframes to trade (${esc(S.symbol)}, works whatever timeframe the chart shows)</label>
+    <div class="btchips" id="taTfs">${TFS_AUTO.map(t => `<button class="${AUTO_TFS.includes(t) ? 'on' : ''}" onclick="AUTO_TFS=AUTO_TFS.includes('${t}')?AUTO_TFS.filter(x=>x!=='${t}'):[...AUTO_TFS,'${t}'];this.classList.toggle('on')">${t}</button>`).join('')}</div>
+    <div class="row2"><label>Risk per trade (% of balance)<input id="taRisk" inputmode="decimal" value="${TRA.risk}"></label>
+      <label>Max open auto orders (all timeframes)<input id="taOpen" inputmode="numeric" value="${TRA.maxOpen}"></label>
+      <label>Max auto trades per day<input id="taDay" inputmode="numeric" value="${TRA.maxDay}"></label></div>
+    <label class="tg"><input type="checkbox" id="taCur" ${TRA.takeCurrent ? 'checked' : ''}><span></span>Also take setups that are already waiting now (otherwise only setups that break after you turn it on)</label>
+    <label class="tg"><input type="checkbox" id="taLive" ${TRA.live ? 'checked' : ''}><span></span>Also on real-money accounts (otherwise demo / paper only)</label>
+    <p class="mut" style="font-size:11.5px">On account <b>${S.login}</b>${real ? ' <span class="badge live">REAL MONEY</span>' : ''}. Safety: each timeframe loads and checks its own candles (twice) before acting · one order per direction per timeframe · never twice the same setup or price · pauses if you change account or symbol. Runs only while this terminal is open (PC or VPS).</p>
+    ${CFG.maxDailyLoss ? `<p class="mut" style="font-size:12px">Your daily loss lock (−${CFG.maxDailyLoss}%) also stops auto-trading for the day.</p>` : '<p class="dn" style="font-size:12px">Tip: set a daily loss limit in Settings, so auto-trading also stops on a bad day.</p>'}
+    ${TRL.length ? `<label>Recent auto actions</label><div class="talog">${[...TRL].reverse().slice(0, 20).map(x => `<div class="${x.k}"><small>${new Date(x.t).toLocaleString([], { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</small>${esc(x.text)}</div>`).join('')}</div>` : ''}
+    <p class="mut" style="font-size:11.5px">Backtest results are no promise. Start on a demo or paper account and watch it for a while.</p>
+  </div><div class="mact"><button class="btn ghost" data-m="no">Close</button>${TRA.on ? '<button class="btn danger" onclick="autoOff()">Turn auto OFF</button>' : ''}<button class="btn acc" onclick="autoOn()">${TRA.on ? 'Save' : 'Turn auto ON'}</button></div>`);
+}
+async function autoOn() {
+  const v = id => $('#' + id), num = (id, d, lo, hi) => { const x = parseFloat(String(v(id).value).replace(',', '.')); return isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d };
+  const tfs = TFS_AUTO.filter(t => (AUTO_TFS || []).includes(t)); if (!tfs.length) return toast('Pick at least one timeframe.', 'err');
+  const cfg = { risk: num('taRisk', .5, .05, 5), maxOpen: Math.round(num('taOpen', 2, 1, 20)), maxDay: Math.round(num('taDay', 5, 1, 50)), live: v('taLive').checked, takeCurrent: v('taCur').checked, tfs };
+  if (traReal() && cfg.live && !(await confirmBox('Auto-trade with REAL money?', `<p>Orders will be placed on <b>account ${S.login}</b> (${tfs.join(', ')}) without asking you, with <b>${cfg.risk}% risk</b> each, up to ${cfg.maxOpen} at a time and ${cfg.maxDay} per day.</p><p class="dn" style="margin-top:8px"><b>Real money. You can lose it.</b></p>`, 'Yes, auto-trade real money', 'danger'))) return openAuto();
+  const fresh = !TRA.on || TRA.sym !== S.symbol || TRA.login !== S.login;
+  if (fresh) Object.assign(TRA, { since: Math.floor(Date.now() / 1000), cfg: trPick(TRC), sys: trActive()?.name || '' }); // new run: freeze the system, only new setups
+  Object.assign(TRA, cfg, { on: true, login: S.login, sym: S.symbol }); TRAuto.st = {}; saveTRA();
+  traLog(`Auto ${fresh ? 'ON' : 'updated'}: ${TRA.sys || 'saved settings'} · ${TRA.sym} ${tfs.join(' ')} · ${TRA.risk}% risk`, 'info'); resolveModal(null);
+  toast(`🤖 Auto-trade ON: ${TRA.sym} ${tfs.join(', ')}${traReal() && !TRA.live ? ' (paused: real-money account not allowed)' : ''}`, 'ok', 7000);
+  TR.force = true; TR.panelHtml = ''; TR.panel(TR.res);
+}
+function autoOff() { TRA.on = false; saveTRA(); traLog('Auto OFF', 'info'); resolveModal(null); toast('🤖 Auto-trade OFF. Orders it already placed stay open: see Orders.', 'warn', 7000); TR.force = true; TR.panelHtml = ''; TR.panel(TR.res) }
+function openTRSettings() {
+  closePopover();
+  const sel = (id, opts, cur) => `<select id="${id}">${opts.map(([v, l]) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+  openModal(`<h3>TR1 / TR2 signals</h3><div class="mbody">
+    <label>My saved systems</label>${trSysList()}
+    <div><button class="btn sm" onclick="saveTRSettings(true)">☆ Save current as…</button></div><hr style="border:0;border-top:1px solid var(--line);margin:2px 0">
+    <p>A <b>consolidation</b> is a tight range (at least the minimum candles, no wider than the range size × ATR). A candle whose <b>body closes</b> outside it is the break:
+      the first break in a new direction is <b>TR1</b> (CHOCH), the next one in the same direction is <b>TR2</b> (BOS). The <b>zone</b> is that candle from its body close to its full wick, extended right.
+      When price comes back into the zone the signal is <b>valid</b>: entry at the body close, stop beyond the consolidation, take profit open (R levels shown).</p>
+    <div class="row2"><label>Show${sel('trShow', [['both', 'TR1 + TR2'], ['tr1', 'Only TR1'], ['tr2', 'Only TR2'], ['all', 'TR1, TR2, TR3…']], TRC.show)}</label>
+      <label>Older signals${sel('trHist', [['minimal', 'Small (arrow + result)'], ['full', 'Small + failed zones'], ['none', 'Hide']], TRC.hist || 'minimal')}</label>
+      <label>Min. candles in a range<input id="trMin" inputmode="numeric" value="${TRC.minBars}"></label></div>
+    <div class="row2"><label>Range size (× ATR 14)<input id="trRange" inputmode="decimal" value="${TRC.rangeAtr}"></label>
+      <label>Stop buffer (× ATR)<input id="trBuf" inputmode="decimal" value="${TRC.slBuf}"></label>
+      <label>Take profit (R, 0 = open)<input id="trTp" inputmode="decimal" value="${TRC.tp || 0}"></label>
+      <label>Max candles to wait for the retest<input id="trAge" inputmode="numeric" value="${TRC.maxAge}"></label></div>
+    <label class="tg"><input type="checkbox" id="trAway" ${TRC.away ? 'checked' : ''}><span></span>Price must first leave the zone before a retest counts</label>
+    <label class="tg"><input type="checkbox" id="trRR" ${TRC.rr ? 'checked' : ''}><span></span>Show 1R / 2R / 3R levels after a signal</label>
+    <label class="tg"><input type="checkbox" id="trOnly" ${TRC.only ? 'checked' : ''}><span></span>Only TR on the chart (hide my other indicators and overlays)</label>
+  </div><div class="mact"><button class="btn ghost" data-m="no">Cancel</button><button class="btn acc" onclick="saveTRSettings()">Save</button></div>`);
+}
+// drag the TR panel by its header; double-click the header to put it back top right
+document.addEventListener('pointerdown', e => {
+  const hd = e.target.closest('#trPanel .trh'); if (!hd || e.target.closest('button')) return;
+  const el = $('#trPanel'), box = el.parentElement.getBoundingClientRect(), r = el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
+  e.preventDefault(); el.classList.add('drag');
+  const mv = ev => { TRC.pos = { x: ev.clientX - box.left - dx, y: ev.clientY - box.top - dy }; TR.place() };
+  const up = () => { el.classList.remove('drag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); saveTRC() };
+  addEventListener('pointermove', mv); addEventListener('pointerup', up);
+});
+document.addEventListener('dblclick', e => { if (e.target.closest('#trPanel .trh') && !e.target.closest('button')) { TRC.pos = null; saveTRC(); TR.place() } });
+addEventListener('resize', () => TR.place());
+document.addEventListener('mouseleave', e => { if (e.target?.id === 'trPanel' && TR.held) { const h = TR.held; TR.held = ''; TR.panelHtml = h; e.target.innerHTML = h } }, true);
+/* ---------- saved TR systems: name a set of settings (+ its timeframe) and switch between them in one click ---------- */
+let TRP = store.get('trPresets', []);
+const TR_KEYS = ['minBars', 'rangeAtr', 'slBuf', 'away', 'tp', 'show', 'maxAge'];
+const trPick = cfg => Object.fromEntries(TR_KEYS.map(k => [k, cfg[k]]));
+const trSame = (a, b) => TR_KEYS.every(k => String(a[k]) === String(b[k]));
+const trDesc = (q, tf) => `${tf ? tf + ' · ' : ''}${({ both: 'TR1+2', tr1: 'TR1', tr2: 'TR2', all: 'all TR' })[q.show] || q.show} · ${q.minBars} candles · range ${q.rangeAtr}× · stop buf. ${q.slBuf}× · ${q.tp > 0 ? 'TP ' + q.tp + 'R' : 'TP open'}${q.away ? '' : ' · no leave rule'}`;
+const trActive = () => TRP.find(x => trSame(x.cfg, TRC) && (!x.tf || x.tf === S.tf)) || TRP.find(x => trSame(x.cfg, TRC));
+async function trSaveAs(cfg = trPick(TRC), tf = S.tf, after) {
+  const cur = trActive(), v = await formBox('Save this TR system', [{ id: 'name', label: 'Name', value: cur?.name || '', text: true, ph: 'e.g. Gold M5 scalp, H1 swing TR2' }, { id: 'tf', label: 'Timeframe', type: 'select', value: tf, options: [['', 'Any (keep the chart timeframe)'], ...['M1', 'M3', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1'].map(t => [t, t])] }], 'Save system', esc(trDesc(cfg, tf)));
+  if (!v || !v.name) { after?.(); return }
+  const name = v.name.slice(0, 40), old = TRP.find(x => x.name.toLowerCase() === name.toLowerCase());
+  if (old) Object.assign(old, { cfg: { ...cfg }, tf: v.tf, saved: Date.now() }); else TRP.push({ id: Date.now().toString(36), name, cfg: { ...cfg }, tf: v.tf, saved: Date.now() });
+  store.set('trPresets', TRP); toast(`Saved “${name}”${old ? ' (updated)' : ''}`, 'ok'); TR.force = true; TR.panelHtml = ''; TR.panel(TR.res); after?.();
+}
+function trUse(id) {
+  const x = TRP.find(q => q.id === id); if (!x) return;
+  Object.assign(TRC, x.cfg, { on: true }); saveTRC(); closePopover(); if (modalOpen()) resolveModal(null);
+  TR.key = ''; Overlay.dirty = true; TR.tick(); if (x.tf && x.tf !== S.tf) setTF(x.tf);
+  toast(`System “${x.name}” is on: ${trDesc(x.cfg, x.tf)}`, 'ok', 6000);
+}
+function trDel(id) { const x = TRP.find(q => q.id === id); if (!x || !confirm(`Delete the system “${x.name}”?`)) return; TRP = TRP.filter(q => q.id !== id); store.set('trPresets', TRP); TR.force = true; TR.panelHtml = ''; TR.panel(TR.res); if (modalOpen() && $('#trSys')) $('#trSys').outerHTML = trSysList(); else if (popEl) openTRSystems(popEl._a) }
+const trSysList = () => `<div id="trSys" class="trsys">${TRP.length ? TRP.map(x => { const on = trActive()?.id === x.id; return `<div class="${on ? 'on' : ''}"><button class="nm" onclick="trUse('${x.id}')"><b>${on ? '✓ ' : ''}${esc(x.name)}</b><small>${esc(trDesc(x.cfg, x.tf))}</small></button><button class="ib" onclick="trDel('${x.id}')" title="Delete">🗑</button></div>` }).join('') : '<p class="mut" style="font-size:12px;margin:0">No saved systems yet. Set it up the way you like, then “Save current as…”, or press ☆ Save on a backtest result.</p>'}</div>`;
+function openTRSystems(a) {
+  popover(a, `<h6>My TR systems · click to switch</h6>${trSysList()}<hr><button class="it" onclick="closePopover();trSaveAs()">☆ Save current settings as…</button><button class="it" onclick="openTRSettings()">⚙ Edit settings</button>`, 'trpop');
+}
+function saveTRSettings(andName) {
+  const v = id => $('#' + id), num = (id, d, lo, hi) => { const x = parseFloat(String(v(id).value).replace(',', '.')); return isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d };
+  Object.assign(TRC, { on: true, tp: num('trTp', 0, 0, 20), hist: v('trHist').value, show: v('trShow').value, minBars: Math.round(num('trMin', 5, 3, 50)), rangeAtr: num('trRange', 1.6, .3, 10), slBuf: num('trBuf', .1, 0, 3), maxAge: Math.round(num('trAge', 200, 5, 2000)), away: v('trAway').checked, rr: v('trRR').checked, only: v('trOnly').checked });
+  saveTRC(); resolveModal(null); TR.key = ''; Indicators.rebuild(); Levels.key = '#'; Levels.sync(); Markers.update(); Overlay.dirty = true; TR.tick(); toast('TR settings saved', 'ok');
+  if (andName === true) trSaveAs();
+}
 
 /* =====================================================================
    3. CHART  (TradingView lightweight-charts + our trading & drawing layers)
@@ -771,7 +1495,7 @@ const Indicators = {
     for (const e of this.s) e.series.forEach(x => { try { Chart.c.removeSeries(x) } catch {} }); this.s = [];
     let pane = 0;
     for (const o of INDS) {
-      const T = ITYPES[o.type]; if (!o.on || !T) continue;
+      const T = ITYPES[o.type]; if (!o.on || !T || trOnly()) continue;
       const pi = T.pane ? ++pane : 0, outs = T.calc(S.candles, o);
       const series = outs.map((x, k) => x.kind === 'hist' ? Chart.c.addSeries(LWC.HistogramSeries, { priceLineVisible: false, lastValueVisible: false }, pi)
         : Chart.c.addSeries(LWC.LineSeries, { color: o.colors[Math.min(k - (outs[0].kind === 'hist' ? 1 : 0), o.colors.length - 1)] || T.colors[0], lineWidth: x.width || o.width || 2, lineStyle: x.style || 0, priceLineVisible: false, lastValueVisible: !!T.pane, crosshairMarkerVisible: false }, pi));
@@ -823,7 +1547,7 @@ function saveIndicator() {
 const Levels = {
   pl: [], key: '',
   sync() {
-    const C = S.candles, on = indOn.pdhl && tfs() < 86400 && C.length > 2;
+    const C = S.candles, on = indOn.pdhl && !trOnly() && tfs() < 86400 && C.length > 2;
     const key = on ? S.symbol + S.tf + Math.floor(C[C.length - 1].time / 86400) + CFG.theme : '';
     if (key === this.key) return; this.key = key;
     this.pl.forEach(l => Chart.s.removePriceLine(l)); this.pl = [];
@@ -867,7 +1591,7 @@ const Legend = {
 const Markers = {
   update() {
     const C = S.candles; if (!Chart.markers) return;
-    if (!indOn.marks || !C.length) { Chart.markers.setMarkers([]); return }
+    if (!indOn.marks || trOnly() || !C.length) { Chart.markers.setMarkers([]); return }
     const out = [];
     for (const d of S.history) {
       if (d.symbol !== S.symbol) continue; const t = barTime(d.time_epoch); if (t == null) continue;
@@ -1018,7 +1742,7 @@ async function chipClose(sp) {
   const t = sp.ref;
   switch (sp.drag) {
     case 'pos': // like the original: × shows a green ✓ next to the label; click it to close (one-click trading closes at once)
-      if (CFG.oneClick) return act(() => api('/api/close', { login: S.login, ticket: t, percent: 100 }), '✓ Position closed');
+      if (!mustConfirm()) return act(() => api('/api/close', { login: S.login, ticket: t, percent: 100 }), '✓ Position closed');
       Labels.confirm = Labels.confirm === sp.id ? null : sp.id; clearTimeout(Labels.cfT); Labels.cfT = setTimeout(() => { Labels.confirm = null }, 4000); return;
     case 'sl': case 'tp': { const p = S.allPositions.find(x => x.ticket === t); if (p) await act(() => api('/api/modify', { login: S.login, ticket: t, sl: sp.drag === 'sl' ? 0 : p.sl, tp: sp.drag === 'tp' ? 0 : p.tp }), `${sp.drag.toUpperCase()} removed`); return }
     case 'pprice': return act(() => api('/api/cancel', { login: S.login, ticket: t }), `Order #${t} cancelled`);
@@ -1449,8 +2173,9 @@ const Drawings = {
     return { svg: s, geo: { segs, rects, hs } };
   },
   _asia: null, _ak: '',
-  system(X, Y, W) { // automatic overlays: Asia session range
-    if (!indOn.asia || tfs() > 3600 || !S.candles.length) return '';
+  system(X, Y, W, H) { return this.asiaSvg(X, Y, W) + TR.svg(X, Y, W, H) },
+  asiaSvg(X, Y, W) { // automatic overlays: Asia session range
+    if (!indOn.asia || trOnly() || tfs() > 3600 || !S.candles.length) return '';
     const C = S.candles, key = S.symbol + S.tf + C.length + CFG.tz;
     if (key !== this._ak) {
       this._ak = key; this._asia = null; const save = CFG.tz; CFG.tz = CFG.tz === 'broker' ? 'Europe/Brussels' : CFG.tz;
@@ -1512,7 +2237,7 @@ const Overlay = {
     const ts = Chart.c.timeScale(), vr = ts.getVisibleLogicalRange(), lc = S.candles[S.candles.length - 1].close;
     const sig = [vr?.from, vr?.to, Chart.s.priceToCoordinate(lc), Chart.s.priceToCoordinate(lc * 1.01), Chart.el.clientWidth, Chart.el.clientHeight].join('|');
     if (sig !== this.sig || this.dirty) { this.sig = sig; this.dirty = false; Drawings.render() }
-    Labels.render(); Zones.draw();
+    TR.tick(); Labels.render(); Zones.draw();
   },
 };
 
@@ -1632,8 +2357,8 @@ async function placeOrder(side) {
     if (T.sl && (buy ? T.sl >= e : T.sl <= e)) return toast(`Stop loss must be ${buy ? 'below' : 'above'} every entry for a ${side}.`, 'err');
     if (T.tp && (buy ? T.tp <= e : T.tp >= e)) return toast(`Take profit must be ${buy ? 'above' : 'below'} every entry for a ${side}.`, 'err');
   }
-  const name = `${side.toUpperCase()}${mk ? '' : ' ' + T.mode.toUpperCase()}`, acct = S.accounts.find(a => a.login === S.login), live = acct && !acct.is_demo;
-  if (!CFG.oneClick || live) {
+  const name = `${side.toUpperCase()}${mk ? '' : ' ' + T.mode.toUpperCase()}`, acct = S.accounts.find(a => a.login === S.login), live = isLiveAcct();
+  if (mustConfirm()) {
     const ok = await confirmBox(`${name} ${P.length > 1 ? P.length + ' × ' : ''}${lots} ${S.symbol}`, `<div class="sum">
       <span>Account</span><b>${esc(acct?.name || S.login)} ${live ? '<span class="badge live">LIVE</span>' : ''}</b>
       <span>${P.length > 1 ? 'Entries' : 'Price'}</span><b>${mk ? 'Market ≈ ' : ''}${P.map(p => fx(p)).join(' · ')}</b>
@@ -1764,7 +2489,7 @@ async function loadCandles() {
   const sym = S.symbol, tf = S.tf;
   const r = await api(`/api/candles?${L()}&symbol=${enc(sym)}&timeframe=${tf}&count=2000`);
   if (sym !== S.symbol || tf !== S.tf) return;
-  S.candles = r.candles; S.digits = r.digits; S.point = r.point;
+  S.candles = r.candles; S.digits = r.digits; S.point = r.point; S.cKey = sym + '|' + tf + '|' + S.login; // these candles belong to THIS symbol + timeframe + account
   if (D.sym !== sym) Drawings.load(sym);
   Chart.setData(); renderHeader();
 }
@@ -1794,7 +2519,7 @@ async function poll() {
     prevTickets = now;
     S.allPositions = r.positions; S.allPending = r.pending; S.targets = r.targets || []; tgEvents(r, lg);
     S.positions = r.positions.filter(p => p.symbol === sym); S.pending = r.pending.filter(o => o.symbol === sym);
-    Chart.merge(r.bars);
+    if (S.cKey === sym + '|' + tf + '|' + lg) Chart.merge(r.bars); // never glue bars of a new timeframe onto the old candles
     const q = S.quotes[sym] ||= {}; q.last = r.bid; q.d = r.digits; if (q.pc) q.chg = (r.bid - q.pc) / q.pc * 100;
     if (fails >= 2) toast('Reconnected', 'ok'); fails = 0;
     setConn('ok'); onTick();
@@ -1848,10 +2573,13 @@ async function switchAccount(login) {
   S.login = login; store.set('login', login); prevTickets = null; S.account = null; S.accLogin = 0; S.history = []; HJ.trades = null; HJ.cash = []; S.allPositions = []; S.allPending = [];
   await connect();
 }
+// confirmations only where money is real: demo / paper trade in one click; a live account asks unless one-click trading is on
+const isLiveAcct = () => { const a = S.accounts.find(x => x.login === S.login); return !!a && !a.is_demo && !a.paper && !CFG.demo };
+const mustConfirm = () => isLiveAcct() && !CFG.oneClick;
 async function closePos(t, pct = 100) {
   closePopover();
   const p = S.allPositions.find(x => x.ticket === t); if (!p) return;
-  if (pct === 100 && !CFG.oneClick && !(await confirmBox('Close position?', `<div class="sum"><span>Position</span><b>${p.type} ${p.volume} ${esc(p.symbol)}</b><span>P/L now</span><b class="${cls(p.profit)}">${money(p.profit)}</b></div>`, 'Close position', 'danger'))) return;
+  if (pct === 100 && mustConfirm() && !(await confirmBox('Close position?', `<div class="sum"><span>Position</span><b>${p.type} ${p.volume} ${esc(p.symbol)}</b><span>P/L now</span><b class="${cls(p.profit)}">${money(p.profit)}</b></div>`, 'Close position', 'danger'))) return;
   await act(() => api('/api/close', { login: S.login, ticket: t, percent: pct }), pct === 100 ? `Closed #${t}` : `Closed ${pct}% of #${t}`);
 }
 async function breakeven(t, quiet) {
@@ -1992,6 +2720,7 @@ function renderBanner() {
   // one line at every width: the short text on phones, the long one where it fits; the button never gets pushed off screen
   const ph = innerWidth <= 640, set = (c, h) => { if (b._h === c + h + ph) return; b._h = c + h + ph; b.className = c; b.innerHTML = h };
   if (CFG.demo) set('sim', `<span>${ph ? 'Demo mode · simulated prices' : 'Demo mode: simulated prices and a simulated broker. Nothing here touches a real account.'}</span><button data-act="settings">Connect your MT5</button>`);
+  else if (acct?.challenge) set('sim', `<span>${ph ? `🏆 Challenge · ${acct.challenge_status === 'active' ? 'running' : esc(acct.challenge_status || '')}` : acct.challenge_status === 'active' ? '🏆 Challenge account: daily loss limit and max drawdown are watched on every price. Break one and the challenge ends.' : `🏆 This challenge is over (${esc(acct.challenge_status || '')}). See how you placed on the leaderboard.`}</span><a class="btn" href="terminal_test.html#challenge" target="_blank" style="text-decoration:none">Leaderboard</a>`);
   else if (acct?.paper) set('sim', `<span>${ph ? `Paper · ${esc(acct.name)} · simulated orders` : `Paper account "${esc(acct.name)}": live MT5 prices, simulated orders. Nothing is sent to your broker.`}</span><button data-act="accounts">Manage</button>`);
   else if (g) set('lock', `<span>🔒 ${ph ? 'Daily loss limit hit · locked till tomorrow' : 'Daily loss limit reached. New trades are locked until tomorrow.'}</span>`);
   else if (acct && !acct.is_demo) set('live', '<span>● LIVE ACCOUNT: orders use real money</span>');
@@ -2083,7 +2812,7 @@ function tabPositions(force) {
       <div class="c2"><div class="px">${fxs(p.symbol, p.price_open)} <em>→</em> <b data-now></b></div><small data-mv></small></div>
       <div class="c3">${trackHtml(p)}</div>
       <div class="c4"><b class="pl" data-pl="${p.ticket}"></b><small data-r></small></div>
-      <div class="acts"><button data-pa="be" data-t="${p.ticket}" title="Stop to breakeven">BE</button><button data-pa="pct" data-p="50" data-t="${p.ticket}" title="Close 50%">½</button><button data-pa="ptp" data-t="${p.ticket}" title="Partial take profit: close part of this position at a price">🎯</button><button data-pa="edit" data-t="${p.ticket}" title="Edit SL/TP">✎</button><button class="x" data-pa="menu" data-t="${p.ticket}" title="Close…">✕</button></div></div>`;
+      <div class="acts"><button data-pa="be" data-t="${p.ticket}" title="Stop to breakeven">BE</button><button data-pa="pct" data-p="50" data-t="${p.ticket}" title="Close 50%">½</button><button data-pa="ptp" data-t="${p.ticket}" title="Partial take profit: close part of this position at a price">🎯</button><button data-pa="edit" data-t="${p.ticket}" title="Edit SL/TP">✎</button><button data-pa="menu" data-t="${p.ticket}" title="More close options (25 / 50 / 75 %, at a price)">⋯</button><button class="x" data-pa="close" data-t="${p.ticket}" title="Close this position">✕</button></div></div>`;
     const grp = s => {
       const G = by[s]; if (G.length < 2) return row(G[0]);
       const v = sum(G, p => p.volume), net = sum(G, p => p.volume * (p.type === 'BUY' ? 1 : -1)), avg = sum(G, p => p.price_open * p.volume) / v, off = GRP.has(s);
@@ -2591,7 +3320,9 @@ function showHelp() {
   openModal(`<h3>Keyboard & mouse</h3><div class="kbdlist">${k.map(([a, b]) => `<span class="kbd">${a}</span><span>${b}</span>`).join('')}</div><div class="mact"><button class="btn acc" data-m="no">Got it</button></div>`, true);
 }
 function openIndicators(a) {
-  popover(a, `<h6>On this chart · click to hide / show</h6>${INDS.map(o => `<div class="irow"><button class="it ${o.on ? 'on' : ''}" data-ion="${o.id}"><span class="sw" style="background:${o.colors[0]}"></span>${esc(indName(o))}<small>${o.on ? 'ON' : 'off'}</small></button><button class="ib" data-iedit="${o.id}" title="Settings">✎</button><button class="ib" data-idel="${o.id}" title="Remove">🗑</button></div>`).join('') || '<p class="mut" style="padding:6px 10px">None yet.</p>'}
+  popover(a, `<h6>Signals</h6><div class="irow"><button class="it ${TRC.on ? 'on' : ''}" onclick="TR.toggle('on')"><span class="sw" style="background:linear-gradient(90deg,var(--buy) 50%,var(--sell) 50%)"></span>TR1 / TR2 buy & sell zones<small>${TRC.on ? 'ON' : 'off'}</small></button><button class="ib" onclick="openTRSettings()" title="Settings">⚙</button></div>
+    ${TRC.on ? `<button class="it ${TRC.only ? 'on' : ''}" onclick="TR.toggle('only')">🎯 Only TR on the chart (hide the rest)<small>${TRC.only ? 'ON' : ''}</small></button>` : ''}<button class="it" onclick="openBacktest()">📊 Backtest TR1 / TR2 per timeframe</button>
+    <hr><h6>On this chart · click to hide / show</h6>${INDS.map(o => `<div class="irow"><button class="it ${o.on ? 'on' : ''}" data-ion="${o.id}"><span class="sw" style="background:${o.colors[0]}"></span>${esc(indName(o))}<small>${o.on ? 'ON' : 'off'}</small></button><button class="ib" data-iedit="${o.id}" title="Settings">✎</button><button class="ib" data-idel="${o.id}" title="Remove">🗑</button></div>`).join('') || '<p class="mut" style="padding:6px 10px">None yet.</p>'}
     <hr><h6>Add indicator</h6><div class="igrid">${Object.entries(ITYPES).map(([k, T]) => `<button data-iadd="${k}">+ ${T.name}</button>`).join('')}</div>
     <hr><h6>Overlays</h6>${Object.entries(OVERLAYS).map(([k, n]) => `<button class="it ${indOn[k] ? 'on' : ''}" data-ind="${k}">${n}<small>${indOn[k] ? 'ON' : ''}</small></button>`).join('')}`);
 }
@@ -2603,12 +3334,12 @@ function openChartSettings(a) {
     <div class="row"><span>Grid</span><label class="tg"><input type="checkbox" data-ccgrid ${o.gridOff ? '' : 'checked'}><span></span></label></div>
     <hr><button class="it" data-ccreset="1">↺ Reset ${CFG.theme} colours</button>`);
 }
-const acctBadge = x => x?.paper ? ['PAPER', 'sim'] : CFG.demo ? ['SIM', 'sim'] : x?.is_demo ? ['DEMO', ''] : ['LIVE', 'live'];
+const acctBadge = x => x?.challenge ? ['🏆 CHALLENGE', 'sim'] : x?.paper ? ['PAPER', 'sim'] : CFG.demo ? ['SIM', 'sim'] : x?.is_demo ? ['DEMO', ''] : ['LIVE', 'live'];
 function openAccounts(a) {
   const cur = S.accounts.find(x => x.login === S.login);
   popover(a, `<h6>Accounts</h6>${S.accounts.map(x => { const [b, c] = acctBadge(x); return `<button class="it ${x.login === S.login ? 'on' : ''}" data-login="${x.login}"><span class="badge ${c}">${b}</span>${esc(x.name)}<small>${x.login} · ${esc(x.server)}</small></button>` }).join('') || '<p class="mut" style="padding:8px">Not connected</p>'}
     <button class="it" data-act="newAccount" style="color:var(--acc);font-weight:800">＋ New demo account</button>
-    ${cur?.paper ? `<hr><h6>This paper account</h6><button class="it" data-act="paperDeposit">＋ Add funds</button><button class="it" data-act="paperWithdraw">－ Remove funds</button><button class="it" data-act="paperLeverage">⚖ Leverage · 1:${cur.leverage || 100}</button><button class="it" data-act="paperReset">↺ Reset (fresh balance, clear history)</button><button class="it dn" data-act="paperDelete">🗑 Delete this paper account</button>` : ''}
+    ${cur?.challenge ? `<hr><h6>Challenge account</h6><p class="mut" style="padding:4px 8px;font-size:12px;max-width:260px">Fixed rules for everyone: no deposits, resets or leverage changes.</p><a class="it" href="terminal_test.html#challenge" target="_blank">🏆 Leaderboard</a>` : cur?.paper ? `<hr><h6>This paper account</h6><button class="it" data-act="paperDeposit">＋ Add funds</button><button class="it" data-act="paperWithdraw">－ Remove funds</button><button class="it" data-act="paperLeverage">⚖ Leverage · 1:${cur.leverage || 100}</button><button class="it" data-act="paperReset">↺ Reset (fresh balance, clear history)</button><button class="it dn" data-act="paperDelete">🗑 Delete this paper account</button>` : ''}
     <hr><a class="it" href="journal.html" target="_blank">📒 Open journal</a><button class="it" data-act="settings">⚙ Bridge settings</button>`);
 }
 /* ---------- new demo account: instant paper account, or add a real MT5 demo account ---------- */
@@ -2876,7 +3607,7 @@ $('#vPanel').addEventListener('input', e => {
   if (e.target.id?.startsWith('ly')) { LY[{ lyA: 'a', lyB: 'b', lySL: 'sl', lyTP: 'tp', lyRisk: 'risk', lyN: 'n' }[e.target.id]] = e.target.id === 'lyN' ? clamp(+e.target.value || 1, 1, 20) : e.target.value; store.set('ly', LY) }
   renderPanel(); syncLines();
 });
-$('#oneClick').addEventListener('change', e => { CFG.oneClick = e.target.checked; saveCfg(); if (CFG.oneClick) toast('One-click trading ON: orders go out without confirmation (live accounts still confirm).', 'warn') });
+$('#oneClick').addEventListener('change', e => { CFG.oneClick = e.target.checked; saveCfg(); if (CFG.oneClick) toast('One-click ON for real-money accounts too: orders and closes go out without confirmation.', 'warn') });
 document.addEventListener('keydown', e => {
   const k = e.key, typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName), modal = modalOpen();
   if ((e.ctrlKey || e.metaKey) && k.toLowerCase() === 'k') { e.preventDefault(); Palette.on ? Palette.close() : Palette.open(); return }
