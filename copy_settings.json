@@ -1,0 +1,20 @@
+{
+  "master": 114032465,
+  "slave": 1390799,
+  "mode": "fixed_risk",
+  "risk_pct": 5.0,
+  "risk_factor": 0.1,
+  "ratio_mult": 1.0,
+  "lot_mult": 1.0,
+  "fixed_lot": 1.0,
+  "risk_basis": "balance",
+  "max_lot": 1.0,
+  "below_min": "min",
+  "no_sl": "balance",
+  "copy_sltp": true,
+  "copy_pending": true,
+  "copy_existing": false,
+  "dry_run": false,
+  "symbol_map": "",
+  "interval": 2.0
+}

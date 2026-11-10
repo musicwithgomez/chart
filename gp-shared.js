@@ -35,10 +35,12 @@ const BRIDGE_ORIGIN = !SAAS_PAGE && (location.port === '8765' || /trycloudflare\
 const CFG = Object.assign({
   base: legacy('gm_base') || 'http://127.0.0.1:8765', key: legacy('gm_key'), demo: false,
   theme: legacy('gm_theme') === 'dark' ? 'dark' : 'light', tz: 'Europe/Brussels',
-  oneClick: false, sound: true, riskPct: 1, maxDailyLoss: 5, maxPositions: 10, welcomed: false,
+  oneClick: false, sound: true, riskPct: 1, maxDailyLoss: 0, maxPositions: 0, welcomed: false, // 0 = no limit: traders set their own
   chartColors: {}, // per theme overrides: { light: { up, down, wick, border, bg, grid } }
 }, store.get('cfg', {}));
 if (CFG.v !== 2) { CFG.v = 2; if (!['light', 'dark', 'midnight'].includes(CFG.theme)) CFG.theme = 'light' }
+// one time: the old built-in limits (−5% a day, 10 positions) were defaults nobody chose -> now off; a value someone typed stays
+if (!CFG.limitsV) { CFG.limitsV = 1; if (CFG.maxDailyLoss === 5) CFG.maxDailyLoss = 0; if (CFG.maxPositions === 10) CFG.maxPositions = 0; store.set('cfg', CFG) }
 if (BRIDGE_ORIGIN) CFG.base = BRIDGE_ORIGIN;
 { // share links: ?demo=1 opens straight into the live demo, ?theme=dark|light|midnight picks a theme
   const q = new URLSearchParams(location.search);
@@ -188,6 +190,7 @@ const Demo = (() => {
     for (const a of Object.values(ACC)) {
       for (const o of [...a.pending]) {
         const q = quote(o.symbol), hit = { 2: q.ask <= o.price, 3: q.bid >= o.price, 4: q.ask >= o.price, 5: q.bid <= o.price }[o.type];
+        if (hit && marginOf(a, o.symbol, o.volume) > acctOut(a).margin_free) { a.pending.splice(a.pending.indexOf(o), 1); demoEvent(a, `${NAMES[o.type]} #${o.ticket} on ${o.symbol} was cancelled: not enough free margin.`, 'err'); continue }
         if (hit) { a.pending.splice(a.pending.indexOf(o), 1); a.positions.push({ ticket: o.ticket, symbol: o.symbol, type: o.type % 2 === 0 ? 'BUY' : 'SELL', volume: o.volume, price_open: o.type % 2 === 0 ? q.ask : q.bid, sl: o.sl, tp: o.tp, sl0: o.sl, tp0: o.tp, time_epoch: t }) }
       }
       for (const p of [...a.positions]) {
@@ -196,9 +199,48 @@ const Demo = (() => {
         if (p.sl && (buy ? px <= p.sl : px >= p.sl)) closePos(a, p, p.sl, p.volume, 4);
         else if (p.tp && (buy ? px >= p.tp : px <= p.tp)) closePos(a, p, p.tp, p.volume, 5);
       }
+      // price targets: partial take profit / keep best entry (the bridge does the same with your MT5 prices)
+      const T = a.targets ||= [];
+      for (const g of [...T]) {
+        const open = a.positions.filter(p => g.kind === 'partial' ? p.ticket === g.ticket : p.symbol === g.symbol && p.type === g.side);
+        if (!open.length) { T.splice(T.indexOf(g), 1); continue }
+        const q = quote(g.symbol), px = g.side === 'BUY' ? q.bid : q.ask;
+        if (!(g.dir > 0 ? px >= g.price : px <= g.price)) continue;
+        T.splice(T.indexOf(g), 1);
+        const msg = g.kind === 'partial' ? demoPartial(a, open[0], g.percent, px, g.be) : demoKeepBest(a, g.symbol, g.side, g.percent, g.be, px);
+        demoEvent(a, (g.kind === 'partial' ? `Partial TP ${px.toFixed(SPEC[g.symbol].d)}: ` : `Keep-best ${g.side} ${g.symbol} at ${px.toFixed(SPEC[g.symbol].d)}: `) + msg + '.');
+      }
     }
   }
-  setInterval(step, 250);
+  // like a broker: margin level (equity / margin) at or below 20% closes the biggest loser, again and again; balance never below 0
+  const marginOf = (A, s, v) => v * mpu(s) * mids[s] / (A.leverage || 100);
+  function stopOut(a) {
+    const hit = [];
+    for (let i = 0; i < 100 && a.positions.length; i++) {
+      const o = acctOut(a); if (o.margin <= 0 || o.equity / o.margin * 100 > 20) break;
+      const w = a.positions.reduce((x, y) => profitOf(y) < profitOf(x) ? y : x), q = quote(w.symbol), lvl = o.equity / o.margin * 100;
+      const pl = profitOf(w); closePos(a, w, w.type === 'BUY' ? q.bid : q.ask, w.volume, 6); hit.push(`#${w.ticket} ${w.symbol} (${pl.toFixed(2)}) at margin level ${lvl.toFixed(0)}%`);
+    }
+    if (hit.length) demoEvent(a, 'Stop out: margin level fell to 20% or below. Closed ' + hit.join(', ') + '.', 'err');
+    if (a.balance < 0 && !a.positions.length) { demoEvent(a, `The balance went ${a.balance.toFixed(2)}: reset to 0 (negative balance protection).`, 'err'); a.cash.push({ time: now(), type: 'balance', amount: -a.balance, comment: 'Negative balance reset to 0' }); a.balance = 0 }
+  }
+  setInterval(() => { step(); for (const a of Object.values(ACC)) stopOut(a) }, 250);
+  const partVol = (p, pct) => pct >= 99.999 ? p.volume : +(Math.round(p.volume * pct) / 100).toFixed(2);
+  function demoEvent(a, text, kind = 'ok') { const E = a.events ||= []; E.push({ id: Date.now() + E.length, time: now(), text, kind }); E.splice(0, E.length - 30) }
+  function demoPartial(a, p, pct, px, be) {
+    const v = partVol(p, pct); if (v < .01) return `${pct}% of ${p.volume} lot is below 0.01, skipped`;
+    closePos(a, p, px, Math.min(v, p.volume), 5);
+    if (be && a.positions.includes(p) && (px - p.price_open) * (p.type === 'BUY' ? 1 : -1) > 0) p.sl = p.price_open;
+    return `closed ${v} lot of #${p.ticket}` + (a.positions.includes(p) ? `, ${p.volume} lot still open` : '');
+  }
+  function demoKeepBest(a, s, side, pct, be, px) {
+    const ps = a.positions.filter(p => p.symbol === s && p.type === side); if (!ps.length) return 'no open positions';
+    const best = ps.reduce((x, y) => side === 'BUY' ? (y.price_open < x.price_open ? y : x) : (y.price_open > x.price_open ? y : x));
+    const rest = ps.filter(p => p !== best); rest.forEach(p => closePos(a, p, px));
+    let m = rest.length ? `closed ${rest.length}` : 'nothing else to close';
+    if (pct) m += '; ' + demoPartial(a, best, pct, px, be); else if (be && (px - best.price_open) * (side === 'BUY' ? 1 : -1) > 0) best.sl = best.price_open;
+    return m;
+  }
 
   const err = m => { throw new Error(m) };
   const acc = l => ACC[+l] || err('That account is not configured in the bridge.');
@@ -209,9 +251,9 @@ const Demo = (() => {
     if (tp && (buy ? tp <= ref : tp >= ref)) err('Take profit must be above entry for buys and below entry for sells.');
   };
   const NAMES = { 2: 'BUY LIMIT', 3: 'SELL LIMIT', 4: 'BUY STOP', 5: 'SELL STOP' };
-  const posOut = a => a.positions.map(({ sl0, tp0, mfe, mae, ...p }) => ({ ...p, profit: +profitOf(p).toFixed(2) }));
+  const posOut = a => a.positions.map(({ sl0, tp0, mfe, mae, ...p }) => ({ ...p, profit: +profitOf(p).toFixed(2), price_current: quote(p.symbol)[p.type === 'BUY' ? 'bid' : 'ask'] }));
   const acctOut = A => {
-    const fl = sum(A.positions, profitOf), margin = sum(A.positions, x => x.volume * mpu(x.symbol) * mids[x.symbol] / 100);
+    const fl = sum(A.positions, profitOf), margin = sum(A.positions, x => x.volume * mpu(x.symbol) * mids[x.symbol] / (A.leverage || 100));
     return { balance: A.balance, equity: +(A.balance + fl).toFixed(2), margin: +margin.toFixed(2), margin_free: +(A.balance + fl - margin).toFixed(2), profit: +fl.toFixed(2), currency: 'USD' };
   };
 
@@ -223,11 +265,13 @@ const Demo = (() => {
       const a = () => acc(body ? body.login : q.login);
       switch (p) {
         case '/api/health': return { ok: true, mode: 'demo', version: 'demo' };
-        case '/api/accounts': return { accounts: Object.entries(ACC).map(([l, x]) => ({ login: +l, name: x.label, server: x.paper ? 'Goldmine Paper' : 'Goldmine-Demo', is_demo: true, paper: !!x.paper })) };
+        case '/api/accounts': return { accounts: Object.entries(ACC).map(([l, x]) => ({ login: +l, name: x.label, server: x.paper ? 'Goldmine Paper' : 'Goldmine-Demo', is_demo: true, paper: !!x.paper, leverage: x.leverage || 100 })) };
         case '/api/paper/create': {
           const l = 90000001 + Object.values(ACC).filter(x => x.paper).length, bal = +body.balance || 10000;
-          ACC[l] = Object.assign(genAccount(body.name || `Paper ${num(bal, 0)}`, bal, l, 0, 1), { paper: true });
-          return { ok: true, account: { login: l, name: ACC[l].label, balance: bal, currency: 'USD', paper: true } };
+          ACC[l] = Object.assign(genAccount(body.name || `Paper ${num(bal, 0)}`, bal, l, 0, 1), { paper: true, leverage: +body.leverage || 500 });
+          return { ok: true, account: { login: l, name: ACC[l].label, balance: bal, currency: 'USD', paper: true, leverage: ACC[l].leverage } };
+        }
+        case '/api/paper/leverage': { const A = a(); A.leverage = +body.leverage || 100; return { ok: true, account: { login: +body.login, leverage: A.leverage } }
         }
         case '/api/paper/reset': { const A = a(); const bal = body.balance || A.cash[0]?.amount || 10000; Object.assign(A, { balance: bal, positions: [], pending: [], trades: [], cash: [{ time: now(), type: 'balance', amount: bal, comment: 'Reset' }] }); return { ok: true } }
         case '/api/paper/deposit': { const A = a(); A.balance = +(A.balance + body.amount).toFixed(2); A.cash.push({ time: now(), type: 'balance', amount: body.amount, comment: body.amount >= 0 ? 'Deposit' : 'Withdrawal' }); return { ok: true } }
@@ -238,17 +282,32 @@ const Demo = (() => {
         case '/api/live': {
           const A = a(), s = sym(q.symbol), qt = quote(s), B = series(s, q.timeframe);
           return { symbol: s, ...qt, time: now(), digits: SPEC[s].d, point: pt(s), contract: SPEC[s].c, tick_size: pt(s), tick_value: mpu(s) * pt(s), volume_min: .01, volume_step: .01, volume_max: 1,
-            bars: B.slice(-2).map(b => ({ ...b })), positions: posOut(A), pending: A.pending.map(o => ({ ...o, name: NAMES[o.type] })), account: acctOut(A) };
+            bars: B.slice(-2).map(b => ({ ...b })), positions: posOut(A), pending: A.pending.map(o => ({ ...o, name: NAMES[o.type] })), account: acctOut(A),
+            targets: (A.targets || []).map(g => ({ ...g })), events: (A.events || []).slice(-10) };
         }
+        case '/api/targets/add': {
+          const A = a(), b = body, side = String(b.side || '').toUpperCase();
+          let s = b.symbol, sd = side;
+          if (b.kind === 'partial') { const p = A.positions.find(x => x.ticket === b.ticket) || err('Position not found.'); s = p.symbol; sd = p.type; if (!b.price) err('Enter a price.') }
+          else if (!A.positions.some(p => p.symbol === s && p.type === sd)) err(`No open ${sd} positions on ${s}.`);
+          const qt = quote(sym(s)), ref = sd === 'BUY' ? qt.bid : qt.ask;
+          if (b.kind === 'keepbest' && !b.price) { const m = demoKeepBest(A, s, sd, +b.percent || 0, !!b.be, ref); return { ok: true, message: m[0].toUpperCase() + m.slice(1) + '.' } }
+          const price = +(+b.price).toFixed(SPEC[s].d); if (price === ref) err('That price is the current price: pick a level above or below it.');
+          const g = { id: ++tk, kind: b.kind, symbol: s, side: sd, price, dir: price > ref ? 1 : -1, percent: +b.percent || 0, ticket: b.ticket || 0, be: !!b.be, created: now() };
+          (A.targets ||= []).push(g); return { ok: true, target: g };
+        }
+        case '/api/targets/remove': { const A = a(), T = A.targets || [], i = T.findIndex(g => g.id === body.id); if (i < 0) err('Target not found (it may just have fired).'); T.splice(i, 1); return { ok: true } }
         case '/api/history': { const A = a(); return { deals: A.trades.slice().sort((x, y) => y.close_time - x.close_time).slice(0, +q.limit || 8).map(t => ({ ticket: t.position, symbol: t.symbol, type: t.side === 'BUY' ? 'SELL' : 'BUY', volume: t.closed_volume, price: t.close_price, profit: t.net, time_epoch: t.close_time, time: new Date(t.close_time * 1000).toISOString().slice(0, 16).replace('T', ' ') })) } }
         case '/api/journal': {
           const A = a(), from = now() - (+q.days || 365) * 86400;
-          return { account: { login: +(q.login), name: A.label, owner: 'Demo Trader', server: 'Goldmine-Demo', company: 'Goldmine Demo Broker', currency: 'USD', leverage: 100, ...acctOut(A), is_demo: true },
+          return { account: { login: +(q.login), name: A.label, owner: 'Demo Trader', server: 'Goldmine-Demo', company: 'Goldmine Demo Broker', currency: 'USD', leverage: A.leverage || 100, ...acctOut(A), is_demo: true },
             trades: A.trades.filter(t => t.close_time >= from).map(t => ({ ...t })), cash: A.cash.filter(c => c.time >= from), open: posOut(A), now: now() };
         }
         case '/api/order': {
           const A = a(), s = sym(body.symbol), v = vol(body.volume), buy = body.side === 'buy', qt = quote(s), px = buy ? qt.ask : qt.bid;
           sideCheck(buy, px, body.sl, body.tp);
+          const need = marginOf(A, s, v), free = acctOut(A).margin_free;
+          if (need > free + 1e-6) err(`Not enough free margin: this trade needs ${need.toFixed(2)} USD margin, you have ${Math.max(0, free).toFixed(2)} free (1:${A.leverage || 100}). Use a smaller lot.`);
           A.positions.push({ ticket: ++tk, symbol: s, type: buy ? 'BUY' : 'SELL', volume: v, price_open: px, sl: body.sl || 0, tp: body.tp || 0, sl0: body.sl || 0, tp0: body.tp || 0, time_epoch: now() });
           return { ok: true, ticket: tk, message: 'Request executed' };
         }

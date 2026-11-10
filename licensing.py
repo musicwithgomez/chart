@@ -5,7 +5,7 @@ so YOUR own bridge keeps working. A customer bridge gets license.json inside the
     {"server": "https://app.yourdomain.com", "pubkey": "<hex>", "key": "GP-XXXXX-..."}
 
 How it works
-- Every 30 minutes the bridge asks the license server "is this key active?".
+- Every 10 minutes the bridge asks the license server "is this key active?".
 - The answer is signed with the server's private key; the bridge checks it with the public key (gp_sign.py),
   so editing the answer or pointing the bridge to a fake server does not work.
 - The last good answer is cached in license_cache.json. If the server is unreachable the bridge keeps working
@@ -163,4 +163,4 @@ class License:
     def _loop(self):
         while True:
             self.refresh()
-            time.sleep(1800 if self.ok() else 60)
+            time.sleep(600 if self.ok() else 60)  # every 10 min (plan changes are also picked up right away, see app.py)
